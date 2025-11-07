@@ -76,8 +76,8 @@
   --chart-4: 280 40% 35%;
   --chart-5: 160 42% 32%;
 
-  --font-sans: Open Sans, sans-serif;
-  --font-serif: Georgia, serif;
+  --font-sans: Roboto, sans-serif;
+  --font-serif: Playfair Display, serif;
   --font-mono: Menlo, monospace;
   --radius: .5rem; /* 8px */
   --shadow-2xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.05);
@@ -132,11 +132,12 @@
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
 
+  /* Alpha Phi Alpha Dark Theme - Gold (#C8A856) on Black (#121212) */
   --background: 0 0% 7%;
 
   --foreground: 0 0% 96%;
 
-  --border: 0 0% 18%;
+  --border: 42 48% 56% / 0.3;
 
   --card: 0 0% 10%;
 
@@ -150,9 +151,9 @@
 
   --sidebar-border: 0 0% 20%;
 
-  --sidebar-primary: 42 48% 32%;
+  --sidebar-primary: 42 48% 56%;
 
-  --sidebar-primary-foreground: 42 48% 98%;
+  --sidebar-primary-foreground: 0 0% 7%;
 
   --sidebar-accent: 42 12% 18%;
 
@@ -166,9 +167,10 @@
 
   --popover-border: 0 0% 22%;
 
-  --primary: 42 48% 32%;
+  /* Gold primary color for APA */
+  --primary: 42 48% 56%;
 
-  --primary-foreground: 42 48% 98%;
+  --primary-foreground: 0 0% 7%;
 
   --secondary: 0 3% 20%;
 
@@ -182,9 +184,9 @@
 
   --accent-foreground: 42 15% 88%;
 
-  --destructive: 0 72% 32%;
+  --destructive: 0 72% 50%;
 
-  --destructive-foreground: 0 72% 98%;
+  --destructive-foreground: 0 0% 98%;
 
   --input: 0 0% 32%;
   --ring: 42 48% 56%;
@@ -324,5 +326,29 @@
   .border.active-elevate-2:not(.no-active-interaction-elevate)::after,
   .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
     inset: -1px;
+  }
+}
+
+/* Custom scrollbar for dark theme - Alpha Phi Alpha gold accent */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: hsl(42 48% 56%);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: hsl(0 0% 10%);
+}
+
+/* Gold pulse animation for coin render placeholder */
+@keyframes pulse-gold {
+  0% {
+    box-shadow: 0 0 10px hsl(42 48% 56% / 0.4);
+  }
+  100% {
+    box-shadow: 0 0 20px hsl(42 48% 56% / 0.8);
   }
 }

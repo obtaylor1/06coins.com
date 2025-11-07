@@ -100,6 +100,11 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "pulse-gold": "pulse-gold 2s ease-in-out infinite alternate",
+      },
+      letterSpacing: {
+        'widest': '0.2em',
+        'monumental': '0.05em',
       },
     },
   },
