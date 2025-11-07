@@ -53,6 +53,9 @@ export const orders = pgTable("orders", {
   quantity: integer("quantity").notNull(),
   totalAmount: integer("total_amount").notNull(), // in cents
   status: text("status").notNull().default("pending"), // pending, completed, failed
+  customerName: text("customer_name"),
+  customerEmail: text("customer_email"),
+  shippingAddress: jsonb("shipping_address"), // { line1, line2, city, state, postal_code, country }
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

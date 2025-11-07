@@ -121,12 +121,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      // Extract customer and shipping information from payment intent
+      const customerName = paymentIntent.shipping?.name || 
+                          paymentIntent.billing_details?.name || 
+                          'Unknown Customer';
+      const customerEmail = paymentIntent.receipt_email || 
+                           paymentIntent.billing_details?.email || 
+                           null;
+      const shippingAddress = paymentIntent.shipping?.address || null;
+
       // Create order record FIRST for idempotency (before decrementing)
       await storage.createOrder({
         stripePaymentIntentId: paymentIntentId,
         quantity,
         totalAmount: paymentIntent.amount, // Use actual paid amount from Stripe
         status: "completed",
+        customerName,
+        customerEmail,
+        shippingAddress,
       });
       
       const inventory = await storage.getInventory();
