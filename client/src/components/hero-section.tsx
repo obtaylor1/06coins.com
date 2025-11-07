@@ -15,7 +15,7 @@ export function HeroSection({ onCtaClick }: HeroSectionProps) {
     refetchInterval: 5000,
   });
   
-  const stock = inventory?.remainingStock ?? 406;
+  const stock = inventory?.remainingStock ?? 1906;
 
   return (
     <section className="relative min-h-screen flex items-center px-6 py-20 md:px-12 lg:px-16 overflow-hidden bg-gradient-to-br from-background via-background to-background/80">

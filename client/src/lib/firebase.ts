@@ -74,12 +74,12 @@ export function subscribeToInventory(
     (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
-        const stock = data?.remaining_stock ?? 406;
+        const stock = data?.remaining_stock ?? 1906;
         console.log('Firebase real-time update: stock =', stock);
         callback(stock);
       } else {
         console.log('Firestore document not found, using default stock');
-        callback(406); // Default stock
+        callback(1906); // Default stock
       }
     },
     (error) => {

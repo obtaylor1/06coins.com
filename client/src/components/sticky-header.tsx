@@ -41,7 +41,7 @@ export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
     };
   }, []);
 
-  const stock = realtimeStock !== null ? realtimeStock : (inventory?.remainingStock ?? 406);
+  const stock = realtimeStock !== null ? realtimeStock : (inventory?.remainingStock ?? 1906);
   const isSoldOut = stock <= 0;
 
   return (

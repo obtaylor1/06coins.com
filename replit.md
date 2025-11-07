@@ -212,11 +212,19 @@ Once you provide Firebase credentials, follow these steps:
 - **inventory**: id, remainingStock, lastUpdated
 - **orders**: id, stripePaymentIntentId, quantity, totalAmount, status, createdAt
 
+## Inventory Configuration
+
+**Starting Stock:** 1906 coins (commemorating Alpha Phi Alpha's 1906 founding year)
+- Database initialized with 1906 remaining stock
+- All fallback values set to 1906
+- Stock decrements with each purchase
+- Real-time updates via Firebase or 5-second polling fallback
+
 ## Testing Checklist
 
 Current state:
-- ✅ Inventory persists in PostgreSQL database
-- ✅ Stock counter shows on frontend (polling every 5 seconds)
+- ✅ Inventory persists in PostgreSQL database (starting at 1906)
+- ✅ Stock counter shows 1906 on frontend (polling every 5 seconds)
 - ✅ Checkout flow with server-side price calculation
 - ✅ Payment verification before inventory decrement
 - ✅ Orders recorded in database

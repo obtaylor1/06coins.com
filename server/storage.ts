@@ -54,8 +54,8 @@ export class DbStorage implements IStorage {
     if (result.length === 0) {
       return await this.initializeInventory({
         productName: "APA 120th Anniversary Commemorative Coin (6-Inch)",
-        remainingStock: 406,
-        initialStock: 406,
+        remainingStock: 1906,
+        initialStock: 1906,
       });
     }
     

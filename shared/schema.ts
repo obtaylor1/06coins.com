@@ -33,8 +33,8 @@ export type User = typeof users.$inferSelect;
 export const inventory = pgTable("inventory", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   productName: text("product_name").notNull(),
-  remainingStock: integer("remaining_stock").notNull().default(406),
-  initialStock: integer("initial_stock").notNull().default(406),
+  remainingStock: integer("remaining_stock").notNull().default(1906),
+  initialStock: integer("initial_stock").notNull().default(1906),
   lastUpdated: timestamp("last_updated").notNull().defaultNow(),
 });
 

@@ -20,7 +20,7 @@ export function PurchaseModule() {
     refetchInterval: 5000,
   });
 
-  const stock = inventory?.remainingStock ?? 406;
+  const stock = inventory?.remainingStock ?? 1906;
   const isSoldOut = stock <= 0;
   const totalAmount = COIN_PRICE * quantity;
 
