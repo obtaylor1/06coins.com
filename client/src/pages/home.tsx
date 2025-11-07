@@ -26,7 +26,7 @@ export default function Home() {
       <main>
         <HeroSection onCtaClick={scrollToPurchase} />
         
-        <StorySection />
+        <StorySection onCtaClick={scrollToPurchase} />
         
         <ProductShowcase />
         

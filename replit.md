@@ -34,10 +34,12 @@ A premium e-commerce website for the Alpha Phi Alpha Fraternity's 120th Annivers
   - Split-screen layout with actual coin renderings
   - Elegant coin specifications display
   - High-quality coin front & back images integrated
-- ✅ **Timeline Story Section**
-  - Three-card historical narrative
-  - Refined typography and spacing
-  - Professional background imagery
+- ✅ **Timeline Story Section** (Updated Nov 7, 2025)
+  - Vertical timeline with gold connecting line
+  - Alternating left/right layout with icons
+  - Year badges: 1906, 1906-2026, 2026
+  - Icon circles on timeline (User, Users, ShieldCheck)
+  - "Honor the Legacy - Add to Cart" as clickable gold button
 - ✅ **Premium Why Own Section**
   - Three compelling value propositions
   - Hover effects with subtle gold texture overlays
