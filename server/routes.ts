@@ -283,6 +283,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin analytics endpoint
+  app.get("/api/admin/analytics", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const orders = await storage.getAllOrders();
+      const inventory = await storage.getInventory();
+      
+      const completedOrders = orders.filter(o => o.status === 'completed');
+      const totalRevenue = completedOrders.reduce((sum, order) => sum + order.totalAmount, 0);
+      const totalCoinsSold = completedOrders.reduce((sum, order) => sum + order.quantity, 0);
+      const initialStock = inventory?.initialStock || 1906;
+      const remainingStock = inventory?.remainingStock || 0;
+      
+      // Calculate profit (assuming $30 cost per coin = $20 profit per coin sold)
+      const COST_PER_COIN = 30; // $30 cost basis
+      const PRICE_PER_COIN = 50; // $50 selling price
+      const PROFIT_PER_COIN = PRICE_PER_COIN - COST_PER_COIN;
+      const totalProfit = totalCoinsSold * PROFIT_PER_COIN * 100; // in cents
+      
+      res.json({
+        totalOrders: completedOrders.length,
+        totalRevenue, // in cents
+        totalCoinsSold,
+        totalProfit, // in cents
+        initialStock,
+        remainingStock,
+        soldPercentage: ((totalCoinsSold / initialStock) * 100).toFixed(1),
+      });
+    } catch (error: any) {
+      console.error('Error fetching analytics:', error);
+      res.status(500).json({ message: "Error fetching analytics: " + error.message });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;
