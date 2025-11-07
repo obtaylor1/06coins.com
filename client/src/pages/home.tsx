@@ -28,7 +28,7 @@ export default function Home() {
         
         <StorySection onCtaClick={scrollToPurchase} />
         
-        <ProductShowcase />
+        <ProductShowcase onCtaClick={scrollToPurchase} />
         
         <WhyOwnSection />
         

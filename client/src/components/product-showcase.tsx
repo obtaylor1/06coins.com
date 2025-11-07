@@ -1,9 +1,14 @@
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Ruler, Scale, Sparkles, Globe, Star, Shield } from "lucide-react";
 import coinFrontImg from "@assets/apa coin front_1762505793054.png";
 import coinBackImg from "@assets/apa coin back_1762505793054.png";
 
-export function ProductShowcase() {
+interface ProductShowcaseProps {
+  onCtaClick?: () => void;
+}
+
+export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
   return (
     <section className="relative py-20 md:py-32 px-6 md:px-12">
       <div className="relative z-10 max-w-7xl mx-auto space-y-20 md:space-y-28">
@@ -228,9 +233,14 @@ export function ProductShowcase() {
           </div>
 
           <div className="text-center pt-6">
-            <p className="text-lg text-primary/80 font-serif italic">
+            <Button
+              onClick={onCtaClick}
+              size="lg"
+              className="bg-primary hover:bg-primary/90 text-black font-bold text-lg px-12 py-6"
+              data-testid="button-claim-masterpiece"
+            >
               Claim Your Masterpiece
-            </p>
+            </Button>
           </div>
         </div>
       </div>
