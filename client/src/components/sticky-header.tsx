@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Shield } from "lucide-react";
 import { subscribeToInventory, signInAnonymouslyToFirebase } from "@/lib/firebase";
 
 interface StickyHeaderProps {
@@ -12,13 +13,11 @@ export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
   
   const { data: inventory, isLoading } = useQuery<{ remainingStock: number }>({
     queryKey: ['/api/inventory'],
-    refetchInterval: 5000, // Fallback polling if Firebase not available
+    refetchInterval: 5000,
   });
 
-  // Subscribe to Firebase real-time updates
   useEffect(() => {
     const setupFirebase = async () => {
-      // Sign in anonymously before subscribing
       const signedIn = await signInAnonymouslyToFirebase();
       
       if (signedIn) {
@@ -42,30 +41,45 @@ export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
     };
   }, []);
 
-  // Prefer real-time Firebase stock, fallback to API query
   const stock = realtimeStock !== null ? realtimeStock : (inventory?.remainingStock ?? 406);
   const isSoldOut = stock <= 0;
 
   return (
-    <header className="sticky top-0 z-50 bg-background/95 border-b border-primary/30 shadow-lg backdrop-blur-sm">
-      <div className="py-3 px-4 md:px-6 flex justify-center items-center">
-        <div className="flex items-center gap-6">
-          <span className="text-sm md:text-base font-semibold flex items-baseline gap-1">
-            <span className="text-foreground/70">Phase I:</span>
-            <span className="text-foreground">Only</span>
-            <span 
-              className="text-lg md:text-xl font-bold text-primary"
-              data-testid="text-stock-counter"
-            >
-              {isLoading ? "..." : stock}
+    <header 
+      className="sticky top-0 z-50 shadow-lg"
+      style={{ backgroundColor: '#8B1538' }}
+      data-testid="header-sticky"
+    >
+      <div className="py-3 px-4 md:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+          {/* Left: Logo + Title */}
+          <div className="flex items-center gap-3">
+            <Shield className="w-6 h-6 text-primary fill-primary" data-testid="icon-logo" />
+            <span className="text-sm md:text-base font-semibold text-white whitespace-nowrap">
+              Alpha Phi Alpha 120th Anniversary
             </span>
-            <span className="text-foreground">Remaining!</span>
-          </span>
-          
+          </div>
+
+          {/* Center: Stock Counter */}
+          <div className="flex-1 flex justify-center">
+            <span className="text-sm md:text-base font-semibold text-white flex items-baseline gap-1">
+              <span>Phase I:</span>
+              <span>Only</span>
+              <span 
+                className="text-lg md:text-xl font-bold text-primary mx-1"
+                data-testid="text-stock-counter"
+              >
+                {isLoading ? "..." : stock}
+              </span>
+              <span>Remaining!</span>
+            </span>
+          </div>
+
+          {/* Right: CTA Button */}
           <Button
             onClick={onCtaClick}
             disabled={isSoldOut}
-            className="whitespace-nowrap font-bold"
+            className="whitespace-nowrap font-bold bg-primary hover:bg-primary/90 text-black border-0"
             size="default"
             data-testid="button-header-cta"
           >
