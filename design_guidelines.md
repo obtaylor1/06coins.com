@@ -1,7 +1,7 @@
 # Design Guidelines: Alpha Phi Alpha 120th Anniversary Commemorative Coin
 
 ## Design Approach
-**Reference-Based**: Drawing inspiration from luxury e-commerce (Tiffany & Co., Rolex) and prestigious institutional sites, emphasizing heritage, exclusivity, and craftsmanship. The design celebrates 120 years of brotherhood through monumental aesthetics and controlled scarcity.
+**Premium Luxury E-Commerce**: Inspired by world-class luxury brands (Tiffany & Co., Rolex, Cartier), this design balances heritage with modern sophistication. The aesthetic celebrates 120 years of Alpha Phi Alpha brotherhood through refined typography, generous white space, and museum-quality presentation. Every element serves the dual purpose of honoring the legacy while creating desire for ownership.
 
 ## Core Design Principles
 1. **Monumental Prestige**: Every element conveys gravitas and historical significance
@@ -131,12 +131,19 @@
 
 ## Images
 
-**Hero 3D Coin Render**
+**Hero Coin Imagery**
 - Placement: Center of hero section, below headline
-- Size: max-w-lg (400-500px)
-- Treatment: Rotating 3D model showing Sphinx side
-- Background: Gradient from gold (50% opacity) to dark (80%), with gold border and pulse animation
-- Purpose: Primary visual anchor showcasing the product
+- Size: max-w-2xl (600-800px) for impactful presence
+- Treatment: High-resolution coin photography or 3D render on clean black background
+- Background: Pure black or subtle radial gradient emphasizing the gold coin
+- Lighting: Dramatic side lighting to highlight relief details and metallic finish
+- Purpose: Museum-quality product showcase that commands attention
+
+**Lifestyle & Context Photography**
+- Professional, editorial-style imagery showing the coin in luxury settings
+- Warm, sophisticated lighting matching the Black & Gold aesthetic
+- Minimal props, maximum focus on the coin as artifact
+- High contrast, sharp focus, professional color grading
 
 **Supporting Images** (if needed)
 - Historical photos: Cornell founding, Jewel portraits (sepia or desaturated for cohesion)

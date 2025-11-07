@@ -1,85 +1,125 @@
 import { Card } from "@/components/ui/card";
+import luxuryBgImg from "@assets/stock_images/luxury_black_and_gol_33f8eddd.jpg";
 
 export function ProductShowcase() {
   return (
-    <section className="py-16 md:py-24 px-6 md:px-12 bg-card">
-      <div className="max-w-6xl mx-auto space-y-12">
-        <div className="text-center space-y-4">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-foreground tracking-monumental">
-            Six Inches of History. Unmatched Quality.
+    <section className="relative py-20 md:py-32 px-6 md:px-12 overflow-hidden">
+      {/* Background texture */}
+      <div 
+        className="absolute inset-0 opacity-10"
+        style={{
+          backgroundImage: `url(${luxuryBgImg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
+      
+      <div className="relative z-10 max-w-7xl mx-auto space-y-16 md:space-y-20">
+        <div className="text-center space-y-6">
+          <h2 className="text-4xl md:text-5xl lg:text-7xl font-serif text-foreground tracking-tight leading-tight">
+            Six Inches of History.
+            <br />
+            <span className="text-primary">Unmatched Quality.</span>
           </h2>
-          <p className="text-xl text-primary">
-            Behold the weight of brotherhood. A premium collectible worthy of the Black and Gold.
+          <p className="text-xl md:text-2xl text-foreground/70 max-w-3xl mx-auto">
+            A premium collectible worthy of the Black and Gold
           </p>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-12 items-start">
+        <div className="flex flex-col lg:flex-row gap-12 lg:gap-16 items-start">
           {/* Product Renders/Video */}
-          <div className="lg:w-1/2 space-y-8">
-            {/* Video placeholder */}
-            <Card className="w-full p-8 aspect-video flex items-center justify-center border-2 border-primary">
-              <p className="text-lg text-primary font-serif">VEO 3.1 COIN SHOWCASE VIDEO HERE</p>
-            </Card>
+          <div className="lg:w-1/2 space-y-6">
+            {/* Video placeholder with elegant styling */}
+            <div className="w-full aspect-video rounded-2xl overflow-hidden border border-primary/20 bg-card/50 backdrop-blur-sm flex items-center justify-center">
+              <div className="text-center space-y-3 p-8">
+                <div className="w-20 h-20 mx-auto rounded-full border-2 border-primary/40 flex items-center justify-center">
+                  <svg className="w-8 h-8 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                  </svg>
+                </div>
+                <p className="text-sm text-primary/80 font-serif tracking-wider">
+                  COIN SHOWCASE VIDEO
+                </p>
+              </div>
+            </div>
             
-            {/* Side-by-side renders */}
-            <div className="flex gap-4">
-              <Card className="w-1/2 p-4 flex items-center justify-center aspect-square">
-                <p className="text-sm text-primary">FRONT SIDE RENDER</p>
-              </Card>
-              <Card className="w-1/2 p-4 flex items-center justify-center aspect-square">
-                <p className="text-sm text-primary">BACK SIDE RENDER</p>
-              </Card>
+            {/* Side-by-side coin renders with elegant borders */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="aspect-square rounded-xl overflow-hidden border border-primary/20 bg-card/30 backdrop-blur-sm flex items-center justify-center p-6">
+                <div className="text-center space-y-2">
+                  <div className="w-20 h-20 mx-auto rounded-full border-2 border-primary/40 flex items-center justify-center">
+                    <span className="text-3xl text-primary/80">Α</span>
+                  </div>
+                  <p className="text-xs text-primary/60 font-serif tracking-wider">FRONT SIDE</p>
+                </div>
+              </div>
+              <div className="aspect-square rounded-xl overflow-hidden border border-primary/20 bg-card/30 backdrop-blur-sm flex items-center justify-center p-6">
+                <div className="text-center space-y-2">
+                  <div className="w-20 h-20 mx-auto rounded-full border-2 border-primary/40 flex items-center justify-center">
+                    <div className="grid grid-cols-3 gap-1">
+                      {[...Array(7)].map((_, i) => (
+                        <div key={i} className="w-1.5 h-1.5 rounded-full bg-primary/60" />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-xs text-primary/60 font-serif tracking-wider">BACK SIDE</p>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Detailed Symbolism */}
-          <div className="lg:w-1/2 space-y-8 text-foreground">
-            <div className="space-y-3">
-              <h3 className="text-3xl font-serif text-primary tracking-monumental">
+          {/* Detailed Symbolism with Premium Layout */}
+          <div className="lg:w-1/2 space-y-10">
+            <div className="space-y-4">
+              <h3 className="text-2xl md:text-3xl font-serif text-primary tracking-tight">
                 The Scale and Significance
               </h3>
-              <ul className="list-disc list-inside space-y-2 ml-4 text-foreground/90">
-                <li>
-                  <strong className="text-primary">6-Inch Diameter:</strong> Chosen to physically represent the founding year, 1906. Designed to be a substantial, commanding display piece.
-                </li>
-                <li>
-                  <strong className="text-primary">Substantial Weight:</strong> Crafted from a premium zinc alloy with a rich Old Gold finish, symbolizing the gravity of our history.
-                </li>
-              </ul>
+              <div className="space-y-4 text-foreground/80 leading-relaxed">
+                <p>
+                  <strong className="text-primary font-semibold">6-Inch Diameter:</strong> Chosen to physically represent the founding year, 1906. Designed to be a substantial, commanding display piece that makes an immediate impression.
+                </p>
+                <p>
+                  <strong className="text-primary font-semibold">Substantial Weight:</strong> Crafted from premium zinc alloy with a rich Old Gold finish, symbolizing the gravity and permanence of our 120-year history.
+                </p>
+              </div>
             </div>
 
-            <div className="space-y-3">
-              <h3 className="text-3xl font-serif text-primary tracking-monumental">
+            <div className="h-px bg-primary/20 w-full" />
+
+            <div className="space-y-4">
+              <h3 className="text-2xl md:text-3xl font-serif text-primary tracking-tight">
                 Obverse (Front) Details
               </h3>
-              <ul className="list-disc list-inside space-y-2 ml-4 text-foreground/90">
-                <li>
-                  <strong className="text-primary">The Sphinx:</strong> The iconic cornerstone of our sacred bond, standing in high relief.
-                </li>
-                <li>
-                  <strong className="text-primary">Global Reach:</strong> Stylized lines encircling the design recognize Alpha Phi Alpha's international expansion.
-                </li>
-                <li>
-                  <strong className="text-primary">Dates:</strong> Clearly marked 1906 and 2026 frame the 120-year commemoration.
-                </li>
-              </ul>
+              <div className="space-y-4 text-foreground/80 leading-relaxed">
+                <p>
+                  <strong className="text-primary font-semibold">The Sphinx:</strong> The iconic cornerstone of our sacred bond, rendered in striking high relief with intricate detailing.
+                </p>
+                <p>
+                  <strong className="text-primary font-semibold">Global Reach:</strong> Stylized lines encircling the design recognize Alpha Phi Alpha's international expansion across six continents.
+                </p>
+                <p>
+                  <strong className="text-primary font-semibold">Commemorative Dates:</strong> 1906 and 2026 prominently displayed, framing our 120-year journey of excellence.
+                </p>
+              </div>
             </div>
 
-            <div className="space-y-3">
-              <h3 className="text-3xl font-serif text-primary tracking-monumental">
+            <div className="h-px bg-primary/20 w-full" />
+
+            <div className="space-y-4">
+              <h3 className="text-2xl md:text-3xl font-serif text-primary tracking-tight">
                 Reverse (Back) Details
               </h3>
-              <ul className="list-disc list-inside space-y-2 ml-4 text-foreground/90">
-                <li>
-                  <strong className="text-primary">The Seven Jewels:</strong> Seven distinct stars arranged in homage to our visionary founders.
-                </li>
-                <li>
-                  <strong className="text-primary">The Motto:</strong> The complete mantra, "First of All, Servants of All..." elegantly inscribed along the perimeter.
-                </li>
-                <li>
-                  <strong className="text-primary">Presentation:</strong> Arrives in a custom, velvet-lined display box with a numbered certificate of authenticity.
-                </li>
-              </ul>
+              <div className="space-y-4 text-foreground/80 leading-relaxed">
+                <p>
+                  <strong className="text-primary font-semibold">The Seven Jewels:</strong> Seven distinct stars meticulously arranged in homage to our visionary founders who shaped history at Cornell.
+                </p>
+                <p>
+                  <strong className="text-primary font-semibold">The Sacred Motto:</strong> Our complete mantra, "First of All, Servants of All, We Shall Transcend All" elegantly inscribed along the perimeter.
+                </p>
+                <p>
+                  <strong className="text-primary font-semibold">Premium Presentation:</strong> Each coin arrives in a custom, velvet-lined display box with a numbered certificate of authenticity.
+                </p>
+              </div>
             </div>
           </div>
         </div>

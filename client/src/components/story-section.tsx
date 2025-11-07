@@ -1,3 +1,5 @@
+import fraternityImg from "@assets/stock_images/fraternity_brotherho_3214f1c2.jpg";
+
 export function StorySection() {
   const stories = [
     {
@@ -15,26 +17,49 @@ export function StorySection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 px-6 md:px-12">
-      <div className="max-w-6xl mx-auto space-y-12">
-        <h2 
-          className="text-4xl md:text-5xl lg:text-6xl font-serif text-primary text-center tracking-monumental"
-          data-testid="text-story-heading"
-        >
-          More Than a Coin: A Symbol of Enduring Brotherhood
-        </h2>
+    <section className="relative py-20 md:py-32 px-6 md:px-12 overflow-hidden">
+      {/* Background image with dark overlay */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(${fraternityImg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/90 to-background/95" />
+      
+      <div className="relative z-10 max-w-7xl mx-auto space-y-16 md:space-y-20">
+        <div className="text-center space-y-6 max-w-4xl mx-auto">
+          <h2 
+            className="text-4xl md:text-5xl lg:text-7xl font-serif text-foreground tracking-tight leading-tight"
+            data-testid="text-story-heading"
+          >
+            More Than a Coin:
+            <br />
+            <span className="text-primary">A Symbol of Enduring Brotherhood</span>
+          </h2>
+          <p className="text-xl md:text-2xl text-foreground/60">
+            Celebrating 120 years of excellence, leadership, and service
+          </p>
+        </div>
         
-        <div className="grid md:grid-cols-3 gap-10">
+        <div className="grid md:grid-cols-3 gap-8 md:gap-10 lg:gap-12">
           {stories.map((story, index) => (
-            <div key={index} className="space-y-4" data-testid={`card-story-${index}`}>
+            <div 
+              key={index} 
+              className="space-y-5 p-8 rounded-2xl border border-primary/10 bg-card/30 backdrop-blur-sm hover-elevate transition-all duration-300" 
+              data-testid={`card-story-${index}`}
+            >
+              <div className="w-12 h-1 bg-primary rounded-full" />
               <h3 
-                className="text-2xl font-serif text-primary tracking-monumental"
+                className="text-2xl md:text-3xl font-serif text-primary tracking-tight leading-tight"
                 data-testid={`text-story-title-${index}`}
               >
                 {story.title}
               </h3>
               <p 
-                className="text-foreground/90 text-lg leading-relaxed"
+                className="text-foreground/80 text-base md:text-lg leading-relaxed"
                 data-testid={`text-story-content-${index}`}
               >
                 {story.content}
