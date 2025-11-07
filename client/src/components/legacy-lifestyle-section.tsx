@@ -1,9 +1,14 @@
+import { Button } from "@/components/ui/button";
 import professionalDeskImg1 from "@assets/stock_images/professional_mahogan_4bd46e85.jpg";
 import giftPresentationImg from "@assets/stock_images/elegant_gift_present_ca12998c.jpg";
 import homeMantleImg from "@assets/stock_images/elegant_home_mantle__9166904c.jpg";
 import coinDetailImg from "@assets/stock_images/gold_coin_close-up_d_04ec2cbe.jpg";
 
-export function LegacyLifestyleSection() {
+interface LegacyLifestyleSectionProps {
+  onCtaClick?: () => void;
+}
+
+export function LegacyLifestyleSection({ onCtaClick }: LegacyLifestyleSectionProps) {
   const displays = [
     {
       title: "The Professional Display",
@@ -126,16 +131,23 @@ export function LegacyLifestyleSection() {
         </div>
 
         {/* Final CTA */}
-        <div className="text-center space-y-6 pt-12">
-          <h3 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
+        <div className="bg-card border border-primary/20 rounded-3xl p-10 md:p-16 text-center space-y-6">
+          <h3 className="text-2xl md:text-3xl font-serif font-bold text-primary">
             This Is More Than a Purchase
           </h3>
           <p className="text-lg md:text-xl text-foreground/70 max-w-3xl mx-auto">
             You're acquiring a piece of history, a symbol of excellence, and a legacy that transcends generations.
           </p>
-          <p className="text-lg md:text-xl text-primary/80 font-serif italic pt-4">
-            Secure Your Legacy Now
-          </p>
+          <div className="pt-4">
+            <Button
+              onClick={onCtaClick}
+              size="lg"
+              className="bg-primary hover:bg-primary/90 text-black font-bold text-lg px-12 py-6"
+              data-testid="button-secure-legacy"
+            >
+              Secure Your Legacy Now
+            </Button>
+          </div>
         </div>
       </div>
     </section>

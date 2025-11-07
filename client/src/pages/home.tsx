@@ -32,7 +32,7 @@ export default function Home() {
         
         <WhyOwnSection onCtaClick={scrollToPurchase} />
         
-        <LegacyLifestyleSection />
+        <LegacyLifestyleSection onCtaClick={scrollToPurchase} />
         
         <div ref={purchaseRef}>
           <PurchaseModule />
