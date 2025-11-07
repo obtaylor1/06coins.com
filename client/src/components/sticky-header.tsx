@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Shield } from "lucide-react";
 import { subscribeToInventory, signInAnonymouslyToFirebase } from "@/lib/firebase";
+import shieldImg from "@assets/IMG_0093_1762507090202.jpeg";
 
 interface StickyHeaderProps {
   onCtaClick: () => void;
@@ -54,7 +54,12 @@ export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           {/* Left: Logo + Title */}
           <div className="flex items-center gap-3">
-            <Shield className="w-6 h-6 text-primary fill-primary" data-testid="icon-logo" />
+            <img 
+              src={shieldImg} 
+              alt="Alpha Phi Alpha Shield" 
+              className="w-8 h-8 md:w-10 md:h-10 object-contain" 
+              data-testid="img-shield-logo" 
+            />
             <span className="text-sm md:text-base font-semibold text-white whitespace-nowrap">
               Alpha Phi Alpha 120th Anniversary
             </span>
