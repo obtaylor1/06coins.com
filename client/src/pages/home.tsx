@@ -6,6 +6,7 @@ import { ProductShowcase } from "@/components/product-showcase";
 import { WhyOwnSection } from "@/components/why-own-section";
 import { LegacyLifestyleSection } from "@/components/legacy-lifestyle-section";
 import { PurchaseModule } from "@/components/purchase-module";
+import { Footer } from "@/components/footer";
 
 export default function Home() {
   useEffect(() => {
@@ -38,6 +39,8 @@ export default function Home() {
           <PurchaseModule />
         </div>
       </main>
+      
+      <Footer />
     </div>
   );
 }
