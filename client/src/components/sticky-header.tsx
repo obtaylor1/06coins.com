@@ -48,23 +48,18 @@ export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 bg-background/95 border-b border-primary/30 shadow-lg backdrop-blur-sm">
-      <div className="py-3 px-4 md:px-6 flex flex-col md:flex-row justify-between items-center gap-3 md:gap-4">
-        <h1 className="text-lg md:text-xl font-bold text-primary font-serif tracking-widest">
-          APA 120th Legacy Coin
-        </h1>
-        
-        <div className="flex items-center gap-3 md:gap-4 flex-wrap justify-center">
-          <span className="text-xs md:text-sm font-semibold flex items-baseline gap-1 flex-wrap justify-center">
-            <span className={isSoldOut ? "text-destructive" : "text-primary"} data-testid="text-scarcity-status">
-              {isSoldOut ? "Phase I is SOLD OUT!" : "Limited Edition - Only"}
-            </span>
+      <div className="py-3 px-4 md:px-6 flex justify-center items-center">
+        <div className="flex items-center gap-6">
+          <span className="text-sm md:text-base font-semibold flex items-baseline gap-1">
+            <span className="text-foreground/70">Phase I:</span>
+            <span className="text-foreground">Only</span>
             <span 
-              className={`text-xl md:text-2xl font-bold ${isSoldOut ? "text-destructive" : "text-primary"}`}
+              className="text-lg md:text-xl font-bold text-primary"
               data-testid="text-stock-counter"
             >
               {isLoading ? "..." : stock}
             </span>
-            {!isSoldOut && <span className="text-xs md:text-sm">Remaining!</span>}
+            <span className="text-foreground">Remaining!</span>
           </span>
           
           <Button
@@ -74,7 +69,7 @@ export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
             size="default"
             data-testid="button-header-cta"
           >
-            {isSoldOut ? "JOIN WAITLIST" : "SECURE YOUR COIN NOW"}
+            {isSoldOut ? "JOIN WAITLIST" : "PURCHASE NOW"}
           </Button>
         </div>
       </div>
