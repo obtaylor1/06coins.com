@@ -4,7 +4,7 @@
 A premium e-commerce website for the Alpha Phi Alpha Fraternity's 120th Anniversary Commemorative Coin. The site features real-time inventory tracking with Firebase Firestore and secure payment processing through Stripe.
 
 ## Current Status
-**Phase**: MVP Complete + Database Persistence ✓
+**Phase**: MVP Complete + Admin Dashboard ✓
 
 ### Completed Features
 - ✅ Design system configured with Alpha Phi Alpha branding (Gold #C8A856 on Black)
@@ -18,11 +18,20 @@ A premium e-commerce website for the Alpha Phi Alpha Fraternity's 120th Annivers
 - ✅ SEO optimization with meta tags
 - ✅ PostgreSQL database with Drizzle ORM for inventory and orders
 - ✅ Complete Stripe checkout flow (creates orders, decrements inventory)
+- ✅ **Admin Dashboard with Replit Auth**
+  - Protected /admin route with authentication
+  - Inventory management (view stock, update levels)
+  - Order viewing (all purchases with details)
+  - Role-based access control (isAdmin flag)
+  - Secure API endpoints with auth middleware
+- ✅ **Comprehensive Payment Security**
+  - Server-side price authority (COIN_PRICE = $50)
+  - Payment verification before inventory changes
+  - Idempotency to prevent duplicate orders
+  - Amount validation (prevents underpayment attacks)
 - ✅ Firebase Firestore integration ready (awaiting credentials)
-- ✅ Backend API endpoints fully functional
 
-### In Progress
-- Admin dashboard with authentication
+### Next Features
 - Waitlist email collection system
 - Order confirmation emails
 - 3D coin viewer
@@ -40,9 +49,10 @@ A premium e-commerce website for the Alpha Phi Alpha Fraternity's 120th Annivers
 
 ### Backend
 - Express.js
+- PostgreSQL with Drizzle ORM
+- Replit Auth (admin authentication)
 - Firebase Firestore (real-time inventory)
 - Stripe API (payment processing)
-- In-memory storage (will migrate to database)
 
 ## Design System
 
@@ -78,14 +88,22 @@ client/
 │   │   ├── product-showcase.tsx
 │   │   ├── why-own-section.tsx
 │   │   └── purchase-module.tsx
+│   ├── hooks/
+│   │   └── useAuth.ts
 │   ├── pages/
 │   │   ├── home.tsx
+│   │   ├── admin.tsx
+│   │   ├── checkout.tsx
 │   │   └── not-found.tsx
 │   ├── App.tsx
 │   └── index.css
 server/
 ├── routes.ts
-└── storage.ts
+├── storage.ts
+├── replitAuth.ts
+└── vite.ts
+db/
+└── index.ts
 shared/
 └── schema.ts
 ```
@@ -104,6 +122,10 @@ shared/
 ### Stripe (Payment Processing)
 - `VITE_STRIPE_PUBLIC_KEY` (frontend)
 - `STRIPE_SECRET_KEY` (backend)
+
+### Database (PostgreSQL)
+- `DATABASE_URL` (auto-configured by Replit)
+- `SESSION_SECRET` (auto-configured by Replit)
 
 ## Firebase Setup Instructions
 
@@ -133,19 +155,45 @@ Once you provide Firebase credentials, follow these steps:
    - Add Firebase service account JSON
    - Set GOOGLE_APPLICATION_CREDENTIALS environment variable
 
+## Security Architecture
+
+### Payment Security (Critical)
+1. **Server-Side Price Authority**
+   - COIN_PRICE constant defined server-side only
+   - Client sends quantity, server calculates amount
+   - Prevents client-side price manipulation
+
+2. **Payment Verification**
+   - `/api/inventory/decrement` verifies Stripe payment before inventory changes
+   - Validates both quantity AND amount match payment intent
+   - Idempotency check prevents duplicate orders
+   - Order created atomically with inventory decrement
+
+3. **Admin Protection**
+   - All admin endpoints require `isAuthenticated` + `isAdmin` middleware
+   - `/api/admin/inventory` - Update stock (admin only)
+   - `/api/admin/orders` - View all orders (admin only)
+
+### Database Schema
+- **users**: id, email, firstName, lastName, profileImageUrl, isAdmin
+- **sessions**: Passport session storage for Replit Auth
+- **inventory**: id, remainingStock, lastUpdated
+- **orders**: id, stripePaymentIntentId, quantity, totalAmount, status, createdAt
+
 ## Testing Checklist
 
-Without Firebase (current state):
-- ✅ Inventory API works with in-memory storage
+Current state:
+- ✅ Inventory persists in PostgreSQL database
 - ✅ Stock counter shows on frontend (polling every 5 seconds)
-- ✅ Checkout flow decrements inventory after payment
-- ✅ Orders are recorded in memory
+- ✅ Checkout flow with server-side price calculation
+- ✅ Payment verification before inventory decrement
+- ✅ Orders recorded in database
+- ✅ Admin dashboard protected with Replit Auth
 - ✅ Sold-out state works correctly
 
 With Firebase (once credentials added):
 - Real-time stock updates across all browsers
 - Inventory syncs to Firestore on every change
-- Persistent inventory across server restarts
 
 ## User Preferences
 - Dark mode only (Alpha Phi Alpha branding)
