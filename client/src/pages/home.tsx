@@ -4,6 +4,7 @@ import { HeroSection } from "@/components/hero-section";
 import { StorySection } from "@/components/story-section";
 import { ProductShowcase } from "@/components/product-showcase";
 import { WhyOwnSection } from "@/components/why-own-section";
+import { LegacyLifestyleSection } from "@/components/legacy-lifestyle-section";
 import { PurchaseModule } from "@/components/purchase-module";
 
 export default function Home() {
@@ -25,14 +26,13 @@ export default function Home() {
       <main>
         <HeroSection onCtaClick={scrollToPurchase} />
         
-        {/* Divider */}
-        <hr className="border-primary/30 max-w-4xl mx-auto" />
-        
         <StorySection />
         
         <ProductShowcase />
         
         <WhyOwnSection />
+        
+        <LegacyLifestyleSection />
         
         <div ref={purchaseRef}>
           <PurchaseModule />

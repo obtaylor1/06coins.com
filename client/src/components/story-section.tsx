@@ -1,71 +1,71 @@
-import fraternityImg from "@assets/stock_images/fraternity_brotherho_3214f1c2.jpg";
-
 export function StorySection() {
-  const stories = [
+  const timeline = [
     {
-      title: "The Jewel's Vision (1906)",
-      content: "Our journey began at Cornell, founded by seven visionary Jewels who sought to build a strong bond for African descendants. This coin embodies the courage they displayed against prejudice, laying the foundation for our global impact.",
+      year: "1906",
+      title: "The Jewels",
+      description: "Seven visionary founders established the first intercollegiate Greek-letter fraternity for African Americans at Cornell University.",
     },
     {
-      title: "A Foundation of Principles",
-      content: "The 120-year narrative is driven by our core tenets. This artifact connects you directly to the values of Scholarship, Fellowship, Good Character, and the Uplifting of Humanity, which continue to guide us today.",
+      year: "1906-2026",
+      title: "120 Years of Excellence",
+      description: "Generations of brothers upholding the ideals of Scholarship, Fellowship, Good Character, and the Uplifting of Humanity.",
     },
     {
-      title: "The Global Force (2026)",
-      content: "From a small study group to a significant force in civil rights and social justice—with over 700 chapters worldwide. Owning this coin is a recognition of the collective impact of thousands of brothers over twelve decades.",
+      year: "2026",
+      title: "The Celebration",
+      description: "This commemorative coin represents our past, present, and future—a symbol of brotherhood and a legacy to hold.",
     },
   ];
 
   return (
-    <section className="relative py-20 md:py-32 px-6 md:px-12 overflow-hidden">
-      {/* Background image with dark overlay */}
-      <div 
-        className="absolute inset-0"
-        style={{
-          backgroundImage: `url(${fraternityImg})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/90 to-background/95" />
-      
-      <div className="relative z-10 max-w-7xl mx-auto space-y-16 md:space-y-20">
-        <div className="text-center space-y-6 max-w-4xl mx-auto">
+    <section className="py-20 md:py-32 px-6 md:px-12 bg-gradient-to-b from-background to-background/95">
+      <div className="max-w-7xl mx-auto space-y-16">
+        {/* Section Header */}
+        <div className="text-center space-y-6">
           <h2 
-            className="text-4xl md:text-5xl lg:text-7xl font-serif text-foreground tracking-tight leading-tight"
-            data-testid="text-story-heading"
+            className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-foreground tracking-tight"
+            data-testid="text-story-title"
           >
-            More Than a Coin:
-            <br />
-            <span className="text-primary">A Symbol of Enduring Brotherhood</span>
+            From the Jewels' Vision to a <span className="text-primary">Global Force</span>
           </h2>
-          <p className="text-xl md:text-2xl text-foreground/60">
-            Celebrating 120 years of excellence, leadership, and service
+          <p className="text-xl md:text-2xl text-foreground/70">
+            1906-2026: A legacy of Scholarship, Fellowship, and Service
           </p>
         </div>
-        
-        <div className="grid md:grid-cols-3 gap-8 md:gap-10 lg:gap-12">
-          {stories.map((story, index) => (
+
+        {/* Timeline Cards */}
+        <div className="grid md:grid-cols-3 gap-8 md:gap-10">
+          {timeline.map((item, index) => (
             <div 
-              key={index} 
-              className="space-y-5 p-8 rounded-2xl border border-primary/10 bg-card/30 backdrop-blur-sm hover-elevate transition-all duration-300" 
-              data-testid={`card-story-${index}`}
+              key={index}
+              className="group relative bg-card border border-primary/20 rounded-2xl p-8 md:p-10 space-y-6 hover-elevate transition-all duration-300"
+              data-testid={`card-timeline-${index}`}
             >
-              <div className="w-12 h-1 bg-primary rounded-full" />
-              <h3 
-                className="text-2xl md:text-3xl font-serif text-primary tracking-tight leading-tight"
-                data-testid={`text-story-title-${index}`}
-              >
-                {story.title}
-              </h3>
-              <p 
-                className="text-foreground/80 text-base md:text-lg leading-relaxed"
-                data-testid={`text-story-content-${index}`}
-              >
-                {story.content}
+              {/* Year */}
+              <div className="text-center">
+                <h3 className="text-5xl md:text-6xl font-serif font-bold text-primary">
+                  {item.year}
+                </h3>
+              </div>
+
+              {/* Title */}
+              <h4 className="text-2xl md:text-3xl font-serif font-bold text-foreground text-center">
+                {item.title}
+              </h4>
+
+              {/* Description */}
+              <p className="text-base md:text-lg text-foreground/70 leading-relaxed text-center">
+                {item.description}
               </p>
             </div>
           ))}
+        </div>
+
+        {/* CTA */}
+        <div className="text-center pt-8">
+          <p className="text-lg md:text-xl text-primary/80 font-serif italic">
+            Honor the Legacy - Add to Cart
+          </p>
         </div>
       </div>
     </section>

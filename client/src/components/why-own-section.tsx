@@ -1,67 +1,92 @@
-import goldTextureImg2 from "@assets/stock_images/gold_texture_metalli_899f2d67.jpg";
+import { User, Gift, Trophy } from "lucide-react";
 
 export function WhyOwnSection() {
   const reasons = [
     {
-      title: "The Personal Testament",
-      description: "A tangible, prestigious marker of your commitment and pride. Display it on your desk or in your office as a subtle, powerful statement of your Alpha Phi Alpha journey.",
+      icon: User,
+      label: "For the Brothers",
+      title: "The Brother",
+      subtitle: "Wear Your Pride",
+      description: "Display your commitment to the ideals that have shaped leaders for 120 years. This coin is more than memorabilia—it's a declaration of your values.",
     },
     {
-      title: "The Perfect Gift",
-      description: "The ultimate gift for a graduating brother, a mentor, an elder, or a new initiate. A treasured heirloom marking a lifetime of brotherhood.",
+      icon: Gift,
+      label: "Perfect Gift",
+      title: "The Mentor",
+      subtitle: "Gift the Legacy",
+      description: "Present this distinguished piece to a graduating brother, a new initiate, or any man who embodies our values. It's a gift that honors the past and inspires the future.",
     },
     {
-      title: "Collector's Investment",
-      description: "A strictly limited-edition collectible commemorating a monumental 120-year milestone. A non-negotiable addition to any Alpha artifact collection.",
+      icon: Trophy,
+      label: "Limited Forever",
+      title: "The Collector",
+      subtitle: "Own Scarcity",
+      description: "With only 1,906 remaining and never to be reproduced, this is a once-in-a-lifetime opportunity to own a piece of fraternal history.",
     },
   ];
 
   return (
-    <section className="py-20 md:py-32 px-6 md:px-12">
+    <section className="py-20 md:py-32 px-6 md:px-12 bg-gradient-to-b from-background/95 to-background">
       <div className="max-w-7xl mx-auto space-y-16 md:space-y-20">
         <div className="text-center space-y-6">
-          <h2 className="text-4xl md:text-5xl lg:text-7xl font-serif text-foreground tracking-tight leading-tight">
-            A Legacy to Hold:
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-foreground tracking-tight leading-tight">
+            A Symbol of Brotherhood.
             <br />
-            <span className="text-primary">For the Brother, For the Pride</span>
+            <span className="text-primary">A Legacy to Hold.</span>
           </h2>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 md:gap-10 lg:gap-12">
-          {reasons.map((reason, index) => (
-            <div 
-              key={index} 
-              className="group relative overflow-hidden rounded-2xl border border-primary/20 bg-card/50 backdrop-blur-sm hover-elevate transition-all duration-300"
-              data-testid={`card-why-own-${index}`}
-            >
-              {/* Subtle gold texture on hover */}
+          {reasons.map((reason, index) => {
+            const Icon = reason.icon;
+            return (
               <div 
-                className="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-300"
-                style={{
-                  backgroundImage: `url(${goldTextureImg2})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }}
-              />
-              
-              <div className="relative p-8 md:p-10 space-y-6">
-                {/* Icon indicator */}
-                <div className="w-16 h-16 rounded-full border-2 border-primary/30 flex items-center justify-center bg-primary/5">
-                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                    <div className="w-2 h-2 rounded-full bg-primary" />
+                key={index} 
+                className="group relative overflow-visible rounded-2xl border border-primary/20 bg-card hover-elevate transition-all duration-300"
+                data-testid={`card-why-own-${index}`}
+              >
+                <div className="relative p-8 md:p-10 space-y-6 text-center">
+                  {/* Icon */}
+                  <div className="mx-auto w-20 h-20 rounded-full border-2 border-primary/30 flex items-center justify-center bg-primary/10">
+                    <Icon className="w-10 h-10 text-primary" />
                   </div>
+
+                  {/* Label */}
+                  <p className="text-sm text-foreground/60 font-semibold tracking-wider uppercase">
+                    {reason.label}
+                  </p>
+
+                  {/* Title */}
+                  <h3 
+                    className="text-3xl md:text-4xl font-serif font-bold text-foreground"
+                    data-testid={`text-why-own-title-${index}`}
+                  >
+                    {reason.title}
+                  </h3>
+
+                  {/* Subtitle */}
+                  <p className="text-xl md:text-2xl font-serif text-primary italic">
+                    {reason.subtitle}
+                  </p>
+
+                  {/* Description */}
+                  <p 
+                    className="text-foreground/70 text-base md:text-lg leading-relaxed"
+                    data-testid={`text-why-own-description-${index}`}
+                  >
+                    {reason.description}
+                  </p>
                 </div>
-                
-                <h3 className="text-2xl md:text-3xl font-serif text-primary tracking-tight leading-tight">
-                  {reason.title}
-                </h3>
-                
-                <p className="text-foreground/70 text-base md:text-lg leading-relaxed">
-                  {reason.description}
-                </p>
               </div>
-            </div>
-          ))}
+            );
+          })}
+        </div>
+
+        {/* CTA */}
+        <div className="text-center pt-8">
+          <p className="text-lg md:text-xl text-primary/80 font-serif italic">
+            Join the Legacy - Order Now
+          </p>
         </div>
       </div>
     </section>

@@ -57,111 +57,143 @@ export function PurchaseModule() {
   };
 
   return (
-    <section className="py-20 md:py-32 px-6 md:px-12 bg-gradient-to-b from-background to-card/50 border-t border-primary/20">
-      <div className="max-w-4xl mx-auto space-y-12 md:space-y-16">
+    <section className="py-20 md:py-32 px-6 md:px-12 bg-gradient-to-b from-background to-card/30 border-t border-primary/20">
+      <div className="max-w-6xl mx-auto space-y-12 md:space-y-16">
         <div className="text-center space-y-6">
           <h2 
-            className="text-4xl md:text-5xl lg:text-7xl font-serif text-foreground tracking-tight leading-tight"
+            className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-foreground tracking-tight leading-tight"
             data-testid="text-purchase-heading"
           >
-            Secure Your Piece
-            <br />
-            <span className="text-primary">of History</span>
+            Secure Your Limited Edition Coin Today
           </h2>
           
           <p 
-            className="text-lg md:text-xl lg:text-2xl text-foreground/60 max-w-2xl mx-auto"
+            className="text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto"
             data-testid="text-purchase-description"
           >
-            Limited commemorative run. Once current stock runs out, the price may change or availability may be delayed.
+            Don't let history pass you by. Only {stock} coins remain in Phase I.
           </p>
         </div>
 
-        <div className="bg-card/80 backdrop-blur-sm rounded-3xl p-8 md:p-12 shadow-2xl border border-primary/20 space-y-8">
-          {/* Price Display */}
-          <div className="text-center space-y-4 pb-8 border-b border-primary/10">
-            <p className="text-5xl md:text-6xl font-bold text-foreground" data-testid="text-coin-price">
-              <span className="text-primary">${COIN_PRICE.toFixed(2)}</span>
-            </p>
-            <p className="text-lg text-foreground/60">Per Coin</p>
-          </div>
-
-          {/* Quantity Selector */}
-          <div className="flex flex-col items-center gap-4">
-            <label htmlFor="quantity" className="text-lg text-foreground/80 font-semibold">
-              Select Quantity
-            </label>
-            <div className="flex items-center gap-4">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                disabled={isSoldOut || quantity <= 1}
-                data-testid="button-decrease-quantity"
-              >
-                -
-              </Button>
-              <Input
-                type="number"
-                id="quantity"
-                value={quantity}
-                onChange={(e) => setQuantity(Math.max(1, Math.min(10, parseInt(e.target.value) || 1)))}
-                min="1"
-                max="10"
-                className="w-24 text-center text-2xl font-bold border-primary/30"
-                disabled={isSoldOut}
-                data-testid="input-quantity"
-              />
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setQuantity(Math.min(10, quantity + 1))}
-                disabled={isSoldOut || quantity >= 10}
-                data-testid="button-increase-quantity"
-              >
-                +
-              </Button>
+        <div className="grid lg:grid-cols-5 gap-8 lg:gap-12">
+          {/* Product Image */}
+          <div className="lg:col-span-2">
+            <div className="aspect-square rounded-3xl overflow-hidden border-4 border-primary/30 bg-gradient-to-br from-primary/10 to-background flex items-center justify-center p-8 shadow-2xl">
+              <div className="text-center space-y-4">
+                <div className="w-40 h-40 md:w-48 md:h-48 mx-auto rounded-full border-8 border-primary/40 flex items-center justify-center bg-primary/5">
+                  <span className="text-8xl md:text-9xl text-primary font-serif font-bold">Α</span>
+                </div>
+              </div>
             </div>
-            <p className="text-sm text-foreground/50">Maximum 10 per order</p>
           </div>
 
-          {/* Total */}
-          <div className="text-center py-6 bg-primary/5 rounded-xl border border-primary/10">
-            <p className="text-sm text-foreground/60 mb-2">Total Amount</p>
-            <p className="text-4xl font-bold text-primary" data-testid="text-total-amount">
-              ${totalAmount.toFixed(2)}
-            </p>
-          </div>
+          {/* Purchase Details */}
+          <div className="lg:col-span-3 bg-card/80 backdrop-blur-sm rounded-3xl p-8 md:p-10 shadow-2xl border border-primary/20 space-y-8">
+            {/* Product Title */}
+            <div className="space-y-3">
+              <h3 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
+                Alpha Phi Alpha 120th Anniversary Commemorative Coin
+              </h3>
+              <p className="text-foreground/70">
+                6-inch diameter • Museum-quality • Numbered & Certified
+              </p>
+              <div className="flex items-center gap-2 text-primary">
+                <span className="font-semibold">Phase I: Only</span>
+                <span className="text-2xl font-bold">{stock}</span>
+                <span className="font-semibold">Remaining</span>
+              </div>
+            </div>
 
-          {/* Checkout Button */}
-          <Button
-            onClick={handleCheckout}
-            disabled={isSoldOut}
-            size="lg"
-            className="w-full text-xl md:text-2xl font-bold rounded-xl shadow-2xl hover:scale-[1.02] transition-all duration-300"
-            data-testid="button-checkout"
-          >
-            {isSoldOut ? "JOIN WAITLIST" : "SECURE YOUR COIN NOW"}
-          </Button>
+            {/* Price Display */}
+            <div className="space-y-2 pb-6 border-b border-primary/10">
+              <p className="text-4xl md:text-5xl font-bold text-foreground" data-testid="text-coin-price">
+                <span className="text-primary">${COIN_PRICE.toFixed(2)}</span>
+              </p>
+              <p className="text-sm text-foreground/60">+ Free shipping in the continental US</p>
+            </div>
 
-          {/* Trust Signals */}
-          <div className="space-y-4 pt-6 border-t border-primary/10">
-            <p className="text-sm text-center text-foreground/60">
-              Shipping calculated at checkout • Powered by Stripe Secure Payments
-            </p>
-            <div className="flex justify-center gap-6 text-sm text-foreground/40">
-              <span className="flex items-center gap-2">
+            {/* Quantity Selector */}
+            <div className="space-y-4">
+              <label htmlFor="quantity" className="text-base text-foreground/80 font-semibold">
+                Quantity:
+              </label>
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  disabled={isSoldOut || quantity <= 1}
+                  data-testid="button-decrease-quantity"
+                >
+                  -
+                </Button>
+                <Input
+                  type="number"
+                  id="quantity"
+                  value={quantity}
+                  onChange={(e) => setQuantity(Math.max(1, Math.min(10, parseInt(e.target.value) || 1)))}
+                  min="1"
+                  max="10"
+                  className="w-20 text-center text-xl font-bold border-primary/30"
+                  disabled={isSoldOut}
+                  data-testid="input-quantity"
+                />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                  disabled={isSoldOut || quantity >= 10}
+                  data-testid="button-increase-quantity"
+                >
+                  +
+                </Button>
+              </div>
+            </div>
+
+            {/* Checkout Button */}
+            <Button
+              onClick={handleCheckout}
+              disabled={isSoldOut}
+              size="lg"
+              className="w-full text-lg md:text-xl font-bold"
+              data-testid="button-checkout"
+            >
+              {isSoldOut ? "JOIN WAITLIST" : "Add to Cart"}
+            </Button>
+
+            {/* Trust Signals */}
+            <div className="flex flex-col sm:flex-row justify-center gap-4 text-sm text-foreground/60 border-t border-primary/10 pt-6">
+              <span className="flex items-center justify-center gap-2">
                 <ShieldCheck className="w-4 h-4" />
-                Secure Checkout
+                Secure Checkout via Stripe
               </span>
-              <span className="flex items-center gap-2">
-                <CreditCard className="w-4 h-4" />
-                All Cards Accepted
-              </span>
-              <span className="flex items-center gap-2">
+              <span className="flex items-center justify-center gap-2">
                 <Package className="w-4 h-4" />
-                Fast Shipping
+                Authenticity Guaranteed
               </span>
+            </div>
+
+            {/* What's Included */}
+            <div className="border-t border-primary/10 pt-6 space-y-4">
+              <h4 className="font-semibold text-foreground">What's Included:</h4>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-3 text-foreground/70">
+                  <span className="text-primary mt-1">✓</span>
+                  <span>Official 120th Anniversary Commemorative Coin (6" diameter)</span>
+                </li>
+                <li className="flex items-start gap-3 text-foreground/70">
+                  <span className="text-primary mt-1">✓</span>
+                  <span>Premium Display Case</span>
+                </li>
+                <li className="flex items-start gap-3 text-foreground/70">
+                  <span className="text-primary mt-1">✓</span>
+                  <span>Certificate of Authenticity</span>
+                </li>
+                <li className="flex items-start gap-3 text-foreground/70">
+                  <span className="text-primary mt-1">✓</span>
+                  <span>Unique Serial Number</span>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
