@@ -24,7 +24,9 @@ A premium e-commerce website for the Alpha Phi Alpha Fraternity's 120th Annivers
   - Split layout: content on left, coin image on right
   - "120th Anniversary Edition" badge positioned top-left
   - Main headline in gold with fraternity motto (left-bordered)
+  - **LIMITED EDITION** text in bordered box with gold styling
   - Shopping cart icon on primary CTA button
+  - Trust indicators line: "$50.00 Each", "Secure Checkout", "Authenticity Guaranteed"
   - Coin details badge anchored bottom-right of coin image
   - Real coin front image displayed
   - Responsive grid (single column mobile, two columns desktop)

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Lock, ShieldCheck } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import coinFrontImg from "@assets/apa coin front_1762505793054.png";
 import shieldImg from "@assets/IMG_0093_1762507090202.jpeg";
@@ -71,34 +71,54 @@ export function HeroSection({ onCtaClick }: HeroSectionProps) {
               Honor the Legacy of the Jewels and secure your piece of Alpha history.
             </p>
 
-            {/* Limited Edition Text */}
-            <p 
-              className="text-sm md:text-base font-semibold text-foreground/80"
-              data-testid="text-limited-edition"
+            {/* Limited Edition Text - Bordered Box */}
+            <div 
+              className="border border-primary/30 rounded-md px-6 py-3 w-fit"
+              data-testid="container-limited-edition"
             >
-              <span className="font-bold">LIMITED EDITION.</span> Only {stock.toLocaleString()} available worldwide.
-            </p>
+              <p className="text-sm md:text-base text-primary font-semibold">
+                <span className="font-bold">LIMITED EDITION.</span> Only {stock.toLocaleString()} available worldwide.
+              </p>
+            </div>
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button
-                onClick={onCtaClick}
-                size="lg"
-                className="text-sm md:text-base font-bold bg-primary hover:bg-primary/90 text-black"
-                data-testid="button-hero-cta-primary"
-              >
-                <ShoppingCart className="w-4 h-4 mr-2" />
-                SECURE YOUR COIN NOW
-              </Button>
-              <Button
-                onClick={onCtaClick}
-                size="lg"
-                variant="outline"
-                className="text-sm md:text-base font-bold border-foreground/30 hover:bg-foreground/10"
-                data-testid="button-hero-cta-secondary"
-              >
-                VIEW DETAILS
-              </Button>
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button
+                  onClick={onCtaClick}
+                  size="lg"
+                  className="text-sm md:text-base font-bold bg-primary hover:bg-primary/90 text-black"
+                  data-testid="button-hero-cta-primary"
+                >
+                  <ShoppingCart className="w-4 h-4 mr-2" />
+                  SECURE YOUR COIN NOW
+                </Button>
+                <Button
+                  onClick={onCtaClick}
+                  size="lg"
+                  variant="outline"
+                  className="text-sm md:text-base font-bold border-foreground/30 hover:bg-foreground/10"
+                  data-testid="button-hero-cta-secondary"
+                >
+                  VIEW DETAILS
+                </Button>
+              </div>
+
+              {/* Trust Indicators */}
+              <div className="flex flex-wrap items-center gap-4 md:gap-6 text-sm text-foreground/80">
+                <div className="flex items-center gap-2" data-testid="text-price">
+                  <span className="text-primary font-bold text-base md:text-lg">$50.00</span>
+                  <span>Each</span>
+                </div>
+                <div className="flex items-center gap-2" data-testid="text-secure-checkout">
+                  <Lock className="w-4 h-4" />
+                  <span>Secure Checkout</span>
+                </div>
+                <div className="flex items-center gap-2" data-testid="text-authenticity">
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Authenticity Guaranteed</span>
+                </div>
+              </div>
             </div>
           </div>
 
