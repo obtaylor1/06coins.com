@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alpha Phi Alpha 120th Anniversary Commemorative Coin</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom Colors for Alpha Phi Alpha */
+        .color-gold { color: #C8A856; }
+        .bg-gold { background-color: #C8A856; }
+        .bg-dark { background-color: #121212; }
+        .text-white-subtle { color: #F5F5F5; }
+        /* Font styling for headings to achieve monumental feel */
+        .font-monumental {
+            font-family: 'Playfair Display', serif;
+            letter-spacing: 0.05em;
+        }
+        .font-sans-body { font-family: 'Roboto', sans-serif; }
+
+        /* Custom scrollbar for dark theme */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background-color: #C8A856; border-radius: 4px; }
+        ::-webkit-scrollbar-track { background-color: #1a1a1a; }
+
+        /* Placeholder style for the 3D coin render */
+        #coin-render-placeholder {
+            min-height: 400px;
+            background: linear-gradient(135deg, rgba(200, 168, 86, 0.5), rgba(18, 18, 18, 0.8));
+            border: 4px solid #C8A856;
+            animation: pulse-gold 2s infinite alternate;
+        }
+        @keyframes pulse-gold {
+            0% { box-shadow: 0 0 10px rgba(200, 168, 86, 0.4); }
+            100% { box-shadow: 0 0 20px rgba(200, 168, 86, 0.8); }
+        }
+    </style>
+    <!-- Firebase Imports for Real-Time Inventory Tracking -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables provided by the Canvas environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db = null;
+        let auth = null;
+        let inventoryDocRef = null;
+
+        // Inventory constants (Admin controlled, but tracked in Firestore)
+        const INVENTORY_DOC_ID = 'apa120th_coin_stock';
+        const INITIAL_PHASE_STOCK = 406; // Controlled Scarcity start number
+
+        const initFirebase = async () => {
+            if (!firebaseConfig) {
+                console.error("Firebase configuration is missing. Cannot initialize Firestore.");
+                document.getElementById('stock-counter').textContent = 'Inventory Error';
+                return;
+            }
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // Authenticate
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                const userId = auth.currentUser?.uid || 'anonymous';
+                console.log("Firebase initialized. User ID:", userId);
+
+                // Set up the inventory document path
+                inventoryDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'coin_inventory', INVENTORY_DOC_ID);
+
+                // Start real-time listener for the inventory count
+                onSnapshot(inventoryDocRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        const currentStock = data.remaining_stock || 0;
+                        updateUI(currentStock);
+                    } else {
+                        // Document doesn't exist, assume starting stock
+                        updateUI(INITIAL_PHASE_STOCK);
+                        console.warn("Inventory document not found. UI defaulted to initial stock.");
+                        // An admin function would create this document here if it didn't exist.
+                    }
+                }, (error) => {
+                    console.error("Error listening to inventory:", error);
+                    document.getElementById('stock-counter').textContent = 'Live Counter Offline';
+                });
+
+            } catch (error) {
+                console.error("Firebase Initialization Failed:", error);
+                document.getElementById('stock-counter').textContent = 'Initialization Error';
+            }
+        };
+
+        const updateUI = (currentStock) => {
+            const counterElement = document.getElementById('stock-counter');
+            const buyButtons = document.querySelectorAll('.buy-button');
+
+            counterElement.textContent = currentStock;
+
+            if (currentStock <= 0) {
+                counterElement.classList.add('text-red-600');
+                document.getElementById('scarcity-status').textContent = 'Phase I is SOLD OUT!';
+                document.getElementById('scarcity-status').classList.remove('color-gold');
+                document.getElementById('scarcity-status').classList.add('text-red-600');
+
+                buyButtons.forEach(btn => {
+                    btn.textContent = 'JOIN WAITLIST';
+                    btn.disabled = true;
+                    btn.classList.remove('bg-gold');
+                    btn.classList.add('bg-gray-700');
+                });
+            } else {
+                 counterElement.classList.remove('text-red-600');
+                 document.getElementById('scarcity-status').textContent = 'Limited Edition - Only';
+                 document.getElementById('scarcity-status').classList.add('color-gold');
+                 document.getElementById('scarcity-status').classList.remove('text-red-600');
+
+                 buyButtons.forEach(btn => {
+                    btn.textContent = 'SECURE YOUR COIN NOW';
+                    btn.disabled = false;
+                    btn.classList.add('bg-gold');
+                    btn.classList.remove('bg-gray-700');
+                });
+            }
+        };
+
+        // Simulated function to decrement stock upon successful payment (called via webhook in a real scenario)
+        // For this prototype, we'll simulate the reduction here.
+        window.simulatePurchaseAndDecrementStock = async () => {
+            if (!db || !inventoryDocRef) {
+                console.error("Database not ready.");
+                return;
+            }
+            try {
+                const stockElement = document.getElementById('stock-counter');
+                const currentStock = parseInt(stockElement.textContent) || 0;
+
+                if (currentStock > 0) {
+                    await updateDoc(inventoryDocRef, {
+                        remaining_stock: currentStock - 1
+                    });
+                    console.log("Stock successfully decremented.");
+                    // In a real app, this happens via a backend webhook, not the front end.
+                } else {
+                    console.log("Stock already at zero.");
+                }
+
+            } catch (error) {
+                console.error("Failed to update stock:", error);
+            }
+        };
+
+        // --- ADMIN REPLENISH FUNCTION (FOR CONTROLLED SCARCITY) ---
+        window.replenishStock = async () => {
+            // NOTE: In a production site, this function would be protected by strong user authentication and role-based access control.
+            // For the prototype, we use a simple confirmation modal.
+            const newStock = INITIAL_PHASE_STOCK; // Resetting to the initial phase batch size
+
+            const confirmation = window.prompt(`ADMIN ACTION: Type 'RESET' to replenish the inventory counter to ${newStock} (starting Phase II).`);
+
+            if (confirmation === 'RESET' && db && inventoryDocRef) {
+                 try {
+                    await updateDoc(inventoryDocRef, {
+                        remaining_stock: newStock
+                    });
+                    alert(`Inventory successfully reset to ${newStock}. Sales Phase II is now active!`);
+                } catch (error) {
+                    console.error("Failed to replenish stock:", error);
+                    alert("Replenishment failed. Check console for details.");
+                }
+            } else if (confirmation !== 'RESET') {
+                 alert("Replenishment cancelled.");
+            }
+        };
+
+
+        window.onload = initFirebase;
+    </script>
+</head>
+<body class="bg-dark text-white-subtle font-sans-body min-h-screen">
+
+    <!-- Sticky Header (Always visible for Scarcity/CTA) -->
+    <header class="sticky top-0 z-50 bg-dark/95 border-b border-gold/30 shadow-lg py-3 px-6 flex justify-between items-center backdrop-blur-sm">
+        <h1 class="text-xl font-bold color-gold font-monumental tracking-widest">APA 120th Legacy Coin</h1>
+        <div class="flex items-center space-x-4">
+            <span class="text-sm md:text-base font-semibold">
+                <span id="scarcity-status" class="color-gold">Limited Edition - Only</span>
+                <span id="stock-counter" class="text-2xl font-bold ml-1 text-red-500">...</span>
+                <span class="text-sm">Remaining!</span>
+            </span>
+            <button onclick="document.getElementById('purchase-module').scrollIntoView({ behavior: 'smooth' });" class="buy-button bg-gold text-dark py-2 px-4 rounded-lg font-bold hover:bg-yellow-400 transition shadow-md whitespace-nowrap">
+                SECURE YOUR COIN NOW
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <!-- 1. HERO SECTION: The Legacy Forged -->
+        <section class="min-h-screen flex flex-col justify-center items-center text-center p-6 md:p-12">
+            <div class="max-w-6xl mx-auto">
+                <p class="text-2xl md:text-3xl color-gold font-monumental mb-4 tracking-widest">
+                    "First of All, Servants of All, We Shall Transcend All."
+                </p>
+                <h2 class="text-5xl md:text-8xl font-bold text-white-subtle mb-8 font-monumental tracking-tighter">
+                    120 Years Forged in Gold
+                </h2>
+                <div id="coin-render-placeholder" class="mx-auto w-full max-w-lg rounded-xl flex items-center justify-center p-12 mb-8">
+                    <!-- Figma AI / Replit will replace this with the Nano Banana 3D Render -->
+                    <p class="text-xl color-gold text-center font-monumental">
+                        HIGH-FIDELITY 3D COIN RENDER HERE<br>(Sphinx Side Rotating)
+                    </p>
+                </div>
+                <p class="text-xl md:text-2xl text-white-subtle/80 mb-10 max-w-3xl mx-auto font-sans-body">
+                    Honor the Legacy of the Jewels and secure your piece of **Alpha history**. This six-inch artifact is a permanent testament to our enduring brotherhood.
+                </p>
+                <button onclick="document.getElementById('purchase-module').scrollIntoView({ behavior: 'smooth' });" class="buy-button bg-gold text-dark text-xl font-bold py-4 px-12 rounded-xl shadow-2xl hover:bg-yellow-400 transition transform hover:scale-105">
+                    SECURE YOUR COIN NOW
+                </button>
+            </div>
+        </section>
+
+        <hr class="border-gold/30 max-w-4xl mx-auto">
+
+        <!-- 2. The Story & Significance: A Century of Light -->
+        <section class="py-16 md:py-24 p-6 md:p-12">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-4xl md:text-6xl font-monumental color-gold text-center mb-12">
+                    More Than a Coin: A Symbol of Enduring Brotherhood
+                </h2>
+                <div class="grid md:grid-cols-3 gap-10 text-white-subtle/90 text-lg">
+                    <div class="space-y-4">
+                        <h3 class="text-2xl font-monumental color-gold">The Jewel's Vision (1906)</h3>
+                        <p>Our journey began at Cornell, founded by seven visionary Jewels who sought to build a strong bond for African descendants. This coin embodies the courage they displayed against prejudice, laying the foundation for our global impact.</p>
+                    </div>
+                    <div class="space-y-4">
+                        <h3 class="text-2xl font-monumental color-gold">A Foundation of Principles</h3>
+                        <p>The 120-year narrative is driven by our core tenets. This artifact connects you directly to the values of **Scholarship, Fellowship, Good Character, and the Uplifting of Humanity**, which continue to guide us today.</p>
+                    </div>
+                    <div class="space-y-4">
+                        <h3 class="text-2xl font-monumental color-gold">The Global Force (2026)</h3>
+                        <p>From a small study group to a significant force in civil rights and social justice—with over 700 chapters worldwide. Owning this coin is a recognition of the collective impact of thousands of brothers over twelve decades.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. The Masterpiece: Crafted for Distinction -->
+        <section class="py-16 md:py-24 bg-gray-900 p-6 md:p-12">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-4xl md:text-6xl font-monumental text-white-subtle text-center mb-6">
+                    Six Inches of History. Unmatched Quality.
+                </h2>
+                <p class="text-xl color-gold text-center mb-12">
+                    Behold the weight of brotherhood. A premium collectible worthy of the Black and Gold.
+                </p>
+
+                <div class="flex flex-col lg:flex-row gap-12 items-center">
+                    <!-- Product Renders/Video -->
+                    <div class="lg:w-1/2 space-y-8">
+                        <!-- Replace with Veo 3.1 Video -->
+                        <div class="w-full bg-dark border-2 border-gold rounded-xl p-8 aspect-video flex items-center justify-center">
+                            <p class="text-lg color-gold">VE0 3.1 COIN SHOWCASE VIDEO HERE</p>
+                        </div>
+                        <!-- High-res Side-by-Side Renders -->
+                        <div class="flex gap-4">
+                            <div class="w-1/2 bg-dark border border-white-subtle/20 rounded-lg p-4 flex items-center justify-center aspect-square">
+                                <p class="text-sm color-gold">FRONT SIDE RENDER</p>
+                            </div>
+                            <div class="w-1/2 bg-dark border border-white-subtle/20 rounded-lg p-4 flex items-center justify-center aspect-square">
+                                <p class="text-sm color-gold">BACK SIDE RENDER</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Symbolism -->
+                    <div class="lg:w-1/2 space-y-8 text-white-subtle">
+                        <!-- Detailed Symbolism -->
+                        <div>
+                            <h3 class="text-3xl font-monumental color-gold mb-3">The Scale and Significance</h3>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li>**6-Inch Diameter:** Chosen to physically represent the founding year, **1906**. Designed to be a substantial, commanding display piece.</li>
+                                <li>**Substantial Weight:** Crafted from a premium zinc alloy with a rich **Old Gold finish**, symbolizing the gravity of our history.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-3xl font-monumental color-gold mb-3">Obverse (Front) Details</h3>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li>**The Sphinx:** The iconic cornerstone of our sacred bond, standing in high relief.</li>
+                                <li>**Global Reach:** Stylized lines encircling the design recognize Alpha Phi Alpha’s international expansion.</li>
+                                <li>**Dates:** Clearly marked **1906** and **2026** frame the 120-year commemoration.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-3xl font-monumental color-gold mb-3">Reverse (Back) Details</h3>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li>**The Seven Jewels:** Seven distinct stars arranged in homage to our visionary founders.</li>
+                                <li>**The Motto:** The complete mantra, **"First of All, Servants of All..."** elegantly inscribed along the perimeter.</li>
+                                <li>**Presentation:** Arrives in a custom, velvet-lined display box with a numbered certificate of authenticity.</li>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Why Own This Coin? "A Legacy to Hold" -->
+        <section class="py-16 md:py-24 p-6 md:p-12">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-4xl md:text-6xl font-monumental text-white-subtle text-center mb-16">
+                    A Legacy to Hold: For the Brother, For the Pride
+                </h2>
+                <div class="grid md:grid-cols-3 gap-10">
+                    <!-- Card 1: Personal Pride -->
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-xl border-t-4 border-gold space-y-4">
+                        <div class="w-full h-40 bg-dark rounded-lg flex items-center justify-center border border-gold/50">
+                            <p class="text-sm color-gold">Lifestyle Mockup: Desk/Office</p>
+                        </div>
+                        <h3 class="text-2xl font-monumental color-gold">The Personal Testament</h3>
+                        <p class="text-white-subtle/80 font-sans-body">A tangible, prestigious marker of your commitment and pride. Display it on your desk or in your office as a subtle, powerful statement of your Alpha Phi Alpha journey.</p>
+                    </div>
+
+                    <!-- Card 2: Ultimate Gifting -->
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-xl border-t-4 border-gold space-y-4">
+                        <div class="w-full h-40 bg-dark rounded-lg flex items-center justify-center border border-gold/50">
+                            <p class="text-sm color-gold">Lifestyle Mockup: Gifting Moment</p>
+                        </div>
+                        <h3 class="text-2xl font-monumental color-gold">The Perfect Gift</h3>
+                        <p class="text-white-subtle/80 font-sans-body">The ultimate gift for a graduating brother, a mentor, an elder, or a new initiate. It's a treasured heirloom that is passed down, marking a lifetime of brotherhood.</p>
+                    </div>
+
+                    <!-- Card 3: Collector's Investment -->
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-xl border-t-4 border-gold space-y-4">
+                        <div class="w-full h-40 bg-dark rounded-lg flex items-center justify-center border border-gold/50">
+                            <p class="text-sm color-gold">Lifestyle Mockup: Mantlepiece</p>
+                        </div>
+                        <h3 class="text-2xl font-monumental color-gold">Collector's Investment</h3>
+                        <p class="text-white-subtle/80 font-sans-body">As a strictly limited-edition collectible commemorating a monumental 120-year milestone, this coin is a non-negotiable addition to any Alpha artifact collection.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. CALL TO ACTION & PURCHASE MODULE -->
+        <section id="purchase-module" class="py-16 bg-gray-800 border-t border-gold/50 p-6 md:p-12">
+            <div class="max-w-3xl mx-auto text-center">
+                <h2 class="text-4xl font-monumental color-gold mb-6">Secure Your Piece of History</h2>
+                <p class="text-xl text-white-subtle/90 mb-8">
+                    Don't miss out on Phase I of this limited commemorative run. Once current stock runs out, the price may change, or availability may be delayed.
+                </p>
+
+                <div class="bg-dark p-8 rounded-xl shadow-2xl border border-gold/70">
+                    <p class="text-4xl font-bold text-white-subtle mb-4">
+                        <span class="color-gold">$50.00</span> Per Coin
+                    </p>
+                    <div class="mb-6 flex justify-center items-center space-x-4">
+                        <label for="quantity" class="text-white-subtle">Quantity:</label>
+                        <input type="number" id="quantity" value="1" min="1" max="10" class="w-20 bg-gray-700 text-center rounded p-2 border border-gold/50">
+                    </div>
+
+                    <!-- Button that initiates Stripe Checkout -->
+                    <button id="checkout-button" onclick="redirectToCheckout();" class="buy-button w-full bg-gold text-dark text-2xl font-bold py-4 rounded-lg shadow-xl hover:bg-yellow-400 transition transform hover:scale-[1.01]">
+                        SECURE YOUR COIN NOW
+                    </button>
+                    
+                    <p class="text-sm text-white-subtle/70 mt-4">
+                        Shipping calculated at checkout. Powered by Stripe Secure Payments.
+                    </p>
+                    <div class="mt-4 flex justify-center space-x-4">
+                        <!-- Trust Badges Placeholder -->
+                        <span class="text-sm text-white-subtle/50">Visa | Mastercard | Stripe Secure</span>
+                    </div>
+
+                    <!-- Admin Replenish Button for Controlled Scarcity -->
+                    <button onclick="replenishStock();" class="text-xs text-red-500 hover:text-red-300 mt-8">
+                        [Admin: Replenish Stock Counter]
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stripe Integration Placeholder Script -->
+        <script>
+            // --- STRIPE INTEGRATION LOGIC ---
+
+            // NOTE TO REPLIT AI: This function is the core checkout logic. 
+            // The placeholder variables MUST be replaced with the actual Stripe keys 
+            // when the site is configured for production.
+
+            const STRIPE_PUBLISHABLE_KEY = "pk_test_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"; // REPLACE ME
+            const STRIPE_SECRET_KEY = "sk_test_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"; // REPLACE ME
+
+            const redirectToCheckout = () => {
+                const quantity = parseInt(document.getElementById('quantity').value) || 1;
+                const stock = parseInt(document.getElementById('stock-counter').textContent) || 0;
+
+                if (stock <= 0) {
+                     // Should be disabled, but acts as a final fail-safe
+                    alert("Phase I is sold out! Please check back soon or join the waitlist.");
+                    return;
+                }
+
+                if (quantity > stock) {
+                    alert(`Sorry, only ${stock} coins are left! Please adjust your quantity.`);
+                    return;
+                }
+                
+                // --- Simulating API Call to Create Stripe Checkout Session ---
+                console.log(`Simulating Stripe Checkout for ${quantity} coin(s)...`);
+
+                // In a real application, an AJAX request would be made here to your backend
+                // server, which would use the STRIPE_SECRET_KEY to create a Checkout Session.
+                
+                const sessionDetails = {
+                    line_items: [{
+                        price_data: {
+                            currency: 'usd',
+                            product_data: {
+                                name: 'APA 120th Anniversary Commemorative Coin (6-Inch)',
+                                description: 'Limited Edition collectible marking 1906-2026.',
+                                // Replace with actual image URL of the coin
+                                images: ['https://placehold.co/100x100/121212/C8A856?text=COIN'], 
+                            },
+                            unit_amount: 5000, // $50.00
+                        },
+                        quantity: quantity,
+                    }],
+                    // 1. Configure Shipping Rates (using the fixed-rate structure)
+                    // NOTE TO REPLIT AI: The following are placeholders for Stripe API Rate IDs.
+                    shipping_address_collection: {
+                        allowed_countries: ['US'], // Restricting to US initially
+                    },
+                    shipping_options: [
+                        { shipping_rate_data: { type: 'fixed', fixed_amount: { amount: 1000, currency: 'usd' }, display_name: 'Standard Ground (5-7 Days)', delivery_estimate: { minimum: { unit: 'business_day', value: 5 }, maximum: { unit: 'business_day', value: 7 } } } },
+                        { shipping_rate_data: { type: 'fixed', fixed_amount: { amount: 1800, currency: 'usd' }, display_name: 'Expedited Service (2-3 Days)', delivery_estimate: { minimum: { unit: 'business_day', value: 2 }, maximum: { unit: 'business_day', value: 3 } } } }
+                    ],
+                    // 2. Enable Automatic Sales Tax (Stripe Tax)
+                    automatic_tax: { enabled: true },
+                    
+                    // 3. Set Redirect URLs
+                    mode: 'payment',
+                    success_url: window.location.origin + '/success.html', // Redirect after success
+                    cancel_url: window.location.href, // Stay on this page on cancel
+
+                    // 4. Metadata for Fulfillment/Inventory Decrement (Crucial!)
+                    // This metadata would be used by the backend webhook to trigger stock reduction.
+                    client_reference_id: `APA120-${Date.now()}`,
+                    metadata: {
+                        product_id: 'APA-COIN-120',
+                        quantity_purchased: quantity,
+                        // This property tells the backend to decrement the Firestore stock
+                        decrement_stock: 'true' 
+                    }
+                };
+
+                // --- End Session Creation Details ---
+
+                // Since we cannot execute a real API call here, we simulate success and decrement stock.
+                alert("Redirecting to secure Stripe Checkout... (Simulated)");
+                
+                // Simulate successful purchase for stock tracking in this prototype:
+                // For a true multiple-item purchase simulation, the decrement should happen 
+                // quantity times, but here we just simulate one button click decrement.
+                // simulatePurchaseAndDecrementStock(); // Comment out to avoid stock changes during testing redirects.
+
+                // For a real integration, the server would return a Session ID, and you would:
+                // const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+                // stripe.redirectToCheckout({ sessionId: sessionId });
+            };
+
+            // Load Stripe JS library
+            const script = document.createElement('script');
+            script.src = 'https://js.stripe.com/v3/';
+            document.head.appendChild(script);
+        </script>
+    </main>
+
+    <!-- FOOTER SECTION: Authority and Support -->
+    <footer class="bg-dark border-t border-gold/50 mt-12 py-12 px-6 md:px-12">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Column 1: Authority & Identity -->
+            <div>
+                <h3 class="text-xl font-monumental color-gold mb-4">Alpha Phi Alpha Fraternity, Inc.</h3>
+                <p class="text-white-subtle/80 text-sm mb-4">
+                    This commemorative coin sale is an officially licensed project celebrating the **120th Anniversary (1906–2026)**. Proceeds support the fraternity’s national programs and educational foundation.
+                </p>
+                <a href="https://apa1906.net/our-history/" target="_blank" class="text-sm color-gold hover:text-yellow-400 transition font-semibold underline">
+                    Visit the Official APA Site $\rightarrow$
+                </a>
+            </div>
+
+            <!-- Column 2: Coin & Order Support -->
+            <div>
+                <h3 class="text-xl font-monumental color-gold mb-4">Coin & Order Support</h3>
+                <ul class="text-white-subtle/80 text-sm space-y-2">
+                    <li><span class="font-semibold">Email:</span> support@yourdomainhere.com</li>
+                    <li><a href="#" class="hover:text-gold transition underline">FAQ: Shipping, Returns, and Security</a></li>
+                    <li><a href="#" class="hover:text-gold transition underline">Secure Payment & Privacy Policy</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 3: Legal & Copyright -->
+            <div>
+                <h3 class="text-xl font-monumental color-gold mb-4">Legal & Copyright</h3>
+                <p class="text-white-subtle/80 text-sm">
+                    All rights reserved. Alpha Phi Alpha Fraternity, Inc. is a federally incorporated organization.
+                </p>
+                <p class="text-white-subtle/50 text-xs mt-2">
+                    Copyright &copy; 2024 Alpha Phi Alpha Fraternity, Inc. 120th Anniversary Coin Project.
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
