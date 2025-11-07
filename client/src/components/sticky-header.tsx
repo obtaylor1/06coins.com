@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { subscribeToInventory } from "@/lib/firebase";
+import { subscribeToInventory, signInAnonymouslyToFirebase } from "@/lib/firebase";
 
 interface StickyHeaderProps {
   onCtaClick: () => void;
