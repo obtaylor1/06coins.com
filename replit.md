@@ -50,11 +50,14 @@ A premium e-commerce website for the Alpha Phi Alpha Fraternity's 120th Annivers
   - Premium checkout experience
   - Real coin front image displayed
   - "What's Included" checklist with 4 items
-- ✅ **Admin Dashboard with Replit Auth**
-  - Protected /admin route with authentication
-  - Inventory management (view stock, update levels)
-  - Order viewing (all purchases with details)
-  - Role-based access control (isAdmin flag)
+- ✅ **Comprehensive Admin Dashboard** (Updated Nov 7, 2025)
+  - Protected /admin route with Replit Auth
+  - **Analytics Dashboard**: Total revenue, profit, coins sold, remaining stock
+  - **Inventory Management**: View stock, update levels, quick reset to 1906
+  - **Customer & Shipping Management**: Full customer details, email, shipping addresses
+  - **Order Tracking**: View all orders with payment details, status, and timestamps
+  - **Stripe Integration**: Payment intent IDs, transaction verification
+  - Role-based access control (isAdmin flag in database)
   - Secure API endpoints with auth middleware
 - ✅ **Comprehensive Payment Security**
   - Server-side price authority (COIN_PRICE = $50)
@@ -211,10 +214,10 @@ Once you provide Firebase credentials, follow these steps:
    - `/api/admin/orders` - View all orders (admin only)
 
 ### Database Schema
-- **users**: id, email, firstName, lastName, profileImageUrl, isAdmin
+- **users**: id, email, firstName, lastName, profileImageUrl, isAdmin, createdAt, updatedAt
 - **sessions**: Passport session storage for Replit Auth
-- **inventory**: id, remainingStock, lastUpdated
-- **orders**: id, stripePaymentIntentId, quantity, totalAmount, status, createdAt
+- **inventory**: id, productName, remainingStock, initialStock, lastUpdated
+- **orders**: id, stripePaymentIntentId, quantity, totalAmount, status, customerName, customerEmail, shippingAddress (JSONB), createdAt
 
 ## Inventory Configuration
 
@@ -224,6 +227,25 @@ Once you provide Firebase credentials, follow these steps:
 - Stock decrements with each purchase
 - Real-time updates via Firebase or 5-second polling fallback
 
+## Admin Portal Access
+
+**URL**: `/admin` (e.g., `https://your-app.replit.app/admin`)
+
+**Authentication**:
+1. Click "Login with Replit" when accessing /admin
+2. After first login, user account is created automatically
+3. **To grant admin access**:
+   - Access the database directly (Database pane in Replit)
+   - Update the `users` table: Set `is_admin = 1` for your user account
+   - Logout and login again to activate admin privileges
+
+**Admin Capabilities**:
+- View real-time analytics (revenue, profit, coins sold, stock remaining)
+- Update inventory levels or reset to 1906 coins
+- View all customer orders with shipping information
+- Track Stripe payment transactions
+- Monitor sales performance
+
 ## Testing Checklist
 
 Current state:
@@ -231,7 +253,8 @@ Current state:
 - ✅ Stock counter shows 1906 on frontend (polling every 5 seconds)
 - ✅ Checkout flow with server-side price calculation
 - ✅ Payment verification before inventory decrement
-- ✅ Orders recorded in database
+- ✅ Orders recorded with customer/shipping information
+- ✅ Admin dashboard with analytics and customer management
 - ✅ Admin dashboard protected with Replit Auth
 - ✅ Sold-out state works correctly
 
