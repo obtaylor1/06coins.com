@@ -15,7 +15,7 @@ export function ProductShowcase() {
             <br />
             <span className="text-primary">Unmatched Quality.</span>
           </h2>
-          <p className="text-lg md:text-xl text-foreground/70 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground/90 max-w-3xl mx-auto leading-relaxed">
             Behold the weight of brotherhood. A premium collectible worthy of the Black and Gold.
           </p>
         </div>
