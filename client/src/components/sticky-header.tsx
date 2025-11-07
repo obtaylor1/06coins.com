@@ -2,6 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { subscribeToInventory, signInAnonymouslyToFirebase } from "@/lib/firebase";
+import { useAuth } from "@/hooks/useAuth";
+import { Settings } from "lucide-react";
+import { Link } from "wouter";
 import shieldImg from "@assets/IMG_0093_1762507090202.jpeg";
 
 interface StickyHeaderProps {
@@ -10,6 +13,7 @@ interface StickyHeaderProps {
 
 export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
   const [realtimeStock, setRealtimeStock] = useState<number | null>(null);
+  const { isAuthenticated, isAdmin } = useAuth();
   
   const { data: inventory, isLoading } = useQuery<{ remainingStock: number }>({
     queryKey: ['/api/inventory'],
@@ -80,16 +84,31 @@ export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
             </span>
           </div>
 
-          {/* Right: CTA Button */}
-          <Button
-            onClick={onCtaClick}
-            disabled={isSoldOut}
-            className="whitespace-nowrap font-bold bg-primary hover:bg-primary/90 text-black border-0"
-            size="default"
-            data-testid="button-header-cta"
-          >
-            {isSoldOut ? "JOIN WAITLIST" : "PURCHASE NOW"}
-          </Button>
+          {/* Right: CTA Button + Admin Link */}
+          <div className="flex items-center gap-2">
+            {isAuthenticated && isAdmin && (
+              <Link href="/admin">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="bg-white/10 hover:bg-white/20 border-white/30 text-white"
+                  data-testid="button-admin-link"
+                >
+                  <Settings className="w-4 h-4" />
+                </Button>
+              </Link>
+            )}
+            
+            <Button
+              onClick={onCtaClick}
+              disabled={isSoldOut}
+              className="whitespace-nowrap font-bold bg-primary hover:bg-primary/90 text-black border-0"
+              size="default"
+              data-testid="button-header-cta"
+            >
+              {isSoldOut ? "JOIN WAITLIST" : "PURCHASE NOW"}
+            </Button>
+          </div>
         </div>
       </div>
     </header>
