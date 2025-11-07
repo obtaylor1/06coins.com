@@ -1,5 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Ruler, Scale, Sparkles, Globe, Star, Shield } from "lucide-react";
+import coinFrontImg from "@assets/apa coin front_1762505793054.png";
+import coinBackImg from "@assets/apa coin back_1762505793054.png";
 
 export function ProductShowcase() {
   return (
@@ -70,13 +72,13 @@ export function ProductShowcase() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Coin Image */}
           <div className="order-2 lg:order-1">
-            <div className="aspect-square rounded-3xl overflow-hidden border-4 border-primary/30 bg-gradient-to-br from-primary/10 to-background flex items-center justify-center p-12 shadow-2xl">
-              <div className="text-center space-y-4">
-                <div className="w-48 h-48 md:w-64 md:h-64 mx-auto rounded-full border-8 border-primary/40 flex items-center justify-center bg-primary/5">
-                  <span className="text-8xl md:text-9xl text-primary font-serif font-bold">Α</span>
-                </div>
-                <p className="text-sm text-primary/60 font-serif tracking-wider">FRONT (OBVERSE)</p>
-              </div>
+            <div className="aspect-square rounded-full overflow-hidden shadow-2xl">
+              <img 
+                src={coinFrontImg} 
+                alt="Alpha Phi Alpha 120th Anniversary Commemorative Coin - Front (Obverse)" 
+                className="w-full h-full object-cover"
+                data-testid="img-coin-front-showcase"
+              />
             </div>
           </div>
 
@@ -136,17 +138,13 @@ export function ProductShowcase() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Coin Image */}
           <div>
-            <div className="aspect-square rounded-3xl overflow-hidden border-4 border-primary/30 bg-gradient-to-br from-primary/10 to-background flex items-center justify-center p-12 shadow-2xl">
-              <div className="text-center space-y-4">
-                <div className="w-48 h-48 md:w-64 md:h-64 mx-auto rounded-full border-8 border-primary/40 flex items-center justify-center bg-primary/5">
-                  <div className="grid grid-cols-3 gap-3">
-                    {[...Array(7)].map((_, i) => (
-                      <Star key={i} className="w-6 h-6 text-primary fill-primary" />
-                    ))}
-                  </div>
-                </div>
-                <p className="text-sm text-primary/60 font-serif tracking-wider">BACK (REVERSE)</p>
-              </div>
+            <div className="aspect-square rounded-full overflow-hidden shadow-2xl">
+              <img 
+                src={coinBackImg} 
+                alt="Alpha Phi Alpha 120th Anniversary Commemorative Coin - Back (Reverse)" 
+                className="w-full h-full object-cover"
+                data-testid="img-coin-back-showcase"
+              />
             </div>
           </div>
 

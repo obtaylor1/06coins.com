@@ -15,14 +15,15 @@ A premium e-commerce website for the Alpha Phi Alpha Fraternity's 120th Annivers
   - Professional stock imagery integration (6 high-quality images)
   - Responsive design with refined spacing hierarchy
 - ✅ **Enhanced Hero Section**
-  - Dramatic full-height layout with professional background
+  - Dramatic full-height layout with actual coin imagery
   - Fraternity motto with prestige-focused messaging
   - Refined typography and visual hierarchy
   - Premium CTA with hover effects
+  - Real coin front image displayed
 - ✅ **Luxury Product Showcase**
-  - Split-screen layout with gold texture backgrounds
+  - Split-screen layout with actual coin renderings
   - Elegant coin specifications display
-  - Professional placeholder coin imagery
+  - High-quality coin front & back images integrated
 - ✅ **Timeline Story Section**
   - Three-card historical narrative
   - Refined typography and spacing
@@ -35,6 +36,8 @@ A premium e-commerce website for the Alpha Phi Alpha Fraternity's 120th Annivers
   - Trust signals with professional icons (ShieldCheck, CreditCard, Package)
   - Quantity selector with stock validation
   - Premium checkout experience
+  - Real coin front image displayed
+  - "What's Included" checklist with 4 items
 - ✅ **Admin Dashboard with Replit Auth**
   - Protected /admin route with authentication
   - Inventory management (view stock, update levels)

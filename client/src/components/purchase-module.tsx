@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { ShieldCheck, CreditCard, Package } from "lucide-react";
+import coinFrontImg from "@assets/apa coin front_1762505793054.png";
 
 const COIN_PRICE = 50.00;
 
@@ -78,12 +79,13 @@ export function PurchaseModule() {
         <div className="grid lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Product Image */}
           <div className="lg:col-span-2">
-            <div className="aspect-square rounded-3xl overflow-hidden border-4 border-primary/30 bg-gradient-to-br from-primary/10 to-background flex items-center justify-center p-8 shadow-2xl">
-              <div className="text-center space-y-4">
-                <div className="w-40 h-40 md:w-48 md:h-48 mx-auto rounded-full border-8 border-primary/40 flex items-center justify-center bg-primary/5">
-                  <span className="text-8xl md:text-9xl text-primary font-serif font-bold">Α</span>
-                </div>
-              </div>
+            <div className="aspect-square rounded-full overflow-hidden shadow-2xl">
+              <img 
+                src={coinFrontImg} 
+                alt="Alpha Phi Alpha 120th Anniversary Commemorative Coin" 
+                className="w-full h-full object-cover"
+                data-testid="img-coin-purchase"
+              />
             </div>
           </div>
 

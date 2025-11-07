@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Shield, Check } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import coinFrontImg from "@assets/apa coin front_1762505793054.png";
 
 interface HeroSectionProps {
   onCtaClick: () => void;
@@ -109,26 +110,18 @@ export function HeroSection({ onCtaClick }: HeroSectionProps) {
           </div>
         </div>
 
-        {/* Coin Image Placeholder */}
+        {/* Coin Image */}
         <div className="mx-auto w-full max-w-xl px-4 pt-8">
           <div 
-            className="relative aspect-square rounded-3xl flex items-center justify-center overflow-hidden border-4 border-primary/30 shadow-2xl"
-            style={{
-              background: 'radial-gradient(circle at center, hsl(42 48% 56% / 0.2) 0%, hsl(0 0% 7%) 70%)'
-            }}
+            className="relative aspect-square rounded-full flex items-center justify-center overflow-hidden shadow-2xl"
             data-testid="container-coin-image"
           >
-            {/* Premium Placeholder */}
-            <div className="text-center space-y-4 p-8">
-              <div className="w-40 h-40 md:w-56 md:h-56 mx-auto rounded-full border-8 border-primary/40 flex items-center justify-center animate-pulse-gold">
-                <div className="w-32 h-32 md:w-44 md:h-44 rounded-full border-4 border-primary/60 flex items-center justify-center bg-primary/5">
-                  <span className="text-7xl md:text-9xl text-primary font-serif font-bold">Α</span>
-                </div>
-              </div>
-              <p className="text-sm md:text-base text-primary/60 font-serif tracking-widest">
-                6-Inch Diameter: Commemorating 1906
-              </p>
-            </div>
+            <img 
+              src={coinFrontImg} 
+              alt="Alpha Phi Alpha 120th Anniversary Commemorative Coin - Front" 
+              className="w-full h-full object-cover"
+              data-testid="img-coin-front"
+            />
           </div>
         </div>
       </div>
