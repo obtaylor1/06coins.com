@@ -51,17 +51,13 @@ function CheckoutForm({ quantity, totalAmount }: CheckoutFormProps) {
         return;
       }
 
-      // Payment succeeded! Now decrement inventory and create order
+      // Payment succeeded! Now decrement inventory (order is created server-side)
       if (paymentIntent && paymentIntent.status === 'succeeded') {
         try {
-          // Decrement inventory
-          await apiRequest("POST", "/api/inventory/decrement", { quantity });
-          
-          // Create order record
-          await apiRequest("POST", "/api/orders", {
-            stripePaymentIntentId: paymentIntent.id,
+          // Decrement inventory (with payment verification + order creation)
+          await apiRequest("POST", "/api/inventory/decrement", { 
             quantity,
-            totalAmount,
+            paymentIntentId: paymentIntent.id
           });
 
           toast({
@@ -154,8 +150,7 @@ export default function Checkout() {
     const createPaymentIntent = async () => {
       try {
         const response = await apiRequest("POST", "/api/create-payment-intent", { 
-          amount: totalAmount,
-          quantity 
+          quantity // Amount is calculated server-side for security
         });
         const data = await response.json();
         
