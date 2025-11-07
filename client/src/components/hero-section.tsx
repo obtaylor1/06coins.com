@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { ShoppingCart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import coinFrontImg from "@assets/apa coin front_1762505793054.png";
+import shieldImg from "@assets/IMG_0093_1762507090202.jpeg";
 
 interface HeroSectionProps {
   onCtaClick: () => void;
@@ -19,6 +20,17 @@ export function HeroSection({ onCtaClick }: HeroSectionProps) {
   return (
     <section className="relative min-h-screen flex items-center px-6 py-20 md:px-12 lg:px-16 overflow-hidden bg-gradient-to-br from-background via-background to-background/80">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent pointer-events-none" />
+      
+      {/* Shield Background */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-5"
+        style={{
+          backgroundImage: `url(${shieldImg})`,
+          backgroundPosition: 'center',
+          backgroundSize: '50%',
+          backgroundRepeat: 'no-repeat',
+        }}
+      />
       
       <div className="relative z-10 w-full max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
