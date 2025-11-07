@@ -1,6 +1,13 @@
 import { User, Gift, Trophy } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import coinFrontImg from "@assets/apa coin front_1762505793054.png";
+import coinBackImg from "@assets/apa coin back_1762505793054.png";
 
-export function WhyOwnSection() {
+interface WhyOwnSectionProps {
+  onCtaClick?: () => void;
+}
+
+export function WhyOwnSection({ onCtaClick }: WhyOwnSectionProps) {
   const reasons = [
     {
       icon: User,
@@ -8,6 +15,7 @@ export function WhyOwnSection() {
       title: "The Brother",
       subtitle: "Wear Your Pride",
       description: "Display your commitment to the ideals that have shaped leaders for 120 years. This coin is more than memorabilia—it's a declaration of your values.",
+      bgImage: coinFrontImg,
     },
     {
       icon: Gift,
@@ -15,6 +23,7 @@ export function WhyOwnSection() {
       title: "The Mentor",
       subtitle: "Gift the Legacy",
       description: "Present this distinguished piece to a graduating brother, a new initiate, or any man who embodies our values. It's a gift that honors the past and inspires the future.",
+      bgImage: coinBackImg,
     },
     {
       icon: Trophy,
@@ -22,6 +31,7 @@ export function WhyOwnSection() {
       title: "The Collector",
       subtitle: "Own Scarcity",
       description: "With only 1,906 remaining and never to be reproduced, this is a once-in-a-lifetime opportunity to own a piece of fraternal history.",
+      bgImage: coinFrontImg,
     },
   ];
 
@@ -42,10 +52,16 @@ export function WhyOwnSection() {
             return (
               <div 
                 key={index} 
-                className="group relative overflow-visible rounded-2xl border border-primary/20 bg-card hover-elevate transition-all duration-300"
+                className="group relative overflow-hidden rounded-2xl border border-primary/20 bg-card hover-elevate transition-all duration-300"
                 data-testid={`card-why-own-${index}`}
               >
-                <div className="relative p-8 md:p-10 space-y-6 text-center">
+                {/* Background coin image */}
+                <div 
+                  className="absolute inset-0 bg-center bg-no-repeat bg-cover opacity-10"
+                  style={{ backgroundImage: `url(${reason.bgImage})` }}
+                />
+                
+                <div className="relative p-8 md:p-10 space-y-6 text-center z-10">
                   {/* Icon */}
                   <div className="mx-auto w-20 h-20 rounded-full border-2 border-primary/30 flex items-center justify-center bg-primary/10">
                     <Icon className="w-10 h-10 text-primary" />
@@ -84,9 +100,14 @@ export function WhyOwnSection() {
 
         {/* CTA */}
         <div className="text-center pt-8">
-          <p className="text-lg md:text-xl text-primary/80 font-serif italic">
+          <Button
+            onClick={onCtaClick}
+            size="lg"
+            className="bg-primary hover:bg-primary/90 text-black font-bold text-lg px-12 py-6"
+            data-testid="button-join-legacy"
+          >
             Join the Legacy - Order Now
-          </p>
+          </Button>
         </div>
       </div>
     </section>

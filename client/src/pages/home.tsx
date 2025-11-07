@@ -30,7 +30,7 @@ export default function Home() {
         
         <ProductShowcase onCtaClick={scrollToPurchase} />
         
-        <WhyOwnSection />
+        <WhyOwnSection onCtaClick={scrollToPurchase} />
         
         <LegacyLifestyleSection />
         
