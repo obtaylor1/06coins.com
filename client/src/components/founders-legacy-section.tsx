@@ -1,25 +1,25 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import callisImg from "@assets/stock_images/gold_coin_close-up_d_04ec2cbe.jpg";
-import chapmanImg from "@assets/stock_images/professional_portrai_5d1cea82.jpg";
-import jonesImg from "@assets/stock_images/professional_portrai_6def0f3e.jpg";
-import kelleyImg from "@assets/stock_images/professional_portrai_dfbec7f4.jpg";
-import murrayImg from "@assets/stock_images/professional_portrai_2fed975a.jpg";
-import ogleImg from "@assets/stock_images/gold_coin_close-up_d_77d8a5a8.jpg";
-import tandyImg from "@assets/stock_images/professional_portrai_fec7d2d0.jpg";
+import callisImg from "@assets/Henry Arthur Callis_1763159941951.png";
+import chapmanImg from "@assets/Charles Henry Chapman_1763159941952.png";
+import jonesImg from "@assets/Eugene Kincle Jones_1763159941953.png";
+import kelleyImg from "@assets/george biddle kelley_1763159941952.png";
+import murrayImg from "@assets/Nathaniel Allison Murray_1763159941952.png";
+import ogleImg from "@assets/Robert Harold Ogle_1763159941950.png";
+import tandyImg from "@assets/Vertner Woodson Tandy_1763159941953.png";
 
 interface FoundersLegacySectionProps {
   onCtaClick: () => void;
 }
 
 const founders = [
-  { name: "Callis", image: callisImg, isCoin: true },
-  { name: "Chapman", image: chapmanImg, isCoin: false },
-  { name: "Jones", image: jonesImg, isCoin: false },
-  { name: "Kelley", image: kelleyImg, isCoin: false },
-  { name: "Murray", image: murrayImg, isCoin: false },
-  { name: "Ogle", image: ogleImg, isCoin: true },
-  { name: "Tandy", image: tandyImg, isCoin: false },
+  { name: "Callis", image: callisImg },
+  { name: "Chapman", image: chapmanImg },
+  { name: "Jones", image: jonesImg },
+  { name: "Kelley", image: kelleyImg },
+  { name: "Murray", image: murrayImg },
+  { name: "Ogle", image: ogleImg },
+  { name: "Tandy", image: tandyImg },
 ];
 
 export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps) {
@@ -81,16 +81,10 @@ export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps
               className="flex flex-col items-center gap-3"
               data-testid={`founder-${founder.name.toLowerCase()}`}
             >
-              <div 
-                className={`w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-full overflow-hidden ${
-                  founder.isCoin 
-                    ? 'border-2 border-primary/70' 
-                    : 'border-2 border-foreground/40'
-                }`}
-              >
+              <div className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-full overflow-hidden border-2 border-primary/70">
                 <img 
                   src={founder.image}
-                  alt={`${founder.name} portrait`}
+                  alt={`Jewel ${founder.name} commemorative coin`}
                   className="w-full h-full object-cover"
                   data-testid={`img-founder-${founder.name.toLowerCase()}`}
                 />
