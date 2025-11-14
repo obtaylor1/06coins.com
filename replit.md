@@ -30,6 +30,15 @@ A premium e-commerce website for the Alpha Phi Alpha Fraternity's 120th Annivers
   - Coin details badge anchored bottom-right of coin image
   - Real coin front image displayed
   - Responsive grid (single column mobile, two columns desktop)
+- ✅ **Founders' Legacy Set Section** (Added Nov 14, 2025)
+  - Positioned directly under hero section
+  - "The Complete Collection" red badge
+  - Gold headline: "The Founders' Legacy Set: Own All Seven Jewels"
+  - Complete set pricing: $120.06 (commemorating 1906)
+  - Seven circular founder images (Callis, Chapman, Jones, Kelley, Murray, Ogle, Tandy)
+  - Coin imagery for Callis and Ogle, professional portraits for other founders
+  - "PURCHASE JEWEL SET" CTA button with scroll-to-purchase functionality
+  - Museum-quality craftsmanship messaging
 - ✅ **Luxury Product Showcase**
   - Split-screen layout with actual coin renderings
   - Elegant coin specifications display
