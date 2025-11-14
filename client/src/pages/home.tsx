@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { StickyHeader } from "@/components/sticky-header";
 import { HeroSection } from "@/components/hero-section";
+import { FoundersLegacySection } from "@/components/founders-legacy-section";
 import { StorySection } from "@/components/story-section";
 import { ProductShowcase } from "@/components/product-showcase";
 import { WhyOwnSection } from "@/components/why-own-section";
@@ -26,6 +27,8 @@ export default function Home() {
       
       <main>
         <HeroSection onCtaClick={scrollToPurchase} />
+        
+        <FoundersLegacySection onCtaClick={scrollToPurchase} />
         
         <StorySection onCtaClick={scrollToPurchase} />
         
