@@ -58,29 +58,29 @@ export function PurchaseModule() {
   };
 
   return (
-    <section className="py-20 md:py-32 px-6 md:px-12 bg-gradient-to-b from-background to-card/30 border-t border-primary/20">
-      <div className="max-w-6xl mx-auto space-y-12 md:space-y-16">
-        <div className="text-center space-y-6">
+    <section className="py-12 sm:py-16 md:py-20 lg:py-32 px-4 sm:px-6 md:px-12 bg-gradient-to-b from-background to-card/30 border-t border-primary/20">
+      <div className="max-w-6xl mx-auto space-y-8 sm:space-y-10 md:space-y-12 lg:space-y-16">
+        <div className="text-center space-y-4 sm:space-y-6 px-2">
           <h2 
-            className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-foreground tracking-tight leading-tight"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-serif font-bold text-foreground tracking-tight leading-tight"
             data-testid="text-purchase-heading"
           >
             Secure Your Limited Edition Coin Today
           </h2>
           
           <p 
-            className="text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto"
+            className="text-base sm:text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto"
             data-testid="text-purchase-description"
           >
             Don't let history pass you by. Only {stock} coins remain in Phase I.
           </p>
         </div>
 
-        <Card className="border-2 border-primary/30 rounded-3xl overflow-hidden bg-card/95 shadow-2xl">
-          <div className="grid lg:grid-cols-5 gap-8 lg:gap-12 p-8 md:p-10">
+        <Card className="border-2 border-primary/30 rounded-2xl sm:rounded-3xl overflow-hidden bg-card/95 shadow-2xl">
+          <div className="grid lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-12 p-6 sm:p-8 md:p-10">
             {/* Product Image */}
-            <div className="lg:col-span-2">
-              <div className="aspect-square rounded-full overflow-hidden shadow-2xl">
+            <div className="lg:col-span-2 flex justify-center">
+              <div className="aspect-square rounded-full overflow-hidden shadow-2xl w-full max-w-sm">
                 <img 
                   src={coinFrontImg} 
                   alt="Alpha Phi Alpha 120th Anniversary Commemorative Coin" 
@@ -91,40 +91,40 @@ export function PurchaseModule() {
             </div>
 
             {/* Purchase Details */}
-            <div className="lg:col-span-3 space-y-8">
+            <div className="lg:col-span-3 space-y-6 sm:space-y-8">
               {/* Product Title */}
-              <div className="space-y-4">
-                <h3 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
+              <div className="space-y-3 sm:space-y-4">
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-foreground">
                   Alpha Phi Alpha 120th Anniversary Commemorative Coin
                 </h3>
-                <p className="text-foreground/70">
+                <p className="text-sm sm:text-base text-foreground/70">
                   6-inch diameter • Museum-quality • Numbered & Certified
                 </p>
                 
                 {/* Stock Badge */}
-                <div className="inline-block bg-background/80 border border-primary/30 rounded-xl px-6 py-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-foreground/70 text-sm">Phase I: Only</span>
-                    <span className="text-2xl md:text-3xl font-bold text-primary">{stock}</span>
-                    <span className="text-foreground/70 text-sm">Remaining</span>
+                <div className="inline-block bg-background/80 border border-primary/30 rounded-lg sm:rounded-xl px-4 sm:px-6 py-2 sm:py-3">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <span className="text-foreground/70 text-xs sm:text-sm">Phase I: Only</span>
+                    <span className="text-xl sm:text-2xl md:text-3xl font-bold text-primary">{stock}</span>
+                    <span className="text-foreground/70 text-xs sm:text-sm">Remaining</span>
                   </div>
                 </div>
               </div>
 
               {/* Price Display */}
-              <div className="space-y-2 pb-6 border-b border-primary/10">
-                <p className="text-4xl md:text-5xl font-bold text-foreground" data-testid="text-coin-price">
+              <div className="space-y-1 sm:space-y-2 pb-4 sm:pb-6 border-b border-primary/10">
+                <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground" data-testid="text-coin-price">
                   ${COIN_PRICE.toFixed(2)}
                 </p>
-                <p className="text-sm text-foreground/60">+ Free shipping in the continental US</p>
+                <p className="text-xs sm:text-sm text-foreground/60">+ Free shipping in the continental US</p>
               </div>
 
               {/* Quantity Selector */}
-              <div className="space-y-4">
-                <label htmlFor="quantity" className="text-base text-foreground/80 font-semibold">
+              <div className="space-y-3 sm:space-y-4">
+                <label htmlFor="quantity" className="text-sm sm:text-base text-foreground/80 font-semibold">
                   Quantity:
                 </label>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3 sm:gap-4">
                   <Button
                     variant="outline"
                     size="icon"
@@ -142,7 +142,7 @@ export function PurchaseModule() {
                     onChange={(e) => setQuantity(Math.max(1, Math.min(10, parseInt(e.target.value) || 1)))}
                     min="1"
                     max="10"
-                    className="w-20 text-center text-xl font-bold border-primary/30 bg-background/60"
+                    className="w-16 sm:w-20 text-center text-lg sm:text-xl font-bold border-primary/30 bg-background/60"
                     disabled={isSoldOut}
                     data-testid="input-quantity"
                   />

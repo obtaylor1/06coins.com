@@ -10,17 +10,17 @@ interface ProductShowcaseProps {
 
 export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
   return (
-    <section className="relative py-20 md:py-32 px-6 md:px-12">
-      <div className="relative z-10 max-w-7xl mx-auto space-y-20 md:space-y-28">
+    <section className="relative py-12 sm:py-16 md:py-20 lg:py-32 px-4 sm:px-6 md:px-12">
+      <div className="relative z-10 max-w-7xl mx-auto space-y-12 sm:space-y-16 md:space-y-20 lg:space-y-28">
         {/* Section Header */}
-        <div className="text-center space-y-6">
-          <p className="text-lg md:text-xl text-primary/80 font-serif tracking-wider">The Masterpiece</p>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-foreground tracking-tight leading-tight">
+        <div className="text-center space-y-4 sm:space-y-6 px-2">
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-primary/80 font-serif tracking-wider">The Masterpiece</p>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-serif font-bold text-foreground tracking-tight leading-tight">
             Six Inches of History.
             <br />
             <span className="text-primary">Unmatched Quality.</span>
           </h2>
-          <p className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground/90 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-foreground/90 max-w-3xl mx-auto leading-relaxed">
             Behold the weight of brotherhood. A premium collectible worthy of the Black and Gold.
           </p>
         </div>
@@ -33,38 +33,38 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
         </div>
 
         {/* The Scale and Significance */}
-        <div className="space-y-12">
-          <h3 className="text-3xl md:text-4xl font-serif font-bold text-foreground text-center">
+        <div className="space-y-8 sm:space-y-10 md:space-y-12">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-foreground text-center px-2">
             The Scale and Significance
           </h3>
           
-          <div className="grid md:grid-cols-2 gap-12">
-            <Card className="p-8 md:p-10 space-y-6">
-              <div className="flex items-start gap-4">
+          <div className="grid sm:grid-cols-2 gap-6 sm:gap-8 md:gap-10 lg:gap-12">
+            <Card className="p-6 sm:p-8 md:p-10 space-y-4 sm:space-y-6">
+              <div className="flex items-start gap-3 sm:gap-4">
                 <div className="flex-shrink-0">
-                  <Ruler className="w-10 h-10 text-primary" />
+                  <Ruler className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
                 </div>
-                <div className="space-y-3">
-                  <h4 className="text-2xl md:text-3xl font-serif font-bold text-primary">
+                <div className="space-y-2 sm:space-y-3">
+                  <h4 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-primary">
                     6-Inch Diameter
                   </h4>
-                  <p className="text-foreground/70 leading-relaxed">
+                  <p className="text-sm sm:text-base text-foreground/70 leading-relaxed">
                     This size was chosen to physically represent the founding year, <strong className="text-primary">1906</strong>, giving the coin a substantial presence that demands attention. It is designed not to be carried, but to be displayed—a true mantlepiece artifact.
                   </p>
                 </div>
               </div>
             </Card>
 
-            <Card className="p-8 md:p-10 space-y-6">
-              <div className="flex items-start gap-4">
+            <Card className="p-6 sm:p-8 md:p-10 space-y-4 sm:space-y-6">
+              <div className="flex items-start gap-3 sm:gap-4">
                 <div className="flex-shrink-0">
-                  <Scale className="w-10 h-10 text-primary" />
+                  <Scale className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
                 </div>
-                <div className="space-y-3">
-                  <h4 className="text-2xl md:text-3xl font-serif font-bold text-primary">
+                <div className="space-y-2 sm:space-y-3">
+                  <h4 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-primary">
                     Substantial Weight
                   </h4>
-                  <p className="text-foreground/70 leading-relaxed">
+                  <p className="text-sm sm:text-base text-foreground/70 leading-relaxed">
                     Crafted from a premium zinc alloy with a rich Old Gold finish, the coin possesses a noticeable heft, signifying the weight and gravity of the fraternity's history and its enduring influence.
                   </p>
                 </div>
