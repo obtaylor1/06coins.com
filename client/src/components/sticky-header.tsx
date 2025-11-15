@@ -92,7 +92,7 @@ export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="bg-white/10 border-white/30 text-white shrink-0"
+                  className="bg-white/10 border-white/30 text-white shrink-0 min-h-11 min-w-11"
                   data-testid="button-admin-link"
                 >
                   <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -103,7 +103,7 @@ export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
             <Button
               onClick={onCtaClick}
               disabled={isSoldOut}
-              className="font-bold bg-primary text-black border-0 text-xs sm:text-sm whitespace-nowrap"
+              className="font-bold bg-primary text-black border-0 text-xs sm:text-sm whitespace-nowrap min-h-11"
               size="sm"
               data-testid="button-header-cta"
             >

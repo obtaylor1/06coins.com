@@ -191,7 +191,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
               variant="outline"
               size="icon"
               onClick={goPrev}
-              className="rounded-full border-primary/40 shrink-0"
+              className="rounded-full border-primary/40 shrink-0 min-h-11 min-w-11"
               aria-label="Previous jewel"
               data-testid="button-carousel-prev"
             >
@@ -221,7 +221,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
               variant="outline"
               size="icon"
               onClick={goNext}
-              className="rounded-full border-primary/40 shrink-0"
+              className="rounded-full border-primary/40 shrink-0 min-h-11 min-w-11"
               aria-label="Next jewel"
               data-testid="button-carousel-next"
             >
@@ -299,7 +299,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
                     size="icon"
                     onClick={decrementQuantity}
                     disabled={quantity <= 1}
-                    className="rounded-full"
+                    className="rounded-full min-h-11 min-w-11"
                     aria-label="Decrease quantity"
                     data-testid="button-decrease-quantity"
                   >
@@ -316,7 +316,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
                     size="icon"
                     onClick={incrementQuantity}
                     disabled={quantity >= 99}
-                    className="rounded-full"
+                    className="rounded-full min-h-11 min-w-11"
                     aria-label="Increase quantity"
                     data-testid="button-increase-quantity"
                   >

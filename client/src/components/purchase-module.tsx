@@ -130,7 +130,7 @@ export function PurchaseModule() {
                     size="icon"
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                     disabled={isSoldOut || quantity <= 1}
-                    className="bg-background/60"
+                    className="bg-background/60 min-h-11 min-w-11"
                     data-testid="button-decrease-quantity"
                   >
                     -
@@ -142,7 +142,7 @@ export function PurchaseModule() {
                     onChange={(e) => setQuantity(Math.max(1, Math.min(10, parseInt(e.target.value) || 1)))}
                     min="1"
                     max="10"
-                    className="w-16 sm:w-20 text-center text-lg sm:text-xl font-bold border-primary/30 bg-background/60"
+                    className="w-16 sm:w-20 text-center text-lg sm:text-xl font-bold border-primary/30 bg-background/60 min-h-11"
                     disabled={isSoldOut}
                     data-testid="input-quantity"
                   />
@@ -151,7 +151,7 @@ export function PurchaseModule() {
                     size="icon"
                     onClick={() => setQuantity(Math.min(10, quantity + 1))}
                     disabled={isSoldOut || quantity >= 10}
-                    className="bg-background/60"
+                    className="bg-background/60 min-h-11 min-w-11"
                     data-testid="button-increase-quantity"
                   >
                     +
