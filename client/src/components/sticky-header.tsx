@@ -54,28 +54,29 @@ export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
       style={{ backgroundColor: '#8B1538' }}
       data-testid="header-sticky"
     >
-      <div className="py-3 px-4 md:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      <div className="py-2 px-3 sm:py-3 sm:px-4 md:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center sm:justify-between gap-2 sm:gap-3 md:gap-4">
           {/* Left: Logo + Title */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 w-auto">
             <img 
               src={shieldImg} 
               alt="Alpha Phi Alpha Shield" 
-              className="w-8 h-8 md:w-10 md:h-10 object-contain" 
+              className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 object-contain shrink-0" 
               data-testid="img-shield-logo" 
             />
-            <span className="text-sm md:text-base font-semibold text-white whitespace-nowrap">
-              Alpha Phi Alpha 120th Anniversary
+            <span className="text-xs sm:text-sm md:text-base font-semibold text-white">
+              <span className="hidden sm:inline">Alpha Phi Alpha 120th Anniversary</span>
+              <span className="sm:hidden">AΦA 120th</span>
             </span>
           </div>
 
           {/* Center: Stock Counter */}
-          <div className="flex-1 flex justify-center">
-            <span className="text-sm md:text-base font-semibold text-white flex items-baseline gap-1">
-              <span>Phase I:</span>
+          <div className="flex-shrink-0 order-3 sm:order-2 sm:flex-1 sm:flex sm:justify-center w-full sm:w-auto text-center">
+            <span className="text-xs sm:text-sm md:text-base font-semibold text-white flex items-baseline gap-1 justify-center flex-wrap">
+              <span className="hidden sm:inline">Phase I:</span>
               <span>Only</span>
               <span 
-                className="text-lg md:text-xl font-bold text-primary mx-1"
+                className="text-base sm:text-lg md:text-xl font-bold text-primary mx-0.5 sm:mx-1"
                 data-testid="text-stock-counter"
               >
                 {isLoading ? "..." : stock}
@@ -85,16 +86,16 @@ export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
           </div>
 
           {/* Right: CTA Button + Admin Link */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 order-2 sm:order-3">
             {isAuthenticated && isAdmin && (
               <Link href="/admin">
                 <Button
                   variant="outline"
                   size="icon"
-                  className="bg-white/10 hover:bg-white/20 border-white/30 text-white"
+                  className="bg-white/10 border-white/30 text-white shrink-0"
                   data-testid="button-admin-link"
                 >
-                  <Settings className="w-4 h-4" />
+                  <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </Button>
               </Link>
             )}
@@ -102,11 +103,12 @@ export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
             <Button
               onClick={onCtaClick}
               disabled={isSoldOut}
-              className="whitespace-nowrap font-bold bg-primary hover:bg-primary/90 text-black border-0"
-              size="default"
+              className="font-bold bg-primary text-black border-0 text-xs sm:text-sm whitespace-nowrap"
+              size="sm"
               data-testid="button-header-cta"
             >
-              {isSoldOut ? "JOIN WAITLIST" : "PURCHASE NOW"}
+              {isSoldOut ? "WAITLIST" : "PURCHASE"}
+              <span className="hidden sm:inline ml-1">{isSoldOut ? "" : "NOW"}</span>
             </Button>
           </div>
         </div>

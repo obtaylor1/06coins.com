@@ -25,14 +25,14 @@ const founders = [
 export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps) {
   return (
     <section 
-      className="py-20 px-6 md:px-12 lg:px-16 bg-background"
+      className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12 lg:px-16 bg-background"
       data-testid="section-founders-legacy"
     >
-      <div className="max-w-6xl mx-auto text-center space-y-12">
+      <div className="max-w-6xl mx-auto text-center space-y-8 sm:space-y-10 md:space-y-12">
         {/* Badge */}
         <div className="flex justify-center">
           <Badge 
-            className="bg-destructive text-white px-4 py-1.5 font-semibold text-sm"
+            className="bg-destructive text-white px-3 sm:px-4 py-1 sm:py-1.5 font-semibold text-xs sm:text-sm"
             data-testid="badge-complete-collection"
           >
             The Complete Collection
@@ -41,7 +41,7 @@ export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps
 
         {/* Title */}
         <h2 
-          className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary font-serif leading-tight"
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-primary font-serif leading-tight px-2"
           data-testid="text-legacy-title"
         >
           The Founders' Legacy Set: Own All Seven Jewels
@@ -49,7 +49,7 @@ export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps
 
         {/* Subtitle */}
         <p 
-          className="text-base md:text-lg text-foreground/70 max-w-3xl mx-auto"
+          className="text-sm sm:text-base md:text-lg text-foreground/70 max-w-3xl mx-auto px-2"
           data-testid="text-legacy-subtitle"
         >
           Honor each of the Seven Visionary Founders with this exclusive museum-quality collection.
@@ -57,31 +57,31 @@ export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps
 
         {/* Price Box */}
         <div 
-          className="inline-block border-2 border-primary/50 rounded-lg px-8 py-6 bg-primary/5"
+          className="inline-block border-2 border-primary/50 rounded-lg px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6 bg-primary/5 mx-2"
           data-testid="box-complete-set-price"
         >
-          <div className="flex flex-col items-center gap-2">
-            <span className="text-foreground/80 text-sm font-medium">
+          <div className="flex flex-col items-center gap-1 sm:gap-2">
+            <span className="text-foreground/80 text-xs sm:text-sm font-medium">
               Complete Set Price:
             </span>
-            <span className="text-4xl md:text-5xl font-bold text-primary">
+            <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary">
               $120.06
             </span>
-            <span className="text-sm text-foreground/60">
+            <span className="text-xs sm:text-sm text-foreground/60 text-center">
               Commemorating 1906 · Seven Individual Coins · Limited Edition
             </span>
           </div>
         </div>
 
         {/* Founders Grid */}
-        <div className="flex justify-center items-end gap-4 md:gap-6 flex-wrap">
+        <div className="flex justify-center items-end gap-3 sm:gap-4 md:gap-6 flex-wrap px-2">
           {founders.map((founder) => (
             <div 
               key={founder.name}
-              className="flex flex-col items-center gap-3"
+              className="flex flex-col items-center gap-2 sm:gap-3"
               data-testid={`founder-${founder.name.toLowerCase()}`}
             >
-              <div className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-full overflow-hidden border-2 border-primary/70">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-full overflow-hidden border-2 border-primary/70">
                 <img 
                   src={founder.image}
                   alt={`Jewel ${founder.name} commemorative coin`}
@@ -89,7 +89,7 @@ export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps
                   data-testid={`img-founder-${founder.name.toLowerCase()}`}
                 />
               </div>
-              <span className="text-sm md:text-base text-primary font-semibold">
+              <span className="text-xs sm:text-sm md:text-base text-primary font-semibold">
                 {founder.name}
               </span>
             </div>
@@ -97,7 +97,7 @@ export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps
         </div>
 
         {/* CTA Button */}
-        <div className="pt-6">
+        <div className="pt-4 sm:pt-6">
           <Button
             onClick={onCtaClick}
             size="lg"
@@ -110,7 +110,7 @@ export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps
 
         {/* Bottom Text */}
         <p 
-          className="text-sm text-foreground/60 pt-4"
+          className="text-xs sm:text-sm text-foreground/60 pt-2 sm:pt-4 px-2"
           data-testid="text-craftsmanship-note"
         >
           Each coin features museum-quality craftsmanship with dramatic Old Gold finish

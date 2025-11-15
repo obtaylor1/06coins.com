@@ -136,35 +136,35 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
 
   return (
     <section 
-      className="py-16 md:py-24 px-6 md:px-12 bg-background"
+      className="py-12 sm:py-16 md:py-24 px-4 sm:px-6 md:px-12 bg-background"
       data-testid="section-jewel-carousel"
     >
       <div className="max-w-5xl mx-auto">
         {/* Hero Text Block */}
-        <div className="text-center space-y-6 mb-12">
+        <div className="text-center space-y-4 sm:space-y-6 mb-8 sm:mb-12">
           <Badge 
-            className="bg-primary/20 text-primary border-primary/40 px-4 py-1.5 text-xs uppercase tracking-wider"
+            className="bg-primary/20 text-primary border-primary/40 px-3 sm:px-4 py-1 sm:py-1.5 text-xs uppercase tracking-wider"
             data-testid="badge-individual-pricing"
           >
             Individual Pricing
           </Badge>
           
           <h2 
-            className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-primary tracking-tight"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-primary tracking-tight px-2"
             data-testid="text-carousel-title"
           >
             Honor Your Favorite Jewel
           </h2>
           
-          <p className="text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto px-2">
             Select and purchase individual founder coins to celebrate the legacy of a specific Jewel.
           </p>
 
-          <div className="flex flex-col items-center gap-2">
-            <div className="text-4xl md:text-5xl font-bold text-primary">
-              $19.06 <span className="text-2xl md:text-3xl text-foreground/60">Each</span>
+          <div className="flex flex-col items-center gap-1 sm:gap-2">
+            <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary">
+              $19.06 <span className="text-xl sm:text-2xl md:text-3xl text-foreground/60">Each</span>
             </div>
-            <p className="text-sm text-foreground/50">
+            <p className="text-xs sm:text-sm text-foreground/50">
               Commemorating the founding year 1906
             </p>
           </div>
@@ -172,7 +172,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
           <Button
             onClick={scrollToCarousel}
             size="lg"
-            className="bg-primary text-black font-bold mt-4"
+            className="bg-primary text-black font-bold mt-2 sm:mt-4"
             data-testid="button-browse-jewels"
           >
             Browse Founder Jewels
@@ -182,10 +182,10 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
         {/* Carousel Container */}
         <div 
           id="jewel-carousel"
-          className="flex flex-col items-center gap-8 mt-12"
+          className="flex flex-col items-center gap-6 sm:gap-8 mt-8 sm:mt-12"
         >
           {/* Carousel Navigation */}
-          <div className="flex items-center justify-center gap-6 md:gap-12 w-full">
+          <div className="flex items-center justify-center gap-4 sm:gap-6 md:gap-12 w-full">
             {/* Left Arrow */}
             <Button
               variant="outline"
@@ -195,7 +195,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
               aria-label="Previous jewel"
               data-testid="button-carousel-prev"
             >
-              <ChevronLeft className="w-6 h-6 text-primary" />
+              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
             </Button>
 
             {/* Center Coin Display */}
@@ -205,7 +205,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
               
               {/* Coin Container */}
               <div 
-                className="relative h-44 w-44 sm:h-56 sm:w-56 lg:h-64 lg:w-64 rounded-full border-2 border-primary/60 bg-gradient-to-b from-primary/10 to-background flex items-center justify-center shadow-2xl overflow-hidden"
+                className="relative h-40 w-40 xs:h-48 xs:w-48 sm:h-56 sm:w-56 lg:h-64 lg:w-64 rounded-full border-2 border-primary/60 bg-gradient-to-b from-primary/10 to-background flex items-center justify-center shadow-2xl overflow-hidden"
                 data-testid={`carousel-coin-${activeJewel.id}`}
               >
                 <img
@@ -225,17 +225,17 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
               aria-label="Next jewel"
               data-testid="button-carousel-next"
             >
-              <ChevronRight className="w-6 h-6 text-primary" />
+              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
             </Button>
           </div>
 
           {/* Thumbnail Navigation */}
-          <div className="flex gap-3 overflow-x-auto pb-2 max-w-full px-4 scrollbar-hide">
+          <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 max-w-full px-2 sm:px-4 scrollbar-hide">
             {JEWELS.map((jewel, index) => (
               <button
                 key={jewel.id}
                 onClick={() => setActiveIndex(index)}
-                className={`h-14 w-14 md:h-16 md:w-16 rounded-full border-2 transition-all shrink-0 overflow-hidden ${
+                className={`h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-full border-2 transition-all shrink-0 overflow-hidden ${
                   index === activeIndex
                     ? "border-primary ring-2 ring-primary/30 scale-110"
                     : "border-foreground/20 hover:border-primary/50 opacity-60 hover:opacity-100"
@@ -254,20 +254,20 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
         </div>
 
         {/* Detail & Add-to-Cart Panel */}
-        <div className="w-full max-w-xl mx-auto mt-12">
+        <div className="w-full max-w-xl mx-auto mt-8 sm:mt-12">
           <div 
-            className="rounded-3xl border border-foreground/10 bg-card backdrop-blur px-6 py-8 flex flex-col gap-6"
+            className="rounded-2xl sm:rounded-3xl border border-foreground/10 bg-card backdrop-blur px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-4 sm:gap-6"
             data-testid="card-jewel-detail"
           >
             {/* Name & Title */}
-            <div className="text-center space-y-2">
-              <h3 className="text-2xl md:text-3xl font-serif font-bold text-primary">
+            <div className="text-center space-y-1 sm:space-y-2">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-primary">
                 {activeJewel.fullName}
               </h3>
-              <p className="text-sm text-foreground/60 font-medium">
+              <p className="text-xs sm:text-sm text-foreground/60 font-medium">
                 {activeJewel.years}
               </p>
-              <p className="text-base text-foreground/70">
+              <p className="text-sm sm:text-base text-foreground/70">
                 {activeJewel.title}
               </p>
             </div>
@@ -283,7 +283,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
                 <div className="text-xs text-foreground/50 uppercase tracking-wide mb-1">
                   Price per Coin
                 </div>
-                <div className="text-3xl font-bold text-primary">
+                <div className="text-2xl sm:text-3xl font-bold text-primary">
                   ${activeJewel.price.toFixed(2)}
                 </div>
               </div>
@@ -306,7 +306,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
                     <Minus className="w-4 h-4" />
                   </Button>
                   <span 
-                    className="px-6 text-lg font-semibold min-w-[3rem] text-center"
+                    className="px-4 sm:px-6 text-base sm:text-lg font-semibold min-w-[2.5rem] sm:min-w-[3rem] text-center"
                     data-testid="text-quantity"
                   >
                     {quantity}
@@ -330,7 +330,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
             <Button
               onClick={handleAddToCart}
               size="lg"
-              className="w-full bg-primary text-black font-bold text-base rounded-full"
+              className="w-full bg-primary text-black font-bold text-sm sm:text-base rounded-full"
               data-testid="button-add-coin-to-cart"
             >
               Add Coin to Cart
@@ -345,24 +345,25 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
 
         {/* Upsell Banner */}
         <div 
-          className="mt-8 max-w-xl mx-auto rounded-2xl border border-foreground/10 bg-card/80 backdrop-blur px-6 py-4 flex items-center justify-between gap-4"
+          className="mt-6 sm:mt-8 max-w-xl mx-auto rounded-xl sm:rounded-2xl border border-foreground/10 bg-card/80 backdrop-blur px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-center sm:justify-between gap-3 sm:gap-4"
           data-testid="banner-collect-all"
         >
-          <div className="flex-1">
-            <h4 className="text-base md:text-lg font-bold text-foreground">
+          <div className="flex-1 text-center sm:text-left">
+            <h4 className="text-sm sm:text-base md:text-lg font-bold text-foreground">
               Collect All 7 Founder Coins
             </h4>
-            <p className="text-sm text-foreground/60 mt-0.5">
+            <p className="text-xs sm:text-sm text-foreground/60 mt-0.5">
               Special set pricing available
             </p>
           </div>
           <Button
             variant="ghost"
             onClick={onViewSet}
-            className="shrink-0 text-primary font-semibold"
+            className="shrink-0 text-primary font-semibold text-sm sm:text-base"
             data-testid="button-view-founder-set"
           >
-            View Founder Set
+            <span className="hidden sm:inline">View Founder Set</span>
+            <span className="sm:hidden">View Set</span>
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </div>
