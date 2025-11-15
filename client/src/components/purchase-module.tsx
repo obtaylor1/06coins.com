@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ShieldCheck, CreditCard, Package, ShoppingCart, Lock } from "lucide-react";
 import coinFrontImg from "@assets/apa coin front_1762505793054.png";
 
-const COIN_PRICE = 50.00;
+const COIN_PRICE = 50.06;
 
 export function PurchaseModule() {
   const [quantity, setQuantity] = useState(1);

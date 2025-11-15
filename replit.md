@@ -26,7 +26,7 @@ A premium e-commerce website for the Alpha Phi Alpha Fraternity's 120th Annivers
   - Main headline in gold with fraternity motto (left-bordered)
   - **LIMITED EDITION** text in bordered box with gold styling
   - Shopping cart icon on primary CTA button
-  - Trust indicators line: "$50.00 Each", "Secure Checkout", "Authenticity Guaranteed"
+  - Trust indicators line: "$50.06 Each", "Secure Checkout", "Authenticity Guaranteed"
   - Coin details badge anchored bottom-right of coin image
   - Real coin front image displayed
   - Responsive grid (single column mobile, two columns desktop)
@@ -219,7 +219,7 @@ Once you provide Firebase credentials, follow these steps:
 
 ### Payment Security (Critical)
 1. **Server-Side Price Authority**
-   - COIN_PRICE constant defined server-side only
+   - COIN_PRICE constant defined server-side only ($50.06)
    - Client sends quantity, server calculates amount
    - Prevents client-side price manipulation
 

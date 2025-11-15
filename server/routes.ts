@@ -92,7 +92,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // SECURITY: Validate quantity and amount match payment intent
-      const COIN_PRICE = 50; // Must match create-payment-intent
+      const COIN_PRICE = 50.06; // Must match create-payment-intent
       const paidQuantity = parseInt(paymentIntent.metadata?.quantity || '0');
       const expectedAmount = quantity * COIN_PRICE * 100; // in cents
       
@@ -174,7 +174,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     try {
       const { quantity } = req.body;
-      const COIN_PRICE = 50; // Server-side price authority
+      const COIN_PRICE = 50.06; // Server-side price authority
       
       if (!quantity || quantity < 1) {
         return res.status(400).json({ message: "Invalid quantity" });
@@ -295,9 +295,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const initialStock = inventory?.initialStock || 1906;
       const remainingStock = inventory?.remainingStock || 0;
       
-      // Calculate profit (assuming $30 cost per coin = $20 profit per coin sold)
+      // Calculate profit (assuming $30 cost per coin = $20.06 profit per coin sold)
       const COST_PER_COIN = 30; // $30 cost basis
-      const PRICE_PER_COIN = 50; // $50 selling price
+      const PRICE_PER_COIN = 50.06; // $50.06 selling price
       const PROFIT_PER_COIN = PRICE_PER_COIN - COST_PER_COIN;
       const totalProfit = totalCoinsSold * PROFIT_PER_COIN * 100; // in cents
       

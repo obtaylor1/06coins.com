@@ -96,7 +96,7 @@ function CheckoutForm({ quantity, totalAmount }: CheckoutFormProps) {
         </div>
         <div className="flex justify-between text-foreground/80">
           <span>Price per coin:</span>
-          <span className="font-bold">$50.00</span>
+          <span className="font-bold">$50.06</span>
         </div>
         <div className="flex justify-between text-xl font-bold text-primary border-t border-primary/30 pt-2">
           <span>Total:</span>
@@ -130,7 +130,7 @@ export default function Checkout() {
   // Get checkout params from URL
   const params = new URLSearchParams(window.location.search);
   const quantity = parseInt(params.get('quantity') || '1');
-  const totalAmount = quantity * 50;
+  const totalAmount = quantity * 50.06;
 
   useEffect(() => {
     // Set dark mode
