@@ -70,11 +70,11 @@ export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
               <span className="text-xs sm:text-sm md:text-base font-semibold">
                 <span className="hidden sm:inline">
                   <span className="text-black uppercase">Alpha Phi Alpha</span>
-                  <span className="text-white"> 120th Anniversary</span>
+                  <span className="text-white"> 120 Years Forged in Gold 1906-2026</span>
                 </span>
                 <span className="sm:hidden">
                   <span className="text-black uppercase">AΦA</span>
-                  <span className="text-white"> 120th</span>
+                  <span className="text-white"> 1906-2026</span>
                 </span>
               </span>
             </div>
