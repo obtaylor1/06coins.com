@@ -5,8 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { subscribeToInventory, signInAnonymouslyToFirebase } from "@/lib/firebase";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/contexts/cart-context";
-import { Settings, ShoppingCart } from "lucide-react";
-import { Link } from "wouter";
+import { Settings, ShoppingCart, ArrowLeft } from "lucide-react";
+import { Link, useLocation } from "wouter";
 import coinBackImg from "@assets/apa coin back_1763327918152.png";
 
 interface StickyHeaderProps {
@@ -17,6 +17,8 @@ export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
   const [realtimeStock, setRealtimeStock] = useState<number | null>(null);
   const { isAuthenticated, isAdmin } = useAuth();
   const { itemCount } = useCart();
+  const [location] = useLocation();
+  const isShopPage = location === '/shop-coins';
   
   const { data: inventory, isLoading } = useQuery<{ remainingStock: number }>({
     queryKey: ['/api/inventory'],
@@ -99,16 +101,30 @@ export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
 
           {/* Right: Shop Link + Cart Icon + CTA Button + Admin Link */}
           <div className="flex items-center gap-1.5 sm:gap-2 order-2 sm:order-3">
-            <Link href="/shop-coins">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-white hover:bg-white/10 text-xs sm:text-sm min-h-11"
-                data-testid="button-shop-link"
-              >
-                Shop All
-              </Button>
-            </Link>
+            {isShopPage ? (
+              <Link href="/">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-white hover:bg-white/10 text-xs sm:text-sm min-h-11"
+                  data-testid="button-home-link"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" />
+                  HOME
+                </Button>
+              </Link>
+            ) : (
+              <Link href="/shop-coins">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-white hover:bg-white/10 text-xs sm:text-sm min-h-11"
+                  data-testid="button-shop-link"
+                >
+                  Shop All
+                </Button>
+              </Link>
+            )}
 
             <Link href="/shop-coins">
               <Button
