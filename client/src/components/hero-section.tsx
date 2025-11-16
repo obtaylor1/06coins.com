@@ -32,7 +32,7 @@ export function HeroSection({ onCtaClick }: HeroSectionProps) {
       />
       
       {/* Dark overlay for text readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/70 to-black/80 pointer-events-none" />
       
       <div className="relative z-10 w-full max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-16 items-center">
