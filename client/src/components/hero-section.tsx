@@ -4,7 +4,7 @@ import { ShoppingCart, Lock, ShieldCheck, Package } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import coinFrontImg from "@assets/apa coin front_1762505793054.png";
-import shieldImg from "@assets/IMG_0093_1762507090202.jpeg";
+import heroBackgroundImg from "@assets/0_0_1763334659938.jpg";
 
 interface HeroSectionProps {
   onCtaClick: () => void;
@@ -19,19 +19,20 @@ export function HeroSection({ onCtaClick }: HeroSectionProps) {
   const stock = inventory?.remainingStock ?? 1906;
 
   return (
-    <section className="relative min-h-screen flex items-center px-4 sm:px-6 py-16 sm:py-20 md:px-12 lg:px-16 overflow-hidden bg-gradient-to-br from-background via-background to-background/80">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent pointer-events-none" />
-      
-      {/* Shield Background */}
+    <section className="relative min-h-screen flex items-center px-4 sm:px-6 py-16 sm:py-20 md:px-12 lg:px-16 overflow-hidden">
+      {/* Gold Circular Background */}
       <div 
-        className="absolute inset-0 pointer-events-none opacity-5"
+        className="absolute inset-0 pointer-events-none"
         style={{
-          backgroundImage: `url(${shieldImg})`,
+          backgroundImage: `url(${heroBackgroundImg})`,
           backgroundPosition: 'center',
-          backgroundSize: '50%',
+          backgroundSize: 'cover',
           backgroundRepeat: 'no-repeat',
         }}
       />
+      
+      {/* Dark overlay for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70 pointer-events-none" />
       
       <div className="relative z-10 w-full max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-16 items-center">
