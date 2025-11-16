@@ -143,8 +143,8 @@ export function HeroSection({ onCtaClick }: HeroSectionProps) {
                   className="bg-primary/90 text-black font-semibold px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 text-[10px] sm:text-xs md:text-sm backdrop-blur-sm border-0"
                   data-testid="badge-coin-details"
                 >
-                  <span className="hidden sm:inline">6-inch Diameter commemorative 1906</span>
-                  <span className="sm:hidden">6" · 1906</span>
+                  <span className="hidden sm:inline">4-inch Diameter commemorative 1906</span>
+                  <span className="sm:hidden">4" · 1906</span>
                 </Badge>
               </div>
             </div>

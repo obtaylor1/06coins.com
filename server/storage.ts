@@ -53,7 +53,7 @@ export class DbStorage implements IStorage {
     // If no inventory exists, initialize with default
     if (result.length === 0) {
       return await this.initializeInventory({
-        productName: "APA 120th Anniversary Commemorative Coin (6-Inch)",
+        productName: "APA 120th Anniversary Commemorative Coin (4-Inch)",
         remainingStock: 1906,
         initialStock: 1906,
       });

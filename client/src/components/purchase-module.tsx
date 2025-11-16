@@ -98,7 +98,7 @@ export function PurchaseModule() {
                   Alpha Phi Alpha 120th Anniversary Commemorative Coin
                 </h3>
                 <p className="text-sm sm:text-base text-foreground/70">
-                  6-inch diameter • Museum-quality • Numbered & Certified
+                  4-inch diameter • Museum-quality • Numbered & Certified
                 </p>
                 
                 {/* Stock Badge */}
@@ -192,7 +192,7 @@ export function PurchaseModule() {
             <div className="grid md:grid-cols-2 gap-x-8 gap-y-3">
               <div className="flex items-start gap-3 text-foreground/70">
                 <span className="text-primary mt-0.5">✓</span>
-                <span>Official 120th Anniversary Commemorative Coin (6" diameter)</span>
+                <span>Official 120th Anniversary Commemorative Coin (4" diameter)</span>
               </div>
               <div className="flex items-start gap-3 text-foreground/70">
                 <span className="text-primary mt-0.5">✓</span>

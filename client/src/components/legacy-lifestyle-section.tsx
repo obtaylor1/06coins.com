@@ -13,7 +13,7 @@ export function LegacyLifestyleSection({ onCtaClick }: LegacyLifestyleSectionPro
     {
       title: "The Professional Display",
       subtitle: "A Symbol of Achievement",
-      description: "Displayed on a polished mahogany desk, this coin commands attention alongside your professional accomplishments. The 6-inch diameter makes a dignified statement in any office setting.",
+      description: "Displayed on a polished mahogany desk, this coin commands attention alongside your professional accomplishments. The 4-inch diameter makes a dignified statement in any office setting.",
       features: [
         "Premium acrylic display stand included",
         "Museum-quality finish catches natural light",
@@ -41,9 +41,9 @@ export function LegacyLifestyleSection({ onCtaClick }: LegacyLifestyleSectionPro
     {
       title: "The Heritage Mantlepiece",
       subtitle: "A Distinguished Heirloom",
-      description: "Displayed on your mantle or library shelf, the coin's impressive 6-inch scale commands presence alongside your most cherished items. A permanent marker of fraternity pride.",
+      description: "Displayed on your mantle or library shelf, the coin's impressive 4-inch scale commands presence alongside your most cherished items. A permanent marker of fraternity pride.",
       features: [
-        "Substantial 6-inch diameter visible from across the room",
+        "Substantial 4-inch diameter visible from across the room",
         "Complements formal home settings",
         "Becomes a treasured family heirloom",
       ],

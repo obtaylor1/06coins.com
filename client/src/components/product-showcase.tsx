@@ -16,7 +16,7 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
         <div className="text-center space-y-4 sm:space-y-6 px-2">
           <p className="text-sm sm:text-base md:text-lg lg:text-xl text-primary/80 font-serif tracking-wider">The Masterpiece</p>
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-serif font-bold text-foreground tracking-tight leading-tight">
-            Six Inches of History.
+            Four Inches of History.
             <br />
             <span className="text-primary">Unmatched Quality.</span>
           </h2>
@@ -46,7 +46,7 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
                 </div>
                 <div className="space-y-2 sm:space-y-3">
                   <h4 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-primary">
-                    6-Inch Diameter
+                    4-Inch Diameter
                   </h4>
                   <p className="text-sm sm:text-base text-foreground/70 leading-relaxed">
                     This size was chosen to physically represent the founding year, <strong className="text-primary">1906</strong>, giving the coin a substantial presence that demands attention. It is designed not to be carried, but to be displayed—a true mantlepiece artifact.
