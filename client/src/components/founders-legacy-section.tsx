@@ -74,28 +74,26 @@ export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps
         </div>
 
         {/* Founders Grid */}
-        <div className="overflow-x-auto px-2">
-          <div className="flex justify-center items-end gap-3 sm:gap-4 md:gap-6 min-w-max mx-auto">
-            {founders.map((founder) => (
-              <div 
-                key={founder.name}
-                className="flex flex-col items-center gap-2 sm:gap-3"
-                data-testid={`founder-${founder.name.toLowerCase()}`}
-              >
-                <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-full overflow-hidden border-2 border-primary/70">
-                  <img 
-                    src={founder.image}
-                    alt={`Jewel ${founder.fullName} commemorative coin`}
-                    className="w-full h-full object-cover"
-                    data-testid={`img-founder-${founder.name.toLowerCase()}`}
-                  />
-                </div>
-                <span className="text-xs sm:text-sm md:text-base text-primary font-semibold text-center whitespace-nowrap">
-                  {founder.fullName}
-                </span>
+        <div className="flex justify-center items-end gap-2 sm:gap-3 md:gap-4 lg:gap-6 flex-wrap px-2">
+          {founders.map((founder) => (
+            <div 
+              key={founder.name}
+              className="flex flex-col items-center gap-1 sm:gap-2"
+              data-testid={`founder-${founder.name.toLowerCase()}`}
+            >
+              <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full overflow-hidden border-2 border-primary/70">
+                <img 
+                  src={founder.image}
+                  alt={`Jewel ${founder.fullName} commemorative coin`}
+                  className="w-full h-full object-cover"
+                  data-testid={`img-founder-${founder.name.toLowerCase()}`}
+                />
               </div>
-            ))}
-          </div>
+              <span className="text-[0.6rem] sm:text-xs md:text-sm text-primary font-semibold text-center leading-tight max-w-[60px] sm:max-w-[80px] md:max-w-none">
+                {founder.fullName}
+              </span>
+            </div>
+          ))}
         </div>
 
         {/* CTA Button */}
