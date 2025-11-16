@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/contexts/cart-context";
 import { Settings, ShoppingCart } from "lucide-react";
 import { Link } from "wouter";
-import shieldImg from "@assets/IMG_0093_1762507090202.jpeg";
+import coinBackImg from "@assets/apa coin back_1763327918152.png";
 
 interface StickyHeaderProps {
   onCtaClick: () => void;
@@ -62,10 +62,10 @@ export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
           <Link href="/">
             <div className="flex items-center gap-2 sm:gap-3 w-auto cursor-pointer hover:opacity-80 transition-opacity" data-testid="link-home">
               <img 
-                src={shieldImg} 
-                alt="Alpha Phi Alpha Shield" 
+                src={coinBackImg} 
+                alt="Alpha Phi Alpha 120th Anniversary Coin" 
                 className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 object-contain shrink-0" 
-                data-testid="img-shield-logo" 
+                data-testid="img-coin-logo" 
               />
               <span className="text-xs sm:text-sm md:text-base font-semibold text-white">
                 <span className="hidden sm:inline">Alpha Phi Alpha 120th Anniversary</span>
