@@ -113,7 +113,7 @@ export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps
           className="text-xs sm:text-sm text-foreground/60 pt-2 sm:pt-4 px-2"
           data-testid="text-craftsmanship-note"
         >
-          Each coin features museum-quality craftsmanship with dramatic Old Gold finish
+          Each 3-inch coin features museum-quality craftsmanship with dramatic Old Gold finish
         </p>
       </div>
     </section>

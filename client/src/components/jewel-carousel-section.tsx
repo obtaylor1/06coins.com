@@ -157,7 +157,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
           </h2>
           
           <p className="text-base sm:text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto px-2">
-            Select and purchase individual founder coins to celebrate the legacy of a specific Jewel.
+            Select and purchase individual 3-inch founder coins to celebrate the legacy of a specific Jewel.
           </p>
 
           <div className="flex flex-col items-center gap-1 sm:gap-2">
