@@ -115,7 +115,7 @@ export default function ShopCoins() {
           </h1>
           
           <p className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Celebrate the legacy of Alpha Phi Alpha with museum-quality crafted coins. Own a piece of history.
+            Museum-quality craftsmanship honoring a century of brotherhood. Limited edition coins designed with precision you can feel.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -505,7 +505,7 @@ export default function ShopCoins() {
                 </h2>
 
                 <p className="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                  One click to add the 120-Year Coin, the Complete Jewel Set, and all seven individual Jewel Coins to your cart.
+                  Own every piece of the legacy. The ultimate tribute to the Brotherhood.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-3 justify-center items-center text-sm text-gray-400">
