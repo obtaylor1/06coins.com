@@ -9,9 +9,12 @@ import { WhyOwnSection } from "@/components/why-own-section";
 import { PurchaseModule } from "@/components/purchase-module";
 import { Footer } from "@/components/footer";
 import { useToast } from "@/hooks/use-toast";
+import { useCart } from "@/contexts/cart-context";
+import { JEWEL_SET } from "@/lib/products";
 
 export default function Home() {
   const { toast } = useToast();
+  const { addItem } = useCart();
   
   useEffect(() => {
     // Set dark mode by default for Alpha Phi Alpha theme
@@ -40,6 +43,14 @@ export default function Home() {
     }, 1000);
   };
 
+  const handleAddJewelSetToCart = () => {
+    addItem(JEWEL_SET, 1);
+    toast({
+      title: "Added to Cart",
+      description: `Complete 7-Jewel Collector's Set ($${JEWEL_SET.price.toFixed(2)})`,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <StickyHeader onCtaClick={scrollToPurchase} />
@@ -48,7 +59,7 @@ export default function Home() {
         <HeroSection onCtaClick={scrollToPurchase} />
         
         <div ref={foundersSetRef}>
-          <FoundersLegacySection onCtaClick={scrollToPurchase} />
+          <FoundersLegacySection onCtaClick={handleAddJewelSetToCart} />
         </div>
         
         <StorySection onCtaClick={scrollToPurchase} />
