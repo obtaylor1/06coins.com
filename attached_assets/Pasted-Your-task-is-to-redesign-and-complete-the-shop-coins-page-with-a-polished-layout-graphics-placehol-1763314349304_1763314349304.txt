@@ -1,0 +1,176 @@
+Your task is to redesign and complete the /shop-coins page with a polished layout, graphics placeholders, and full cart logic.
+0. Understand the Existing Project
+Inspect the repository to see:
+How routes/pages are defined (Express routes, EJS templates, plain HTML, etc.).
+How CSS is currently organized (global CSS, Tailwind, inline styles, etc.).
+How navigation and any existing cart/checkout flow is implemented.
+Do not introduce a new framework (no React/Vue) unless it’s already in use.
+Work within the existing stack and style structure.
+1. Redesign /shop-coins Layout (Museum-Quality Style)
+Create or update the /shop-coins page so that it has this exact structure and visual hierarchy:
+1.1 Overall Style
+Theme: Black, gold, and white — premium, museum-quality, historic.
+Use:
+Dark background (#050505 to #111111).
+Gold accents (#D4AF37 or similar).
+White and light gray text for readability.
+Card style: rounded corners, soft shadows, thin gold borders around product cards.
+Typography:
+Headings: a serif-feeling display font (or existing heading font) for elegance.
+Body: clean sans-serif.
+Add subtle Egyptian / historic motifs as thin line dividers or icons (CSS only or simple SVG).
+1.2 Page Structure (Top to Bottom)
+A) Hero Section
+Full-width hero at the top.
+Background: either a dark gradient or an existing coin image with a dark overlay.
+Large title:
+120-Year Commemorative Coin Collection
+Subtitle:
+Celebrate the legacy of Alpha Phi Alpha with museum-quality crafted coins.
+Primary button:
+Shop All Coins — scrolls to the product section.
+Optional secondary button: Learn More (if you have an about page); otherwise omit.
+B) Product Section Wrapper
+Below the hero, create a section with a light-on-dark layout and three clearly separated product areas:
+The 120-Year 4" Coin
+The Full Jewel Set (7 coins, 3" each)
+The Individual 3" Jewel Coins (carousel)
+Use a responsive grid:
+On desktop: 2–3 columns where appropriate.
+On mobile: stacked layout.
+2. Product 1: 120-Year 4" Anniversary Coin
+Create a prominent product card near the top of the product section.
+Title: 120-Year Anniversary Commemorative Coin – 4 Inch Diameter
+Price: $50.06
+Description: a short 2–3 line description (you can write it if one doesn’t exist yet) emphasizing:
+Museum-quality craftsmanship
+4-inch diameter
+Limited commemorative release
+Elements to include:
+Large coin image placeholder (use any existing coin image asset; if none, create a neutral placeholder box with text like “4″ Coin Image Here”).
+Quantity selector (– / + or numeric input).
+Gold “Add to Cart” button.
+A small badge at top-right of the card:
+Text: Premium or Museum Quality.
+Optional sub-label under price: Collector’s centerpiece for the 120th Anniversary.
+The card should be visually larger and more highlighted than other cards.
+3. Product 2: Complete Jewel Set (7 Coins, 3" Each)
+Create a “Best Value” bundle card directly under or next to the 4" coin card.
+Title: Complete Jewel Coin Set – 7 Coins (3 Inches Each)
+Price: $120.06
+Subtext: Save $13.36 compared to buying individually (7 × $19.06 = $133.42).
+Description: 2–3 lines about owning the complete set of Jewel coins.
+Visual layout:
+A grid or collage of 7 small coin images (can reuse the same placeholder repeatedly if there are not 7 unique assets).
+Add a small gold badge or ribbon at the top of the card:
+Text: Best Collector Value.
+Quantity selector and “Add to Cart” button.
+4. Product 3: Individual 3" Jewel Coins (Carousel)
+Create an interactive horizontal carousel or horizontally scrollable row (with simple JS) showing all 7 individual Jewel coins.
+Each Jewel Coin Card must contain:
+Placeholder image for the specific Jewel coin.
+Title pattern: Jewel [Name] – 3" Coin
+For example: Jewel Henry Arthur Callis – 3" Coin.
+Price: $19.06
+Quantity selector.
+“Add to Cart” button.
+The carousel should:
+Work well on desktop (horizontal scroll with arrows or drag).
+Work on mobile (swipe or horizontal scroll).
+Use consistent card size and spacing.
+Have a subtle gold border and shadow on hover/focus.
+Add a button below the carousel:
+Text: Add All Seven Jewel Coins
+Function: adds 1 of each of the seven individual Jewel coins to the cart.
+5. “Build My Complete Collection” (One-Click Bundle)
+Create a bold, full-width (or wide card) call-to-action section below the products:
+Background: slightly lighter or texturized dark area with gold border.
+Title: Build My Complete Collection
+Description:
+One click to add the 120-Year Coin, the Complete Jewel Set, and all seven individual Jewel Coins to your cart.
+Button: Add Complete Collection to Cart
+Logic when clicked:
+Add:
+1 × 120-Year 4" Coin (id: coin120year)
+1 × Jewel Set (id: jewelset7)
+1 × each of the 7 individual Jewel coins (id: jewel_[name] for each).
+If items already exist in the cart, increment their quantities instead of duplicating entries.
+6. Cart System (Logic + UI)
+Implement or refine a simple front-end cart system if not already present.
+6.1 Data Structure
+Use a shared JS module or script like:
+const cart = {
+  items: [], // each: { id, name, price, qty }
+};
+Each item:
+id: string (e.g., coin120year, jewelset7, jewel_callis)
+name: display name for UI.
+price: numeric.
+qty: integer >= 1.
+6.2 Cart Operations
+Implement functions:
+addToCart(id, name, price, qty = 1)
+updateCartItemQty(id, newQty)
+removeFromCart(id)
+getCartTotals() // returns { subtotal, total }
+saveCartToLocalStorage()
+loadCartFromLocalStorage()
+Call saveCartToLocalStorage() after each change.
+Load on page load so the cart persists between visits.
+6.3 Sticky Cart Summary
+On /shop-coins:
+Add a sticky cart summary panel:
+On desktop: right side of the page.
+On mobile: a collapsible bar at the bottom.
+The panel must show:
+List of items (name, qty, line total).
+Subtotal and total (for now, total = subtotal, unless shipping/tax logic exists).
+Button: Proceed to Checkout.
+If the project already has a checkout route, link the button there and ensure cart information is passed in whichever way the project currently expects (query params, session, local storage, etc.).
+6.4 Header Mini Cart
+In the global header/navigation:
+Add a mini-cart icon or text:
+Example: Cart (3) showing total quantity.
+Clicking it should scroll to the cart summary on /shop-coins or navigate to a dedicated cart/checkout page, depending on the existing flow.
+7. Mobile & Responsive Behavior
+Ensure the /shop-coins page is fully responsive:
+On mobile:
+Hero text centered.
+Product cards stacked vertically with good spacing.
+Carousel scrollable with swipe or horizontal scroll.
+Sticky cart as a bottom bar that expands when tapped.
+On desktop:
+Use a two-column layout where possible:
+Left: product cards
+Right: sticky cart summary
+Ensure max-width for content so text doesn’t stretch too wide (e.g., max-width: 1200px and centered).
+8. Visual Polish & Graphics Placeholders
+Because not all final coin images may exist yet, create tasteful placeholders:
+Use light gray or dark boxes with text like:
+4" Coin Image Placeholder
+Jewel Coin Image Placeholder.
+Optionally add a small icon in the middle using pure CSS or SVG.
+Make sure these placeholders have the same aspect ratio you would expect for the real photos so the layout will not shift later.
+9. Code Quality & Files to Touch
+Reuse existing CSS classes where possible to keep consistency.
+If creating new CSS:
+Use a dedicated stylesheet or section for /shop-coins styles.
+Name classes descriptively (e.g., .shop-coins-hero, .product-card, .jewel-carousel, .cart-summary).
+Ensure no console errors in the browser.
+Ensure there are no broken links in the navigation.
+10. Final Deliverables
+When you are done, the /shop-coins page must:
+Look visually complete and polished (not bare-bones).
+Clearly show:
+4" 120-Year Coin @ $50.06.
+Jewel Set @ $120.06 (with savings message).
+Individual Jewel Coins @ $19.06 each in a carousel.
+Support:
+Add-to-cart for each product.
+“Add All Seven Jewel Coins” button.
+“Build My Complete Collection” button.
+Have a working, persistent cart:
+Sticky cart summary.
+Mini cart in header.
+Checkout button leading into the existing checkout flow.
+Make all changes now.

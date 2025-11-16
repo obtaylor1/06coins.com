@@ -90,20 +90,49 @@ A premium e-commerce website for the Alpha Phi Alpha Fraternity's 120th Annivers
   - Complete Stripe checkout flow (creates orders, decrements inventory)
   - Firebase Firestore integration ready (awaiting credentials)
   - SEO optimization with meta tags
-- ✅ **Complete Cart System** (Added Nov 16, 2025)
-  - CartContext with localStorage persistence across sessions
-  - Add/update/remove/empty cart operations
-  - Mini-cart icon in sticky header with live item count badge
-  - Dedicated `/shop-coins` page featuring:
-    - 120-Year Anniversary Coin (4-inch diameter, $50.06)
-    - Jewel Set bundle (all 7 founders, $120.06 with savings message)
-    - Individual Jewel Coins carousel (3-inch diameter, $19.06 each)
-  - Sticky cart summary on shop page showing items, subtotal, and total
-  - "Build My Complete Collection" button (adds all products: 1 main + 1 set + 7 individuals)
-  - Full checkout integration displaying cart line items
-  - Cart empties only after successful order submission
-  - Backward-compatible with query parameter checkout flow
-  - Responsive design with 44px minimum touch targets (WCAG compliance)
+- ✅ **Complete Cart System with Museum-Quality Shop Page** (Updated Nov 16, 2025)
+  - **Premium Museum Aesthetic**:
+    - Black/gold/white color scheme (#050505 to #111111 backgrounds, #D4AF37 gold accents)
+    - Full-width hero section with coin background, dark gradient overlay
+    - Decorative gold line elements and Egyptian-inspired motifs
+    - Serif typography for headings, elegant spacing and shadows
+  - **Hero Section**:
+    - Large "120-Year Commemorative Coin Collection" headline
+    - "Est. 1906 - Limited Edition Collection" badge
+    - Dual CTAs: "Shop All Coins" and "Learn More"
+    - Smooth scroll to products section
+  - **Product 1 - The Centerpiece (120-Year 4" Coin)**:
+    - Museum Quality badge, $50.06
+    - Large coin image with gold glow effect
+    - Premium card design with gold borders
+    - Quantity selector and add to cart
+  - **Product 2 - Best Collector Value (Complete Jewel Set)**:
+    - 7-coin grid preview, $120.06
+    - "Save $13.36" badge prominently displayed
+    - Individual vs. bundle pricing comparison
+    - Premium card matching main coin style
+  - **Product 3 - Individual Jewel Coins (Interactive Carousel)**:
+    - Horizontal carousel with left/right navigation
+    - 7 thumbnail selectors below main coin display
+    - Selected coin highlighted with gold border and glow
+    - Individual jewel pricing $19.06 each
+    - "Add All Seven Jewel Coins" button below carousel
+  - **"Build My Complete Collection" CTA Section**:
+    - Full-width card with decorative corner borders
+    - One-click button adds: 1 main + 1 set + 7 individual jewels
+    - Premium gold gradient background
+    - Clear itemization of what's included
+  - **Cart System**:
+    - CartContext with localStorage persistence
+    - Mini-cart icon in header with live count badge
+    - Sticky cart summary (desktop right sidebar, mobile bottom)
+    - Full checkout integration with line items display
+    - Cart clears only after successful order
+    - Backward-compatible with query parameter flow
+  - **Responsive Design**:
+    - Mobile: stacked layout, swipeable carousel, collapsible bottom cart
+    - Desktop: 2-column grid (products left, cart right)
+    - WCAG-compliant 44px minimum touch targets
 
 ### Next Features
 - Waitlist email collection system
