@@ -67,7 +67,7 @@ export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
                 className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 object-contain shrink-0" 
                 data-testid="img-coin-logo" 
               />
-              <span className="text-xs sm:text-sm md:text-base font-semibold text-white">
+              <span className="text-xs sm:text-sm md:text-base font-semibold text-black uppercase">
                 <span className="hidden sm:inline">Alpha Phi Alpha 120th Anniversary</span>
                 <span className="sm:hidden">AΦA 120th</span>
               </span>
@@ -77,7 +77,7 @@ export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
           {/* Center: Stock Counter */}
           <div className="flex-shrink-0 order-3 sm:order-2 sm:flex-1 sm:flex sm:justify-center w-full sm:w-auto text-center">
             <span className="text-xs sm:text-sm md:text-base font-semibold text-white flex items-baseline gap-1 justify-center flex-wrap">
-              <span className="hidden sm:inline">Phase I:</span>
+              <span className="hidden sm:inline">LIMITED EDITION:</span>
               <span>Only</span>
               <span 
                 className="text-base sm:text-lg md:text-xl font-bold text-primary mx-0.5 sm:mx-1"
