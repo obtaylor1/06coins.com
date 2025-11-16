@@ -13,13 +13,13 @@ interface FoundersLegacySectionProps {
 }
 
 const founders = [
-  { name: "Callis", image: callisImg },
-  { name: "Chapman", image: chapmanImg },
-  { name: "Jones", image: jonesImg },
-  { name: "Kelley", image: kelleyImg },
-  { name: "Murray", image: murrayImg },
-  { name: "Ogle", image: ogleImg },
-  { name: "Tandy", image: tandyImg },
+  { name: "Callis", fullName: "Henry Arthur Callis", image: callisImg },
+  { name: "Chapman", fullName: "Charles Henry Chapman", image: chapmanImg },
+  { name: "Jones", fullName: "Eugene Kinckle Jones", image: jonesImg },
+  { name: "Kelley", fullName: "George Biddle Kelley", image: kelleyImg },
+  { name: "Murray", fullName: "Nathaniel Allison Murray", image: murrayImg },
+  { name: "Ogle", fullName: "Robert Harold Ogle", image: ogleImg },
+  { name: "Tandy", fullName: "Vertner Woodson Tandy", image: tandyImg },
 ];
 
 export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps) {
@@ -84,13 +84,13 @@ export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps
               <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-full overflow-hidden border-2 border-primary/70">
                 <img 
                   src={founder.image}
-                  alt={`Jewel ${founder.name} commemorative coin`}
+                  alt={`Jewel ${founder.fullName} commemorative coin`}
                   className="w-full h-full object-cover"
                   data-testid={`img-founder-${founder.name.toLowerCase()}`}
                 />
               </div>
-              <span className="text-xs sm:text-sm md:text-base text-primary font-semibold">
-                {founder.name}
+              <span className="text-xs sm:text-sm md:text-base text-primary font-semibold text-center">
+                {founder.fullName}
               </span>
             </div>
           ))}
