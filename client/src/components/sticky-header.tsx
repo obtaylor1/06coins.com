@@ -53,8 +53,7 @@ export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
 
   return (
     <header 
-      className="sticky top-0 z-50 shadow-lg"
-      style={{ backgroundColor: '#8B1538' }}
+      className="sticky top-0 z-50 shadow-lg bg-destructive"
       data-testid="header-sticky"
     >
       <div className="py-2 px-3 sm:py-3 sm:px-4 md:px-6 lg:px-8">
