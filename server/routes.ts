@@ -3,13 +3,13 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage.js";
 import { getInventoryFromFirestore, updateInventoryInFirestore } from "./firebase.js";
 import { setupAuth, isAuthenticated, isAdmin } from "./replitAuth.js";
+import Stripe from "stripe";
 
 // Stripe integration - reference: javascript_stripe blueprint
-let stripe: any = null;
+let stripe: Stripe | null = null;
 if (process.env.STRIPE_SECRET_KEY) {
-  const Stripe = require('stripe');
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2023-10-16",
+    apiVersion: "2025-10-29.clover",
   });
   console.log('Stripe initialized successfully');
 } else {
@@ -122,12 +122,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Extract customer and shipping information from payment intent
-      const customerName = paymentIntent.shipping?.name || 
-                          paymentIntent.billing_details?.name || 
-                          'Unknown Customer';
-      const customerEmail = paymentIntent.receipt_email || 
-                           paymentIntent.billing_details?.email || 
-                           null;
+      const customerName = paymentIntent.shipping?.name || 'Unknown Customer';
+      const customerEmail = paymentIntent.receipt_email || null;
       const shippingAddress = paymentIntent.shipping?.address || null;
 
       // Create order record FIRST for idempotency (before decrementing)
