@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { useCart } from "@/contexts/cart-context";
+import { MAIN_COIN } from "@/lib/products";
 import { ShieldCheck, CreditCard, Package, ShoppingCart, Lock } from "lucide-react";
 import coinFrontImg from "@assets/apa coin front_1762505793054.png";
 
@@ -14,6 +16,7 @@ export function PurchaseModule() {
   const [quantity, setQuantity] = useState(1);
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  const { addItem, itemCount } = useCart();
 
   const { data: inventory } = useQuery<{ remainingStock: number }>({
     queryKey: ['/api/inventory'],
@@ -24,7 +27,7 @@ export function PurchaseModule() {
   const isSoldOut = stock <= 0;
   const totalAmount = COIN_PRICE * quantity;
 
-  const handleCheckout = () => {
+  const handleAddToCart = () => {
     if (isSoldOut) {
       toast({
         title: "Sold Out",
@@ -43,6 +46,27 @@ export function PurchaseModule() {
       return;
     }
 
+    addItem(MAIN_COIN, quantity);
+    toast({
+      title: "Added to Cart",
+      description: `${quantity}x 120-Year Anniversary Coin ($${(COIN_PRICE * quantity).toFixed(2)})`,
+    });
+  };
+
+  const handleViewCart = () => {
+    setLocation("/shop-coins");
+  };
+
+  const handleCheckout = () => {
+    if (itemCount === 0) {
+      toast({
+        title: "Cart is Empty",
+        description: "Please add items to your cart before checking out.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Check if Stripe is configured
     if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
       toast({
@@ -53,8 +77,7 @@ export function PurchaseModule() {
       return;
     }
 
-    // Navigate to checkout page with quantity
-    setLocation(`/checkout?quantity=${quantity}`);
+    setLocation("/checkout");
   };
 
   return (
@@ -159,17 +182,31 @@ export function PurchaseModule() {
                 </div>
               </div>
 
-              {/* Checkout Button */}
-              <Button
-                onClick={handleCheckout}
-                disabled={isSoldOut}
-                size="lg"
-                className="w-full text-lg md:text-xl font-bold bg-primary hover:bg-primary/90 text-black"
-                data-testid="button-checkout"
-              >
-                <ShoppingCart className="w-5 h-5 mr-2" />
-                {isSoldOut ? "JOIN WAITLIST" : "Add to Cart"}
-              </Button>
+              {/* Add to Cart and Checkout Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button
+                  onClick={handleAddToCart}
+                  disabled={isSoldOut}
+                  size="lg"
+                  className="flex-1 text-base md:text-lg font-bold bg-primary hover:bg-primary/90 text-black"
+                  data-testid="button-add-to-cart"
+                >
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  {isSoldOut ? "JOIN WAITLIST" : "Add to Cart"}
+                </Button>
+                {itemCount > 0 && (
+                  <Button
+                    onClick={handleCheckout}
+                    size="lg"
+                    variant="outline"
+                    className="flex-1 text-base md:text-lg font-bold border-primary text-primary hover:bg-primary hover:text-black"
+                    data-testid="button-proceed-checkout"
+                  >
+                    <Lock className="w-5 h-5 mr-2" />
+                    Checkout ({itemCount})
+                  </Button>
+                )}
+              </div>
 
               {/* Trust Signals */}
               <div className="flex flex-col sm:flex-row justify-center gap-4 text-sm text-foreground/60 border-t border-primary/10 pt-6">

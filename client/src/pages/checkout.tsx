@@ -5,6 +5,7 @@ import { useStripe, Elements, PaymentElement, useElements } from '@stripe/react-
 import { loadStripe } from '@stripe/stripe-js';
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useCart } from "@/contexts/cart-context";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
@@ -16,14 +17,16 @@ const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY
 interface CheckoutFormProps {
   quantity: number;
   totalAmount: number;
+  useCartData: boolean;
 }
 
-function CheckoutForm({ quantity, totalAmount }: CheckoutFormProps) {
+function CheckoutForm({ quantity, totalAmount, useCartData }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [isProcessing, setIsProcessing] = useState(false);
+  const { items, emptyCart } = useCart();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,15 +58,31 @@ function CheckoutForm({ quantity, totalAmount }: CheckoutFormProps) {
       if (paymentIntent && paymentIntent.status === 'succeeded') {
         try {
           // Decrement inventory (with payment verification + order creation)
-          await apiRequest("POST", "/api/inventory/decrement", { 
+          const orderPayload = useCartData ? {
+            paymentIntentId: paymentIntent.id,
+            cartItems: items.map(item => ({
+              id: item.id,
+              quantity: item.quantity,
+            })),
+          } : {
             quantity,
             paymentIntentId: paymentIntent.id
-          });
+          };
 
+          // Submit order FIRST before clearing cart
+          await apiRequest("POST", "/api/inventory/decrement", orderPayload);
+
+          const itemCount = useCartData ? items.reduce((sum, item) => sum + item.quantity, 0) : quantity;
+          
           toast({
             title: "Payment Successful!",
-            description: `Thank you for your purchase! Your order for ${quantity} coin(s) has been confirmed.`,
+            description: `Thank you for your purchase! Your order for ${itemCount} coin(s) has been confirmed.`,
           });
+
+          // Clear cart ONLY AFTER order submission succeeds
+          if (useCartData) {
+            emptyCart();
+          }
 
           // Redirect to home after success
           setTimeout(() => setLocation('/'), 2000);
@@ -89,15 +108,29 @@ function CheckoutForm({ quantity, totalAmount }: CheckoutFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-2">
-        <div className="flex justify-between text-foreground/80">
-          <span>Quantity:</span>
-          <span className="font-bold">{quantity}</span>
-        </div>
-        <div className="flex justify-between text-foreground/80">
-          <span>Price per coin:</span>
-          <span className="font-bold">$50.06</span>
-        </div>
+      <div className="space-y-3">
+        {useCartData ? (
+          <>
+            <h3 className="font-semibold text-foreground mb-2">Order Summary:</h3>
+            {items.map(item => (
+              <div key={item.id} className="flex justify-between text-sm text-foreground/80 pb-2 border-b border-primary/10">
+                <span>{item.name} × {item.quantity}</span>
+                <span className="font-semibold">${(item.price * item.quantity).toFixed(2)}</span>
+              </div>
+            ))}
+          </>
+        ) : (
+          <>
+            <div className="flex justify-between text-foreground/80">
+              <span>Quantity:</span>
+              <span className="font-bold">{quantity}</span>
+            </div>
+            <div className="flex justify-between text-foreground/80">
+              <span>Price per coin:</span>
+              <span className="font-bold">$50.06</span>
+            </div>
+          </>
+        )}
         <div className="flex justify-between text-xl font-bold text-primary border-t border-primary/30 pt-2">
           <span>Total:</span>
           <span>${totalAmount.toFixed(2)}</span>
@@ -126,11 +159,17 @@ export default function Checkout() {
   const [clientSecret, setClientSecret] = useState("");
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { items, total } = useCart();
 
-  // Get checkout params from URL
+  // Determine if using cart data or query parameters
+  const useCartData = items.length > 0;
+  
+  // Fallback to query params if cart is empty
   const params = new URLSearchParams(window.location.search);
-  const quantity = parseInt(params.get('quantity') || '1');
-  const totalAmount = quantity * 50.06;
+  const queryQuantity = parseInt(params.get('quantity') || '1');
+  
+  const quantity = useCartData ? items.reduce((sum, item) => sum + item.quantity, 0) : queryQuantity;
+  const totalAmount = useCartData ? total : (queryQuantity * 50.06);
 
   useEffect(() => {
     // Set dark mode
@@ -149,9 +188,18 @@ export default function Checkout() {
     // Create PaymentIntent as soon as the page loads
     const createPaymentIntent = async () => {
       try {
-        const response = await apiRequest("POST", "/api/create-payment-intent", { 
-          quantity // Amount is calculated server-side for security
-        });
+        const payload = useCartData ? {
+          cartItems: items.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+          })),
+        } : {
+          quantity: queryQuantity // Amount is calculated server-side for security
+        };
+
+        const response = await apiRequest("POST", "/api/create-payment-intent", payload);
         const data = await response.json();
         
         if (data.clientSecret) {
@@ -170,7 +218,7 @@ export default function Checkout() {
     };
 
     createPaymentIntent();
-  }, [quantity, totalAmount, setLocation, toast]);
+  }, [quantity, totalAmount, setLocation, toast, useCartData, items, queryQuantity]);
 
   if (!clientSecret || !stripePromise) {
     return (
@@ -197,7 +245,7 @@ export default function Checkout() {
 
         <Card className="p-8 space-y-6">
           <Elements stripe={stripePromise} options={{ clientSecret }}>
-            <CheckoutForm quantity={quantity} totalAmount={totalAmount} />
+            <CheckoutForm quantity={quantity} totalAmount={totalAmount} useCartData={useCartData} />
           </Elements>
         </Card>
 

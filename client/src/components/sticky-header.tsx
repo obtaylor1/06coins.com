@@ -1,9 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { subscribeToInventory, signInAnonymouslyToFirebase } from "@/lib/firebase";
 import { useAuth } from "@/hooks/useAuth";
-import { Settings } from "lucide-react";
+import { useCart } from "@/contexts/cart-context";
+import { Settings, ShoppingCart } from "lucide-react";
 import { Link } from "wouter";
 import shieldImg from "@assets/IMG_0093_1762507090202.jpeg";
 
@@ -14,6 +16,7 @@ interface StickyHeaderProps {
 export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
   const [realtimeStock, setRealtimeStock] = useState<number | null>(null);
   const { isAuthenticated, isAdmin } = useAuth();
+  const { itemCount } = useCart();
   
   const { data: inventory, isLoading } = useQuery<{ remainingStock: number }>({
     queryKey: ['/api/inventory'],
@@ -85,8 +88,38 @@ export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
             </span>
           </div>
 
-          {/* Right: CTA Button + Admin Link */}
+          {/* Right: Shop Link + Cart Icon + CTA Button + Admin Link */}
           <div className="flex items-center gap-1.5 sm:gap-2 order-2 sm:order-3">
+            <Link href="/shop-coins">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-white/10 text-xs sm:text-sm min-h-11"
+                data-testid="button-shop-link"
+              >
+                Shop All
+              </Button>
+            </Link>
+
+            <Link href="/shop-coins">
+              <Button
+                variant="outline"
+                size="icon"
+                className="bg-white/10 border-white/30 text-white shrink-0 min-h-11 min-w-11 relative"
+                data-testid="button-cart-icon"
+              >
+                <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                {itemCount > 0 && (
+                  <Badge 
+                    className="absolute -top-1 -right-1 h-5 min-w-5 flex items-center justify-center bg-primary text-black font-bold text-xs px-1"
+                    data-testid="badge-cart-count"
+                  >
+                    {itemCount}
+                  </Badge>
+                )}
+              </Button>
+            </Link>
+
             {isAuthenticated && isAdmin && (
               <Link href="/admin">
                 <Button

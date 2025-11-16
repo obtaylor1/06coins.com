@@ -1,0 +1,77 @@
+You are a senior full-stack developer.
+Modify the existing website to add a complete “Shop All Coins” page and a full cart system with the following requirements:
+🔧 TASK 1 — Create New Page
+Create a new route/page called:
+/shop-coins
+This page must include all three product classes:
+PRODUCT 1 — 120-Year 4” Coin
+Title: “120-Year Anniversary Coin – 4 Inch”
+Price: 50.06
+ID: coin120year
+Quantity selector
+Add-to-Cart button
+PRODUCT 2 — Jewel Set (7 coins, 3″ each)
+Title: “Complete Jewel Coin Set – (7 Coins, 3 Inch Each)”
+Price: 120.06
+ID: jewelset7
+Quantity selector
+Add-to-Cart button
+Display value savings:
+“Save $13.36 compared to individual coins”
+PRODUCT 3 — Individual 3″ Jewel Coins
+Create a carousel or grid with 7 items.
+Each item must include:
+Name of the Jewel
+Price: 19.06
+ID format: jewel_{name}
+Quantity selector
+Add-to-Cart button
+Add a button “Add All Jewel Coins” that adds all 7 items with quantity = 1.
+🔧 TASK 2 — Add Full Cart Logic
+Create a cart module:
+Cart Data Structure
+cart = {
+   items: [
+      { id, name, price, qty, image }
+   ],
+   subtotal,
+   total
+}
+Required Cart Features
+Add item
+Update quantity
+Remove item
+Empty cart
+Auto-update totals
+Persist cart in localStorage
+Display mini-cart icon in header
+Sticky cart summary on /shop-coins page
+🔧 TASK 3 — Create “One-Click Collection” Bundle
+Add a button:
+“Build My Complete Collection”
+When clicked:
+Add 1 × 120-year coin
+Add 1 × Jewel Set
+Add each of the 7 individual Jewel coins
+Update cart totals
+Show confirmation toast:
+“Complete Collection Added to Cart”
+🔧 TASK 4 — UI/Styling
+Match all styling to:
+Black + gold theme
+Rounded corners
+Soft shadow boxes
+Responsive mobile layout
+Focus on clean, premium, museum-quality design.
+🔧 TASK 5 — Integrate With Existing Checkout
+Ensure cart passes items correctly to the current checkout/ordering flow.
+📌 FINAL DELIVERABLES
+The agent must output:
+New /shop-coins page
+Product components
+Carousel for Jewel coins
+Cart module
+Add-to-cart JS logic
+Bundle function
+Sticky cart UI
+Updated navigation header
