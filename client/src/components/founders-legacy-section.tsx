@@ -32,7 +32,7 @@ export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps
         {/* Badge */}
         <div className="flex justify-center">
           <Badge 
-            className="bg-destructive text-white px-3 sm:px-4 py-1 sm:py-1.5 font-semibold text-xs sm:text-sm"
+            className="bg-destructive text-white px-6 sm:px-8 md:px-10 py-2 sm:py-3 md:py-3.5 font-semibold text-sm sm:text-base md:text-lg rounded-lg"
             data-testid="badge-complete-collection"
           >
             The Complete Collection
