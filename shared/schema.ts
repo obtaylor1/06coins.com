@@ -29,12 +29,13 @@ export const users = pgTable("users", {
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 
-// Inventory tracking for the commemorative coin
+// Inventory tracking for all products
 export const inventory = pgTable("inventory", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  productId: text("product_id").notNull().unique(),
   productName: text("product_name").notNull(),
-  remainingStock: integer("remaining_stock").notNull().default(1906),
-  initialStock: integer("initial_stock").notNull().default(1906),
+  remainingStock: integer("remaining_stock").notNull(),
+  initialStock: integer("initial_stock").notNull(),
   lastUpdated: timestamp("last_updated").notNull().defaultNow(),
 });
 

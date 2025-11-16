@@ -5,6 +5,20 @@ import { getInventoryFromFirestore, updateInventoryInFirestore } from "./firebas
 import { setupAuth, isAuthenticated, isAdmin } from "./replitAuth.js";
 import Stripe from "stripe";
 
+// Server-side product catalog (price authority)
+// SECURITY: This is the source of truth for all product pricing
+const PRODUCT_CATALOG = new Map([
+  ['coin120year', { name: '120-Year Anniversary Commemorative Coin — 4" Premium Edition', price: 50.06, type: 'main-coin' }],
+  ['jewelset7', { name: 'Complete 7-Jewel Collector\'s Set — 3" Coins', price: 120.06, type: 'jewel-set' }],
+  ['jewel_callis', { name: 'Callis — The Philosopher', price: 19.06, type: 'jewel-coin' }],
+  ['jewel_chapman', { name: 'Chapman — The Educator', price: 19.06, type: 'jewel-coin' }],
+  ['jewel_jones', { name: 'Jones — The Organizer', price: 19.06, type: 'jewel-coin' }],
+  ['jewel_kelley', { name: 'Kelley — The Engineer', price: 19.06, type: 'jewel-coin' }],
+  ['jewel_murray', { name: 'Murray — The Scholar', price: 19.06, type: 'jewel-coin' }],
+  ['jewel_ogle', { name: 'Ogle — The Visionary', price: 19.06, type: 'jewel-coin' }],
+  ['jewel_tandy', { name: 'Tandy — The Architect', price: 19.06, type: 'jewel-coin' }],
+]);
+
 // Stripe integration - reference: javascript_stripe blueprint
 let stripe: Stripe | null = null;
 if (process.env.STRIPE_SECRET_KEY) {
@@ -20,6 +34,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup auth middleware
   await setupAuth(app);
 
+  // Initialize all products inventory on server startup
+  try {
+    await storage.initializeAllProducts();
+    console.log('✅ Product inventory initialized successfully');
+  } catch (error) {
+    console.error('⚠️ Error initializing inventory:', error);
+  }
+
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
@@ -32,7 +54,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Get current inventory
+  // Get current inventory for main coin (used by header stock counter)
   app.get("/api/inventory", async (req, res) => {
     try {
       // Try to get from Firestore first (real-time source of truth)
@@ -40,11 +62,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (firestoreStock !== null) {
         // Update local storage to match Firestore
-        await storage.updateInventoryStock(firestoreStock);
+        await storage.updateInventoryStock('coin120year', firestoreStock);
       }
       
-      // Return from local storage (which is now synced)
-      const inventory = await storage.getInventory();
+      // Return main coin inventory from local storage (which is now synced)
+      const inventory = await storage.getInventoryByProductId('coin120year');
       
       if (!inventory) {
         return res.status(404).json({ message: "Inventory not found" });
@@ -61,6 +83,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all inventory (all products)
+  app.get("/api/inventory/all", async (req, res) => {
+    try {
+      const inventory = await storage.getAllInventory();
+      res.json(inventory);
+    } catch (error: any) {
+      console.error('Error fetching all inventory:', error);
+      res.status(500).json({ message: "Error fetching all inventory: " + error.message });
+    }
+  });
+
+  // Get inventory for specific product
+  app.get("/api/inventory/:productId", async (req, res) => {
+    try {
+      const inventory = await storage.getInventoryByProductId(req.params.productId);
+      
+      if (!inventory) {
+        return res.status(404).json({ message: "Inventory not found for product" });
+      }
+      
+      res.json(inventory);
+    } catch (error: any) {
+      console.error('Error fetching product inventory:', error);
+      res.status(500).json({ message: "Error fetching product inventory: " + error.message });
+    }
+  });
+
   // Legacy endpoint removed - use /api/admin/inventory instead (protected)
 
   // Decrement inventory after payment verified
@@ -71,11 +120,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const { quantity, paymentIntentId } = req.body;
-      
-      if (!quantity || quantity < 1) {
-        return res.status(400).json({ message: "Invalid quantity" });
-      }
+      const { quantity, paymentIntentId, cartItems } = req.body;
 
       if (!paymentIntentId) {
         return res.status(400).json({ message: "Payment intent required" });
@@ -91,69 +136,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // SECURITY: Validate quantity and amount match payment intent
-      const COIN_PRICE = 50.06; // Must match create-payment-intent
-      const paidQuantity = parseInt(paymentIntent.metadata?.quantity || '0');
-      const expectedAmount = quantity * COIN_PRICE * 100; // in cents
-      
-      if (paidQuantity !== quantity) {
-        return res.status(400).json({ 
-          message: "Quantity mismatch - payment was for different quantity",
-          paidQuantity,
-          requestedQuantity: quantity
-        });
-      }
-
-      if (paymentIntent.amount !== expectedAmount) {
-        return res.status(400).json({ 
-          message: "Amount mismatch - payment amount doesn't match quantity",
-          paidAmount: paymentIntent.amount / 100,
-          expectedAmount: expectedAmount / 100
-        });
-      }
-
       // Check if this payment was already processed (idempotency)
       const existingOrder = await storage.getOrderByPaymentIntent(paymentIntentId);
       if (existingOrder) {
+        // Return main coin stock for legacy compatibility
+        const mainCoinInventory = await storage.getInventoryByProductId('coin120year');
         return res.json({
-          remainingStock: (await storage.getInventory())?.remainingStock ?? 0,
+          remainingStock: mainCoinInventory?.remainingStock ?? 0,
           alreadyProcessed: true,
         });
       }
 
-      // Extract customer and shipping information from payment intent
-      const customerName = paymentIntent.shipping?.name || 'Unknown Customer';
-      const customerEmail = paymentIntent.receipt_email || null;
-      const shippingAddress = paymentIntent.shipping?.address || null;
-
-      // Create order record FIRST for idempotency (before decrementing)
-      await storage.createOrder({
-        stripePaymentIntentId: paymentIntentId,
-        quantity,
-        totalAmount: paymentIntent.amount, // Use actual paid amount from Stripe
-        status: "completed",
-        customerName,
-        customerEmail,
-        shippingAddress,
-      });
+      // Parse items from payment intent metadata
+      let itemsToDecrement: Array<{id: string, quantity: number}> = [];
+      let totalQuantity = 0;
       
-      const inventory = await storage.getInventory();
-      if (!inventory) {
-        return res.status(404).json({ message: "Inventory not found" });
+      if (cartItems && Array.isArray(cartItems) && cartItems.length > 0) {
+        // New cart system
+        itemsToDecrement = cartItems.map((item: any) => ({
+          id: item.id,
+          quantity: item.quantity,
+        }));
+        totalQuantity = cartItems.reduce((sum: number, item: any) => sum + item.quantity, 0);
+      } else if (quantity && quantity >= 1) {
+        // Legacy single quantity system
+        itemsToDecrement = [{ id: 'coin120year', quantity }];
+        totalQuantity = quantity;
+      } else {
+        return res.status(400).json({ message: "Invalid request: provide either quantity or cartItems" });
       }
-      
-      const newStock = Math.max(0, inventory.remainingStock - quantity);
-      
-      // Update local storage
-      const updatedInventory = await storage.updateInventoryStock(newStock);
-      
-      // Sync to Firestore
-      await updateInventoryInFirestore(newStock);
-      
-      res.json({
-        remainingStock: updatedInventory.remainingStock,
-        decremented: inventory.remainingStock - newStock,
-      });
+
+      // Verify total items matches payment metadata
+      const paidItems = paymentIntent.metadata?.totalItems;
+      if (paidItems && parseInt(paidItems) !== totalQuantity) {
+        return res.status(400).json({ 
+          message: "Item count mismatch",
+          paidItems: parseInt(paidItems),
+          requestedItems: totalQuantity
+        });
+      }
+
+      // Execute entire decrement + order creation in a database transaction
+      // Ensures all-or-nothing: if any decrement fails, all are rolled back
+      try {
+        const result = await storage.executeInventoryTransaction(
+          itemsToDecrement,
+          {
+            stripePaymentIntentId: paymentIntentId,
+            quantity: totalQuantity,
+            totalAmount: paymentIntent.amount,
+            status: "completed",
+            customerName: paymentIntent.shipping?.name || 'Unknown Customer',
+            customerEmail: paymentIntent.receipt_email || null,
+            shippingAddress: paymentIntent.shipping?.address || null,
+          }
+        );
+
+        // Sync main coin to Firestore (for header counter)
+        const mainCoinUpdate = result.updatedInventories.find(inv => inv.productId === 'coin120year');
+        if (mainCoinUpdate) {
+          await updateInventoryInFirestore(mainCoinUpdate.remainingStock);
+        }
+
+        res.json({
+          remainingStock: mainCoinUpdate?.remainingStock ?? 0,
+          updatedInventories: result.updatedInventories,
+        });
+      } catch (error: any) {
+        console.error('Error in inventory transaction:', error);
+        
+        // Check if it's an insufficient stock error
+        if (error.message?.includes('Insufficient stock') || error.message?.includes('stock exhausted')) {
+          return res.status(409).json({ 
+            message: "Stock was exhausted by another order during processing. Your payment succeeded - please contact support for a refund.",
+            paymentIntentId,
+            error: error.message,
+          });
+        }
+        
+        // Other transaction errors
+        return res.status(500).json({ 
+          message: "Payment succeeded but inventory update failed. Contact support.",
+          paymentIntentId,
+          error: error.message,
+        });
+      }
     } catch (error: any) {
       console.error('Error decrementing inventory:', error);
       res.status(500).json({ message: "Error decrementing inventory: " + error.message });
@@ -169,32 +236,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const { quantity } = req.body;
-      const COIN_PRICE = 50.06; // Server-side price authority
+      const { quantity, cartItems } = req.body;
       
-      if (!quantity || quantity < 1) {
-        return res.status(400).json({ message: "Invalid quantity" });
-      }
-
-      // SECURITY: Calculate amount server-side (never trust client)
-      const totalAmount = quantity * COIN_PRICE;
-
-      // Check inventory before creating payment intent
-      const inventory = await storage.getInventory();
-      if (!inventory || inventory.remainingStock < quantity) {
-        return res.status(400).json({ 
-          message: "Insufficient stock available",
-          remainingStock: inventory?.remainingStock || 0,
-        });
+      let totalAmount = 0;
+      let metadataItems: any[] = [];
+      
+      if (cartItems && Array.isArray(cartItems) && cartItems.length > 0) {
+        // New cart system: Calculate total from SERVER-SIDE catalog
+        // SECURITY: Never trust client prices - use server catalog
+        for (const item of cartItems) {
+          const catalogProduct = PRODUCT_CATALOG.get(item.id);
+          if (!catalogProduct) {
+            return res.status(400).json({ 
+              message: `Invalid product: ${item.id}`,
+            });
+          }
+          
+          // Use SERVER price, not client price
+          const serverPrice = catalogProduct.price;
+          totalAmount += serverPrice * item.quantity;
+          metadataItems.push({
+            id: item.id,
+            name: catalogProduct.name,
+            quantity: item.quantity,
+            price: serverPrice, // Server-controlled price
+          });
+          
+          // Check inventory for each product
+          const inventory = await storage.getInventoryByProductId(item.id);
+          if (!inventory || inventory.remainingStock < item.quantity) {
+            return res.status(400).json({ 
+              message: `Insufficient stock for ${catalogProduct.name}`,
+              productId: item.id,
+              availableStock: inventory?.remainingStock || 0,
+              requestedQuantity: item.quantity,
+            });
+          }
+        }
+      } else if (quantity && quantity >= 1) {
+        // Legacy single quantity system
+        const catalogProduct = PRODUCT_CATALOG.get('coin120year');
+        if (!catalogProduct) {
+          return res.status(500).json({ message: "Product catalog error" });
+        }
+        
+        totalAmount = quantity * catalogProduct.price;
+        metadataItems = [{ productId: 'coin120year', quantity, price: catalogProduct.price }];
+        
+        // Check inventory for main coin
+        const inventory = await storage.getInventoryByProductId('coin120year');
+        if (!inventory || inventory.remainingStock < quantity) {
+          return res.status(400).json({ 
+            message: "Insufficient stock available",
+            remainingStock: inventory?.remainingStock || 0,
+          });
+        }
+      } else {
+        return res.status(400).json({ message: "Invalid request: provide either quantity or cartItems" });
       }
 
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(totalAmount * 100), // Convert to cents
         currency: "usd",
         metadata: {
-          product: "APA 120th Anniversary Commemorative Coin",
-          quantity: quantity.toString(),
-          unitPrice: COIN_PRICE.toString(),
+          items: JSON.stringify(metadataItems),
+          totalItems: metadataItems.reduce((sum, item) => sum + item.quantity, 0).toString(),
         },
       });
       
@@ -260,16 +366,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch("/api/admin/inventory", isAuthenticated, isAdmin, async (req, res) => {
     try {
-      const { remainingStock } = req.body;
+      const { productId, remainingStock } = req.body;
+      
+      if (!productId) {
+        return res.status(400).json({ message: "Product ID required" });
+      }
       
       if (typeof remainingStock !== 'number' || remainingStock < 0) {
         return res.status(400).json({ message: "Invalid stock quantity" });
       }
       
-      const updatedInventory = await storage.updateInventoryStock(remainingStock);
-      await updateInventoryInFirestore(remainingStock);
+      const updatedInventory = await storage.updateInventoryStock(productId, remainingStock);
+      
+      // Sync main coin to Firestore (for header counter)
+      if (productId === 'coin120year') {
+        await updateInventoryInFirestore(remainingStock);
+      }
       
       res.json({
+        productId: updatedInventory.productId,
         remainingStock: updatedInventory.remainingStock,
         lastUpdated: updatedInventory.lastUpdated,
       });
@@ -283,13 +398,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/analytics", isAuthenticated, isAdmin, async (req, res) => {
     try {
       const orders = await storage.getAllOrders();
-      const inventory = await storage.getInventory();
+      const allInventory = await storage.getAllInventory();
       
       const completedOrders = orders.filter(o => o.status === 'completed');
       const totalRevenue = completedOrders.reduce((sum, order) => sum + order.totalAmount, 0);
       const totalCoinsSold = completedOrders.reduce((sum, order) => sum + order.quantity, 0);
-      const initialStock = inventory?.initialStock || 1906;
-      const remainingStock = inventory?.remainingStock || 0;
+      
+      // Get main coin inventory for header display
+      const mainCoinInventory = allInventory.find(inv => inv.productId === 'coin120year');
+      const initialStock = mainCoinInventory?.initialStock || 1906;
+      const remainingStock = mainCoinInventory?.remainingStock || 0;
       
       // Calculate profit (assuming $30 cost per coin = $20.06 profit per coin sold)
       const COST_PER_COIN = 30; // $30 cost basis
@@ -305,6 +423,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         initialStock,
         remainingStock,
         soldPercentage: ((totalCoinsSold / initialStock) * 100).toFixed(1),
+        allInventory, // Include all product inventory for admin
       });
     } catch (error: any) {
       console.error('Error fetching analytics:', error);
