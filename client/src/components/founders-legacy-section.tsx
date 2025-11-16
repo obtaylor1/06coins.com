@@ -25,7 +25,7 @@ const founders = [
 export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps) {
   return (
     <section 
-      className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12 lg:px-16 bg-background"
+      className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12 lg:px-16 bg-white"
       data-testid="section-founders-legacy"
     >
       <div className="max-w-6xl mx-auto text-center space-y-8 sm:space-y-10 md:space-y-12">
@@ -49,7 +49,7 @@ export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps
 
         {/* Subtitle */}
         <p 
-          className="text-sm sm:text-base md:text-lg text-foreground/70 max-w-3xl mx-auto px-2"
+          className="text-sm sm:text-base md:text-lg text-gray-700 max-w-3xl mx-auto px-2"
           data-testid="text-legacy-subtitle"
         >
           Honor each of the Seven Visionary Founders with this exclusive museum-quality collection.
@@ -61,13 +61,13 @@ export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps
           data-testid="box-complete-set-price"
         >
           <div className="flex flex-col items-center gap-1 sm:gap-2">
-            <span className="text-foreground/80 text-xs sm:text-sm font-medium">
+            <span className="text-gray-800 text-xs sm:text-sm font-medium">
               Complete Set Price:
             </span>
             <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary">
               $120.06
             </span>
-            <span className="text-xs sm:text-sm text-foreground/60 text-center">
+            <span className="text-xs sm:text-sm text-gray-600 text-center">
               Commemorating 1906 · Seven Individual Coins · Limited Edition
             </span>
           </div>
@@ -110,7 +110,7 @@ export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps
 
         {/* Bottom Text */}
         <p 
-          className="text-xs sm:text-sm text-foreground/60 pt-2 sm:pt-4 px-2"
+          className="text-xs sm:text-sm text-gray-600 pt-2 sm:pt-4 px-2"
           data-testid="text-craftsmanship-note"
         >
           Each 3-inch coin features museum-quality craftsmanship with dramatic Old Gold finish
