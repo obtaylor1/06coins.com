@@ -6,7 +6,6 @@ import { StorySection } from "@/components/story-section";
 import { JewelCarouselSection } from "@/components/jewel-carousel-section";
 import { ProductShowcase } from "@/components/product-showcase";
 import { WhyOwnSection } from "@/components/why-own-section";
-import { LegacyLifestyleSection } from "@/components/legacy-lifestyle-section";
 import { PurchaseModule } from "@/components/purchase-module";
 import { Footer } from "@/components/footer";
 import { useToast } from "@/hooks/use-toast";
@@ -62,8 +61,6 @@ export default function Home() {
         <ProductShowcase onCtaClick={scrollToPurchase} />
         
         <WhyOwnSection onCtaClick={scrollToPurchase} />
-        
-        <LegacyLifestyleSection onCtaClick={scrollToPurchase} />
         
         <div ref={purchaseRef}>
           <PurchaseModule />
