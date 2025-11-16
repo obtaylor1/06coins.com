@@ -185,7 +185,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
           className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mt-8 sm:mt-12 items-start"
         >
           {/* LEFT: Carousel Container */}
-          <div className="flex flex-col items-center gap-6 sm:gap-8">
+          <div className="flex flex-col items-center gap-6 sm:gap-8 border-2 border-primary/60 rounded-2xl sm:rounded-3xl bg-transparent backdrop-blur px-4 sm:px-6 py-6 sm:py-8">
             {/* Carousel Navigation */}
             <div className="flex items-center justify-center gap-4 sm:gap-6 md:gap-12 w-full">
               {/* Left Arrow */}
@@ -258,7 +258,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
           {/* RIGHT: Detail & Add-to-Cart Panel */}
           <div className="w-full">
             <div 
-              className="rounded-2xl sm:rounded-3xl border border-foreground/10 bg-card backdrop-blur px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-4 sm:gap-6"
+              className="rounded-2xl sm:rounded-3xl border-2 border-primary/60 bg-transparent backdrop-blur px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-4 sm:gap-6"
               data-testid="card-jewel-detail"
             >
               {/* Name & Title */}
