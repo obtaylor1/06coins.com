@@ -15,9 +15,27 @@ import {
   User,
   Mail,
   MapPin,
-  RefreshCw
+  Minus,
+  Plus,
+  Edit2,
+  AlertTriangle,
+  CheckCircle2,
+  XCircle,
+  Filter,
 } from "lucide-react";
-import type { Order, Inventory } from "@shared/schema";
+import type { Order } from "@shared/schema";
+import { 
+  LineChart, 
+  Line, 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  Legend 
+} from 'recharts';
 
 interface Analytics {
   totalOrders: number;
@@ -29,11 +47,39 @@ interface Analytics {
   soldPercentage: string;
 }
 
+interface EnhancedInventory {
+  id: string;
+  productId: string;
+  productName: string;
+  remainingStock: number;
+  initialStock: number;
+  sold: number;
+  avgDailySales: number;
+  daysOfStock: number | null;
+  reorderLevel: number;
+  status: string;
+  lastUpdated: string;
+}
+
+interface SalesChartData {
+  date: string;
+  revenue: number;
+  units: number;
+}
+
+interface ProductSales {
+  productId: string;
+  productName: string;
+  unitsSold: number;
+  percentage: number;
+}
+
 export default function Admin() {
   const { toast } = useToast();
   const { user, isLoading, isAuthenticated, isAdmin } = useAuth();
-  const [newStock, setNewStock] = useState("");
-  const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
+  const [editingProduct, setEditingProduct] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const [orderFilter, setOrderFilter] = useState<'all' | 'pending' | 'completed' | 'refunded'>('all');
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -62,11 +108,6 @@ export default function Admin() {
     }
   }, [isAuthenticated, isLoading, isAdmin, toast]);
 
-  const { data: inventory } = useQuery<Inventory>({
-    queryKey: ['/api/inventory'],
-    enabled: isAuthenticated && isAdmin,
-  });
-
   const { data: orders } = useQuery<Order[]>({
     queryKey: ['/api/admin/orders'],
     enabled: isAuthenticated && isAdmin,
@@ -77,18 +118,37 @@ export default function Admin() {
     enabled: isAuthenticated && isAdmin,
   });
 
+  const { data: inventory } = useQuery<EnhancedInventory[]>({
+    queryKey: ['/api/admin/all-inventory'],
+    enabled: isAuthenticated && isAdmin,
+  });
+
+  const { data: salesChart } = useQuery<SalesChartData[]>({
+    queryKey: ['/api/admin/sales-chart'],
+    enabled: isAuthenticated && isAdmin,
+  });
+
+  const { data: productSales } = useQuery<ProductSales[]>({
+    queryKey: ['/api/admin/product-sales'],
+    enabled: isAuthenticated && isAdmin,
+  });
+
   const updateInventoryMutation = useMutation({
-    mutationFn: async (remainingStock: number) => {
-      await apiRequest("PATCH", "/api/admin/inventory", { remainingStock });
+    mutationFn: async ({ productId, remainingStock }: { productId: string; remainingStock: number }) => {
+      await apiRequest("PATCH", "/api/admin/inventory", { productId, remainingStock });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/inventory'] });
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/all-inventory'] });
       queryClient.invalidateQueries({ queryKey: ['/api/admin/analytics'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/inventory'] });
+      
+      const product = inventory?.find(inv => inv.productId === variables.productId);
       toast({
-        title: "Inventory Updated",
-        description: "Stock levels have been updated successfully.",
+        title: "Stock Updated",
+        description: `${product?.productName} stock updated successfully.`,
       });
-      setNewStock("");
+      setEditingProduct(null);
+      setEditValue("");
     },
     onError: (error: any) => {
       toast({
@@ -99,8 +159,16 @@ export default function Admin() {
     },
   });
 
-  const handleUpdateStock = () => {
-    const stock = parseInt(newStock);
+  const handleQuickUpdate = (productId: string, delta: number) => {
+    const product = inventory?.find(inv => inv.productId === productId);
+    if (!product) return;
+    
+    const newStock = Math.max(0, product.remainingStock + delta);
+    updateInventoryMutation.mutate({ productId, remainingStock: newStock });
+  };
+
+  const handleEditSave = (productId: string) => {
+    const stock = parseInt(editValue);
     if (isNaN(stock) || stock < 0) {
       toast({
         title: "Invalid Input",
@@ -109,13 +177,12 @@ export default function Admin() {
       });
       return;
     }
-    updateInventoryMutation.mutate(stock);
+    updateInventoryMutation.mutate({ productId, remainingStock: stock });
   };
 
-  const handleResetTo1906 = () => {
-    if (confirm("Are you sure you want to reset the inventory to 1906 coins?")) {
-      updateInventoryMutation.mutate(1906);
-    }
+  const startEdit = (productId: string, currentStock: number) => {
+    setEditingProduct(productId);
+    setEditValue(currentStock.toString());
   };
 
   if (isLoading || !isAuthenticated || !isAdmin) {
@@ -143,12 +210,28 @@ export default function Admin() {
     return parts.join(", ");
   };
 
+  const filteredOrders = orders?.filter(order => {
+    if (orderFilter === 'all') return true;
+    return order.status === orderFilter;
+  }) || [];
+
+  const lowStockItems = inventory?.filter(inv => inv.status === 'Low Stock' || inv.status === 'Out of Stock') || [];
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'In Stock': return 'bg-green-500/20 text-green-500 border-green-500/30';
+      case 'Low Stock': return 'bg-yellow-500/20 text-yellow-500 border-yellow-500/30';
+      case 'Out of Stock': return 'bg-red-500/20 text-red-500 border-red-500/30';
+      default: return 'bg-foreground/20 text-foreground border-foreground/30';
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gradient-to-b from-[#050505] to-[#111111] p-6">
+      <div className="max-w-[1600px] mx-auto space-y-6">
         {/* Header */}
         <div className="flex justify-between items-center">
-          <h1 className="text-4xl font-serif text-primary tracking-monumental">
+          <h1 className="text-4xl font-serif text-primary tracking-tight">
             Admin Dashboard
           </h1>
           <div className="flex gap-3 items-center">
@@ -174,7 +257,7 @@ export default function Admin() {
 
         {/* Analytics Cards */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card>
+          <Card className="bg-card/80 border-primary/20">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
               <DollarSign className="h-4 w-4 text-primary" />
@@ -189,7 +272,7 @@ export default function Admin() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-card/80 border-primary/20">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Profit</CardTitle>
               <TrendingUp className="h-4 w-4 text-green-500" />
@@ -204,7 +287,7 @@ export default function Admin() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-card/80 border-primary/20">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Coins Sold</CardTitle>
               <ShoppingCart className="h-4 w-4 text-primary" />
@@ -219,7 +302,7 @@ export default function Admin() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-card/80 border-primary/20">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Stock Remaining</CardTitle>
               <Package className="h-4 w-4 text-primary" />
@@ -235,65 +318,257 @@ export default function Admin() {
           </Card>
         </div>
 
-        {/* Inventory Management */}
-        <Card className="p-6 space-y-4">
-          <h2 className="text-2xl font-serif text-primary">Inventory Management</h2>
-          <div className="grid md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <p className="text-foreground/80">Current Stock</p>
-              <p className="text-3xl font-bold text-primary" data-testid="text-current-stock">
-                {inventory?.remainingStock ?? 0} coins
-              </p>
-              <p className="text-sm text-foreground/60">
-                Last updated: {inventory?.lastUpdated ? new Date(inventory.lastUpdated).toLocaleString() : 'Never'}
-              </p>
-            </div>
-            
-            <div className="space-y-2">
-              <label className="text-foreground/80">Update Stock Level</label>
-              <div className="flex gap-2">
-                <Input
-                  type="number"
-                  value={newStock}
-                  onChange={(e) => setNewStock(e.target.value)}
-                  placeholder="Enter new stock quantity"
-                  data-testid="input-new-stock"
+        {/* Sales & Inventory Analytics */}
+        <div className="grid lg:grid-cols-2 gap-6">
+          <Card className="bg-card/80 border-primary/20 p-6">
+            <h3 className="text-xl font-serif text-primary mb-4">Sales Over Time (30 Days)</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={salesChart || []}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#C8A856" opacity={0.1} />
+                <XAxis 
+                  dataKey="date" 
+                  stroke="#C8A856"
+                  tick={{ fill: '#C8A856', fontSize: 12 }}
+                  tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 />
-                <Button
-                  onClick={handleUpdateStock}
-                  disabled={updateInventoryMutation.isPending}
-                  data-testid="button-update-stock"
-                >
-                  {updateInventoryMutation.isPending ? "Updating..." : "Update"}
-                </Button>
+                <YAxis 
+                  stroke="#C8A856"
+                  tick={{ fill: '#C8A856', fontSize: 12 }}
+                  tickFormatter={(value) => `$${value}`}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: '#0a0a0a', 
+                    border: '1px solid #C8A856',
+                    borderRadius: '8px',
+                    color: '#C8A856'
+                  }}
+                  formatter={(value: any, name: string) => {
+                    if (name === 'revenue') return [`$${value.toFixed(2)}`, 'Revenue'];
+                    return [value, 'Units'];
+                  }}
+                />
+                <Legend />
+                <Line 
+                  type="monotone" 
+                  dataKey="revenue" 
+                  stroke="#C8A856" 
+                  strokeWidth={2}
+                  dot={{ fill: '#C8A856' }}
+                  name="Revenue ($)"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </Card>
+
+          <Card className="bg-card/80 border-primary/20 p-6">
+            <h3 className="text-xl font-serif text-primary mb-4">Top Selling Products</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={productSales || []} layout="horizontal">
+                <CartesianGrid strokeDasharray="3 3" stroke="#C8A856" opacity={0.1} />
+                <XAxis type="number" stroke="#C8A856" tick={{ fill: '#C8A856', fontSize: 12 }} />
+                <YAxis 
+                  type="category" 
+                  dataKey="productName" 
+                  stroke="#C8A856"
+                  tick={{ fill: '#C8A856', fontSize: 10 }}
+                  width={150}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: '#0a0a0a', 
+                    border: '1px solid #C8A856',
+                    borderRadius: '8px',
+                    color: '#C8A856'
+                  }}
+                  formatter={(value: any, name: string, props: any) => {
+                    return [`${value} units (${props.payload.percentage}%)`, 'Sold'];
+                  }}
+                />
+                <Bar dataKey="unitsSold" fill="#C8A856" radius={[0, 4, 4, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+        </div>
+
+        {/* Inventory Alerts */}
+        {lowStockItems.length > 0 && (
+          <Card className="bg-amber-500/5 border-amber-500/30 p-6">
+            <div className="flex items-start gap-4">
+              <AlertTriangle className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
+              <div className="flex-1">
+                <h3 className="text-lg font-serif text-amber-500 mb-2">Inventory Alerts</h3>
+                <p className="text-sm text-foreground/80 mb-3">
+                  {lowStockItems.length} product{lowStockItems.length > 1 ? 's' : ''} need attention
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {lowStockItems.map(item => (
+                    <Badge 
+                      key={item.productId}
+                      className={`${getStatusColor(item.status)} px-3 py-1`}
+                    >
+                      {item.productName.split('—')[0].trim()}: {item.remainingStock} left
+                    </Badge>
+                  ))}
+                </div>
               </div>
             </div>
+          </Card>
+        )}
 
-            <div className="space-y-2">
-              <label className="text-foreground/80">Quick Actions</label>
-              <Button
-                onClick={handleResetTo1906}
-                variant="outline"
-                disabled={updateInventoryMutation.isPending}
-                className="w-full"
-                data-testid="button-reset-1906"
-              >
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Reset to 1906 Coins
-              </Button>
+        {!lowStockItems.length && (
+          <Card className="bg-green-500/5 border-green-500/30 p-6">
+            <div className="flex items-start gap-4">
+              <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
+              <div>
+                <h3 className="text-lg font-serif text-green-500 mb-1">All Items Sufficiently Stocked</h3>
+                <p className="text-sm text-foreground/70">
+                  No inventory alerts at this time.
+                </p>
+              </div>
             </div>
+          </Card>
+        )}
+
+        {/* Inventory Management */}
+        <Card className="bg-card/80 border-primary/20 p-6 overflow-x-auto">
+          <h2 className="text-2xl font-serif text-primary mb-6">Inventory Management</h2>
+          <div className="min-w-[900px]">
+            <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_1fr_120px] gap-4 pb-3 border-b border-primary/20 text-sm font-semibold text-primary/90">
+              <div>Product</div>
+              <div>SKU</div>
+              <div>Current Stock</div>
+              <div>Sold (All-Time)</div>
+              <div>Reorder Level</div>
+              <div>Days of Stock</div>
+              <div>Status</div>
+              <div>Actions</div>
+            </div>
+            {inventory?.map((item) => (
+              <div 
+                key={item.productId}
+                className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_1fr_120px] gap-4 py-4 border-b border-primary/10 items-center text-sm"
+                data-testid={`inventory-row-${item.productId}`}
+              >
+                <div className="font-medium text-foreground">{item.productName}</div>
+                <div className="text-foreground/70 font-mono text-xs">{item.productId}</div>
+                <div className="font-bold text-primary">{item.remainingStock}</div>
+                <div className="text-foreground/70">{item.sold}</div>
+                <div className="text-foreground/70">{item.reorderLevel}</div>
+                <div className="text-foreground/70">
+                  {item.daysOfStock !== null ? `${item.daysOfStock} days` : '—'}
+                </div>
+                <div>
+                  <Badge className={`${getStatusColor(item.status)} text-xs`}>
+                    {item.status}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-1">
+                  {editingProduct === item.productId ? (
+                    <div className="flex items-center gap-1">
+                      <Input
+                        type="number"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        className="w-16 h-7 text-xs"
+                        data-testid={`input-edit-${item.productId}`}
+                      />
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7"
+                        onClick={() => handleEditSave(item.productId)}
+                        data-testid={`button-save-${item.productId}`}
+                      >
+                        <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7"
+                        onClick={() => setEditingProduct(null)}
+                      >
+                        <XCircle className="h-4 w-4 text-red-500" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7"
+                        onClick={() => handleQuickUpdate(item.productId, -1)}
+                        disabled={updateInventoryMutation.isPending || item.remainingStock === 0}
+                        data-testid={`button-decrease-${item.productId}`}
+                      >
+                        <Minus className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7"
+                        onClick={() => handleQuickUpdate(item.productId, 1)}
+                        disabled={updateInventoryMutation.isPending}
+                        data-testid={`button-increase-${item.productId}`}
+                      >
+                        <Plus className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7"
+                        onClick={() => startEdit(item.productId, item.remainingStock)}
+                        disabled={updateInventoryMutation.isPending}
+                        data-testid={`button-edit-${item.productId}`}
+                      >
+                        <Edit2 className="h-3 w-3" />
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </Card>
 
         {/* Orders Management */}
-        <Card className="p-6 space-y-4">
-          <h2 className="text-2xl font-serif text-primary">Customer Orders & Shipping</h2>
+        <Card className="bg-card/80 border-primary/20 p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-serif text-primary">Customer Orders & Shipping</h2>
+            <div className="flex gap-2">
+              <Button
+                variant={orderFilter === 'all' ? 'default' : 'outline'}
+                onClick={() => setOrderFilter('all')}
+                size="sm"
+                data-testid="filter-all"
+              >
+                All ({orders?.length || 0})
+              </Button>
+              <Button
+                variant={orderFilter === 'pending' ? 'default' : 'outline'}
+                onClick={() => setOrderFilter('pending')}
+                size="sm"
+                data-testid="filter-pending"
+              >
+                Pending
+              </Button>
+              <Button
+                variant={orderFilter === 'completed' ? 'default' : 'outline'}
+                onClick={() => setOrderFilter('completed')}
+                size="sm"
+                data-testid="filter-completed"
+              >
+                Completed ({orders?.filter(o => o.status === 'completed').length || 0})
+              </Button>
+            </div>
+          </div>
+
           <div className="space-y-4">
-            {orders && orders.length > 0 ? (
-              orders.map((order) => (
+            {filteredOrders.length > 0 ? (
+              filteredOrders.map((order) => (
                 <div 
                   key={order.id} 
-                  className="border border-primary/20 rounded-lg p-4 space-y-3"
+                  className="border border-primary/20 rounded-lg p-4 space-y-3 hover-elevate"
                   data-testid={`card-order-${order.id}`}
                 >
                   {/* Order Header */}
@@ -316,7 +591,7 @@ export default function Admin() {
                         {formatCurrency(order.totalAmount)}
                       </p>
                       <p className="text-sm text-foreground/70">
-                        {order.quantity} coin{order.quantity > 1 ? 's' : ''}
+                        {order.quantity} item{order.quantity > 1 ? 's' : ''}
                       </p>
                     </div>
                   </div>
@@ -366,9 +641,16 @@ export default function Admin() {
                 </div>
               ))
             ) : (
-              <div className="text-center py-12">
+              <div className="text-center py-12 border border-primary/10 rounded-lg">
                 <Package className="w-12 h-12 text-foreground/30 mx-auto mb-3" />
-                <p className="text-foreground/60">No orders yet</p>
+                <p className="text-foreground/60 font-medium mb-1">
+                  {orderFilter === 'all' ? 'No orders yet' : `No ${orderFilter} orders`}
+                </p>
+                <p className="text-sm text-foreground/50">
+                  {orderFilter === 'all' 
+                    ? 'Once customers begin purchasing coins, their orders will appear here for fulfillment and tracking.'
+                    : `No orders with ${orderFilter} status.`}
+                </p>
               </div>
             )}
           </div>

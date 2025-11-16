@@ -431,6 +431,130 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin sales chart data endpoint (last 30 days)
+  app.get("/api/admin/sales-chart", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const orders = await storage.getAllOrders();
+      const completedOrders = orders.filter(o => o.status === 'completed');
+      
+      // Generate last 30 days
+      const days = 30;
+      const now = new Date();
+      const salesByDay = new Map<string, { revenue: number; units: number }>();
+      
+      // Initialize all days with zero
+      for (let i = days - 1; i >= 0; i--) {
+        const date = new Date(now);
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toISOString().split('T')[0];
+        salesByDay.set(dateStr, { revenue: 0, units: 0 });
+      }
+      
+      // Aggregate orders by day
+      completedOrders.forEach(order => {
+        const orderDate = new Date(order.createdAt).toISOString().split('T')[0];
+        if (salesByDay.has(orderDate)) {
+          const day = salesByDay.get(orderDate)!;
+          day.revenue += order.totalAmount;
+          day.units += order.quantity;
+        }
+      });
+      
+      // Convert to array format for chart
+      const chartData = Array.from(salesByDay.entries()).map(([date, data]) => ({
+        date,
+        revenue: data.revenue / 100, // Convert cents to dollars
+        units: data.units,
+      }));
+      
+      res.json(chartData);
+    } catch (error: any) {
+      console.error('Error fetching sales chart data:', error);
+      res.status(500).json({ message: "Error fetching sales chart data: " + error.message });
+    }
+  });
+
+  // Admin product sales ranking endpoint
+  app.get("/api/admin/product-sales", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      // For now, we'll aggregate based on order quantity
+      // In a real system, orders would have line items per product
+      const orders = await storage.getAllOrders();
+      const completedOrders = orders.filter(o => o.status === 'completed');
+      
+      const allInventory = await storage.getAllInventory();
+      
+      // Calculate sold units per product
+      const productSales = allInventory.map(inv => {
+        const sold = inv.initialStock - inv.remainingStock;
+        const totalUnits = allInventory.reduce((sum, i) => sum + (i.initialStock - i.remainingStock), 0);
+        const percentage = totalUnits > 0 ? ((sold / totalUnits) * 100).toFixed(1) : '0.0';
+        
+        return {
+          productId: inv.productId,
+          productName: inv.productName,
+          unitsSold: sold,
+          percentage: parseFloat(percentage),
+        };
+      });
+      
+      // Sort by units sold descending
+      productSales.sort((a, b) => b.unitsSold - a.unitsSold);
+      
+      res.json(productSales);
+    } catch (error: any) {
+      console.error('Error fetching product sales:', error);
+      res.status(500).json({ message: "Error fetching product sales: " + error.message });
+    }
+  });
+
+  // Admin all inventory endpoint
+  app.get("/api/admin/all-inventory", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const allInventory = await storage.getAllInventory();
+      const orders = await storage.getAllOrders();
+      const completedOrders = orders.filter(o => o.status === 'completed');
+      
+      // Calculate average daily sales over last 30 days for each product
+      const now = new Date();
+      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      const recentOrders = completedOrders.filter(o => new Date(o.createdAt) >= thirtyDaysAgo);
+      
+      // For simplicity, we'll estimate based on total sold / days active
+      const daysActive = Math.max(1, Math.ceil((now.getTime() - new Date(recentOrders[0]?.createdAt || now).getTime()) / (24 * 60 * 60 * 1000)));
+      
+      const enhancedInventory = allInventory.map(inv => {
+        const sold = inv.initialStock - inv.remainingStock;
+        const avgDailySales = sold / Math.max(daysActive, 1);
+        const daysOfStock = avgDailySales > 0 ? Math.ceil(inv.remainingStock / avgDailySales) : 999;
+        
+        // Determine reorder level (10% of initial stock or 50, whichever is greater)
+        const reorderLevel = Math.max(Math.ceil(inv.initialStock * 0.1), 50);
+        
+        let status = 'In Stock';
+        if (inv.remainingStock === 0) {
+          status = 'Out of Stock';
+        } else if (inv.remainingStock <= reorderLevel || daysOfStock < 14) {
+          status = 'Low Stock';
+        }
+        
+        return {
+          ...inv,
+          sold,
+          avgDailySales: parseFloat(avgDailySales.toFixed(2)),
+          daysOfStock: daysOfStock === 999 ? null : daysOfStock,
+          reorderLevel,
+          status,
+        };
+      });
+      
+      res.json(enhancedInventory);
+    } catch (error: any) {
+      console.error('Error fetching all inventory:', error);
+      res.status(500).json({ message: "Error fetching all inventory: " + error.message });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;
