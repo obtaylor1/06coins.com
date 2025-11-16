@@ -82,17 +82,19 @@ export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
 
           {/* Center: Stock Counter */}
           <div className="flex-shrink-0 order-3 sm:order-2 sm:flex-1 sm:flex sm:justify-center w-full sm:w-auto text-center">
-            <span className="text-xs sm:text-sm md:text-base font-semibold text-white flex items-baseline gap-1 justify-center flex-wrap">
-              <span className="hidden sm:inline">LIMITED EDITION:</span>
-              <span>Only</span>
-              <span 
-                className="text-base sm:text-lg md:text-xl font-bold text-primary mx-0.5 sm:mx-1"
-                data-testid="text-stock-counter"
-              >
-                {isLoading ? "..." : stock}
+            <div className="bg-black px-4 py-2 rounded-md border border-white/20">
+              <span className="text-xs sm:text-sm md:text-base font-semibold text-white flex items-baseline gap-1 justify-center flex-wrap">
+                <span className="hidden sm:inline">LIMITED EDITION:</span>
+                <span>Only</span>
+                <span 
+                  className="text-base sm:text-lg md:text-xl font-bold text-primary mx-0.5 sm:mx-1"
+                  data-testid="text-stock-counter"
+                >
+                  {isLoading ? "..." : stock}
+                </span>
+                <span>Remaining!</span>
               </span>
-              <span>Remaining!</span>
-            </span>
+            </div>
           </div>
 
           {/* Right: Shop Link + Cart Icon + CTA Button + Admin Link */}
