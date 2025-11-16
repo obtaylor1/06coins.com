@@ -179,167 +179,170 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
           </Button>
         </div>
 
-        {/* Carousel Container */}
+        {/* Side-by-Side Layout: Carousel Left, Details Right */}
         <div 
           id="jewel-carousel"
-          className="flex flex-col items-center gap-6 sm:gap-8 mt-8 sm:mt-12"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mt-8 sm:mt-12 items-start"
         >
-          {/* Carousel Navigation */}
-          <div className="flex items-center justify-center gap-4 sm:gap-6 md:gap-12 w-full">
-            {/* Left Arrow */}
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={goPrev}
-              className="rounded-full border-primary/40 shrink-0 min-h-11 min-w-11"
-              aria-label="Previous jewel"
-              data-testid="button-carousel-prev"
-            >
-              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
-            </Button>
-
-            {/* Center Coin Display */}
-            <div className="relative flex items-center justify-center">
-              {/* Glow Effect */}
-              <div className="absolute inset-0 rounded-full bg-primary/20 blur-2xl -z-10" />
-              
-              {/* Coin Container */}
-              <div 
-                className="relative h-40 w-40 xs:h-48 xs:w-48 sm:h-56 sm:w-56 lg:h-64 lg:w-64 rounded-full border-2 border-primary/60 bg-gradient-to-b from-primary/10 to-background flex items-center justify-center shadow-2xl overflow-hidden"
-                data-testid={`carousel-coin-${activeJewel.id}`}
+          {/* LEFT: Carousel Container */}
+          <div className="flex flex-col items-center gap-6 sm:gap-8">
+            {/* Carousel Navigation */}
+            <div className="flex items-center justify-center gap-4 sm:gap-6 md:gap-12 w-full">
+              {/* Left Arrow */}
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={goPrev}
+                className="rounded-full border-primary/40 shrink-0 min-h-11 min-w-11"
+                aria-label="Previous jewel"
+                data-testid="button-carousel-prev"
               >
-                <img
-                  src={activeJewel.coinImage}
-                  alt={`${activeJewel.fullName} commemorative coin`}
-                  className="w-full h-full object-cover rounded-full"
-                />
+                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+              </Button>
+
+              {/* Center Coin Display */}
+              <div className="relative flex items-center justify-center">
+                {/* Glow Effect */}
+                <div className="absolute inset-0 rounded-full bg-primary/20 blur-2xl -z-10" />
+                
+                {/* Coin Container */}
+                <div 
+                  className="relative h-40 w-40 xs:h-48 xs:w-48 sm:h-56 sm:w-56 lg:h-64 lg:w-64 rounded-full border-2 border-primary/60 bg-gradient-to-b from-primary/10 to-background flex items-center justify-center shadow-2xl overflow-hidden"
+                  data-testid={`carousel-coin-${activeJewel.id}`}
+                >
+                  <img
+                    src={activeJewel.coinImage}
+                    alt={`${activeJewel.fullName} commemorative coin`}
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                </div>
               </div>
+
+              {/* Right Arrow */}
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={goNext}
+                className="rounded-full border-primary/40 shrink-0 min-h-11 min-w-11"
+                aria-label="Next jewel"
+                data-testid="button-carousel-next"
+              >
+                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+              </Button>
             </div>
 
-            {/* Right Arrow */}
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={goNext}
-              className="rounded-full border-primary/40 shrink-0 min-h-11 min-w-11"
-              aria-label="Next jewel"
-              data-testid="button-carousel-next"
-            >
-              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
-            </Button>
+            {/* Thumbnail Navigation */}
+            <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 max-w-full px-2 sm:px-4 scrollbar-hide">
+              {JEWELS.map((jewel, index) => (
+                <button
+                  key={jewel.id}
+                  onClick={() => setActiveIndex(index)}
+                  className={`h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-full border-2 transition-all shrink-0 overflow-hidden ${
+                    index === activeIndex
+                      ? "border-primary ring-2 ring-primary/30 scale-110"
+                      : "border-foreground/20 hover:border-primary/50 opacity-60 hover:opacity-100"
+                  }`}
+                  aria-label={`View ${jewel.name} coin`}
+                  data-testid={`thumbnail-${jewel.id}`}
+                >
+                  <img
+                    src={jewel.coinImage}
+                    alt={jewel.name}
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Thumbnail Navigation */}
-          <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 max-w-full px-2 sm:px-4 scrollbar-hide">
-            {JEWELS.map((jewel, index) => (
-              <button
-                key={jewel.id}
-                onClick={() => setActiveIndex(index)}
-                className={`h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-full border-2 transition-all shrink-0 overflow-hidden ${
-                  index === activeIndex
-                    ? "border-primary ring-2 ring-primary/30 scale-110"
-                    : "border-foreground/20 hover:border-primary/50 opacity-60 hover:opacity-100"
-                }`}
-                aria-label={`View ${jewel.name} coin`}
-                data-testid={`thumbnail-${jewel.id}`}
-              >
-                <img
-                  src={jewel.coinImage}
-                  alt={jewel.name}
-                  className="w-full h-full object-cover"
-                />
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Detail & Add-to-Cart Panel */}
-        <div className="w-full max-w-xl mx-auto mt-8 sm:mt-12">
-          <div 
-            className="rounded-2xl sm:rounded-3xl border border-foreground/10 bg-card backdrop-blur px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-4 sm:gap-6"
-            data-testid="card-jewel-detail"
-          >
-            {/* Name & Title */}
-            <div className="text-center space-y-1 sm:space-y-2">
-              <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-primary">
-                {activeJewel.fullName}
-              </h3>
-              <p className="text-xs sm:text-sm text-foreground/60 font-medium">
-                {activeJewel.years}
-              </p>
-              <p className="text-sm sm:text-base text-foreground/70">
-                {activeJewel.title}
-              </p>
-            </div>
-
-            {/* Description */}
-            <p className="text-sm md:text-base text-foreground/60 text-center leading-relaxed">
-              {activeJewel.description}
-            </p>
-
-            {/* Price & Quantity */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-foreground/10">
-              <div className="text-center sm:text-left">
-                <div className="text-xs text-foreground/50 uppercase tracking-wide mb-1">
-                  Price per Coin
-                </div>
-                <div className="text-2xl sm:text-3xl font-bold text-primary">
-                  ${activeJewel.price.toFixed(2)}
-                </div>
-              </div>
-
-              {/* Quantity Selector */}
-              <div className="flex flex-col items-center gap-2">
-                <label className="text-xs text-foreground/50 uppercase tracking-wide">
-                  Quantity
-                </label>
-                <div className="inline-flex items-center rounded-full border border-foreground/20 bg-background">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={decrementQuantity}
-                    disabled={quantity <= 1}
-                    className="rounded-full min-h-11 min-w-11"
-                    aria-label="Decrease quantity"
-                    data-testid="button-decrease-quantity"
-                  >
-                    <Minus className="w-4 h-4" />
-                  </Button>
-                  <span 
-                    className="px-4 sm:px-6 text-base sm:text-lg font-semibold min-w-[2.5rem] sm:min-w-[3rem] text-center"
-                    data-testid="text-quantity"
-                  >
-                    {quantity}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={incrementQuantity}
-                    disabled={quantity >= 99}
-                    className="rounded-full min-h-11 min-w-11"
-                    aria-label="Increase quantity"
-                    data-testid="button-increase-quantity"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Add to Cart Button */}
-            <Button
-              onClick={handleAddToCart}
-              size="lg"
-              className="w-full bg-primary text-black font-bold text-sm sm:text-base rounded-full"
-              data-testid="button-add-coin-to-cart"
+          {/* RIGHT: Detail & Add-to-Cart Panel */}
+          <div className="w-full">
+            <div 
+              className="rounded-2xl sm:rounded-3xl border border-foreground/10 bg-card backdrop-blur px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-4 sm:gap-6"
+              data-testid="card-jewel-detail"
             >
-              Add Coin to Cart
-            </Button>
+              {/* Name & Title */}
+              <div className="text-center space-y-1 sm:space-y-2">
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-primary">
+                  {activeJewel.fullName}
+                </h3>
+                <p className="text-xs sm:text-sm text-foreground/60 font-medium">
+                  {activeJewel.years}
+                </p>
+                <p className="text-sm sm:text-base text-foreground/70">
+                  {activeJewel.title}
+                </p>
+              </div>
 
-            {/* Microcopy */}
-            <p className="text-xs text-foreground/40 text-center">
-              Ships in 5–7 days • Commemorative packaging included
-            </p>
+              {/* Description */}
+              <p className="text-sm md:text-base text-foreground/60 text-center leading-relaxed">
+                {activeJewel.description}
+              </p>
+
+              {/* Price & Quantity */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-foreground/10">
+                <div className="text-center sm:text-left">
+                  <div className="text-xs text-foreground/50 uppercase tracking-wide mb-1">
+                    Price per Coin
+                  </div>
+                  <div className="text-2xl sm:text-3xl font-bold text-primary">
+                    ${activeJewel.price.toFixed(2)}
+                  </div>
+                </div>
+
+                {/* Quantity Selector */}
+                <div className="flex flex-col items-center gap-2">
+                  <label className="text-xs text-foreground/50 uppercase tracking-wide">
+                    Quantity
+                  </label>
+                  <div className="inline-flex items-center rounded-full border border-foreground/20 bg-background">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={decrementQuantity}
+                      disabled={quantity <= 1}
+                      className="rounded-full min-h-11 min-w-11"
+                      aria-label="Decrease quantity"
+                      data-testid="button-decrease-quantity"
+                    >
+                      <Minus className="w-4 h-4" />
+                    </Button>
+                    <span 
+                      className="px-4 sm:px-6 text-base sm:text-lg font-semibold min-w-[2.5rem] sm:min-w-[3rem] text-center"
+                      data-testid="text-quantity"
+                    >
+                      {quantity}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={incrementQuantity}
+                      disabled={quantity >= 99}
+                      className="rounded-full min-h-11 min-w-11"
+                      aria-label="Increase quantity"
+                      data-testid="button-increase-quantity"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Add to Cart Button */}
+              <Button
+                onClick={handleAddToCart}
+                size="lg"
+                className="w-full bg-primary text-black font-bold text-sm sm:text-base rounded-full"
+                data-testid="button-add-coin-to-cart"
+              >
+                Add Coin to Cart
+              </Button>
+
+              {/* Microcopy */}
+              <p className="text-xs text-foreground/40 text-center">
+                Ships in 5–7 days • Commemorative packaging included
+              </p>
+            </div>
           </div>
         </div>
 
