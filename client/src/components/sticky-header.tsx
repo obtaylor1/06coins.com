@@ -59,19 +59,21 @@ export function StickyHeader({ onCtaClick }: StickyHeaderProps) {
     >
       <div className="py-2 px-3 sm:py-3 sm:px-4 md:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center sm:justify-between gap-2 sm:gap-3 md:gap-4">
-          {/* Left: Logo + Title */}
-          <div className="flex items-center gap-2 sm:gap-3 w-auto">
-            <img 
-              src={shieldImg} 
-              alt="Alpha Phi Alpha Shield" 
-              className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 object-contain shrink-0" 
-              data-testid="img-shield-logo" 
-            />
-            <span className="text-xs sm:text-sm md:text-base font-semibold text-white">
-              <span className="hidden sm:inline">Alpha Phi Alpha 120th Anniversary</span>
-              <span className="sm:hidden">AΦA 120th</span>
-            </span>
-          </div>
+          {/* Left: Logo + Title (clickable, links to home) */}
+          <Link href="/">
+            <div className="flex items-center gap-2 sm:gap-3 w-auto cursor-pointer hover:opacity-80 transition-opacity" data-testid="link-home">
+              <img 
+                src={shieldImg} 
+                alt="Alpha Phi Alpha Shield" 
+                className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 object-contain shrink-0" 
+                data-testid="img-shield-logo" 
+              />
+              <span className="text-xs sm:text-sm md:text-base font-semibold text-white">
+                <span className="hidden sm:inline">Alpha Phi Alpha 120th Anniversary</span>
+                <span className="sm:hidden">AΦA 120th</span>
+              </span>
+            </div>
+          </Link>
 
           {/* Center: Stock Counter */}
           <div className="flex-shrink-0 order-3 sm:order-2 sm:flex-1 sm:flex sm:justify-center w-full sm:w-auto text-center">
