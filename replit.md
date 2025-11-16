@@ -90,6 +90,20 @@ A premium e-commerce website for the Alpha Phi Alpha Fraternity's 120th Annivers
   - Complete Stripe checkout flow (creates orders, decrements inventory)
   - Firebase Firestore integration ready (awaiting credentials)
   - SEO optimization with meta tags
+- ✅ **Complete Cart System** (Added Nov 16, 2025)
+  - CartContext with localStorage persistence across sessions
+  - Add/update/remove/empty cart operations
+  - Mini-cart icon in sticky header with live item count badge
+  - Dedicated `/shop-coins` page featuring:
+    - 120-Year Anniversary Coin (4-inch diameter, $50.06)
+    - Jewel Set bundle (all 7 founders, $120.06 with savings message)
+    - Individual Jewel Coins carousel (3-inch diameter, $19.06 each)
+  - Sticky cart summary on shop page showing items, subtotal, and total
+  - "Build My Complete Collection" button (adds all products: 1 main + 1 set + 7 individuals)
+  - Full checkout integration displaying cart line items
+  - Cart empties only after successful order submission
+  - Backward-compatible with query parameter checkout flow
+  - Responsive design with 44px minimum touch targets (WCAG compliance)
 
 ### Next Features
 - Waitlist email collection system
@@ -147,11 +161,17 @@ client/
 │   │   ├── story-section.tsx
 │   │   ├── product-showcase.tsx
 │   │   ├── why-own-section.tsx
-│   │   └── purchase-module.tsx
+│   │   ├── purchase-module.tsx
+│   │   └── cart-summary.tsx
+│   ├── contexts/
+│   │   └── cart-context.tsx
 │   ├── hooks/
 │   │   └── useAuth.ts
+│   ├── lib/
+│   │   └── products.ts
 │   ├── pages/
 │   │   ├── home.tsx
+│   │   ├── shop-coins.tsx
 │   │   ├── admin.tsx
 │   │   ├── checkout.tsx
 │   │   └── not-found.tsx
