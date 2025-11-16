@@ -8,7 +8,7 @@ import { useCart } from "@/contexts/cart-context";
 import { useToast } from "@/hooks/use-toast";
 import { CartSummary } from "@/components/cart-summary";
 import { StickyHeader } from "@/components/sticky-header";
-import coinFrontImg from "@assets/apa coin front_1762505793054.png";
+import heroBackgroundImg from "@assets/0_2_1763332961118.jpg";
 
 export default function ShopCoins() {
   const { addItem } = useCart();
@@ -87,14 +87,14 @@ export default function ShopCoins() {
       
       {/* Hero Section */}
       <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden border-b border-primary/20">
-        {/* Background with coin image and dark overlay */}
-        <div className="absolute inset-0 opacity-20">
+        {/* Background with luxurious gold coin image and dark overlay */}
+        <div className="absolute inset-0">
           <img 
-            src={coinFrontImg} 
+            src={heroBackgroundImg} 
             alt="" 
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/90" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
         </div>
 
         {/* Decorative elements */}
