@@ -98,7 +98,7 @@ export function HeroSection({ onCtaClick }: HeroSectionProps) {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="text-xs sm:text-sm md:text-base font-bold border-primary text-primary hover:bg-primary/10 w-full sm:w-auto"
+                    className="text-xs sm:text-sm md:text-base font-bold border-primary text-primary bg-white hover:bg-primary/10 w-full sm:w-auto"
                     data-testid="button-shop-all-coins"
                   >
                     <Package className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2" />
@@ -109,7 +109,7 @@ export function HeroSection({ onCtaClick }: HeroSectionProps) {
                   onClick={onCtaClick}
                   size="lg"
                   variant="outline"
-                  className="text-xs sm:text-sm md:text-base font-bold border-primary text-primary hover:bg-primary/10"
+                  className="text-xs sm:text-sm md:text-base font-bold border-primary text-primary bg-white hover:bg-primary/10"
                   data-testid="button-hero-cta-secondary"
                 >
                   VIEW DETAILS
