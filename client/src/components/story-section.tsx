@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { User, Users, ShieldCheck } from "lucide-react";
+import storyBgImg from "@assets/0_0-3_1763339431485.jpg";
 
 interface StorySectionProps {
   onCtaClick?: () => void;
@@ -29,8 +30,19 @@ export function StorySection({ onCtaClick }: StorySectionProps) {
   ];
 
   return (
-    <section className="py-12 sm:py-16 md:py-20 lg:py-32 px-4 sm:px-6 md:px-12 bg-gradient-to-b from-background to-background/95">
-      <div className="max-w-7xl mx-auto space-y-10 sm:space-y-12 md:space-y-16">
+    <section 
+      className="relative py-12 sm:py-16 md:py-20 lg:py-32 px-4 sm:px-6 md:px-12 overflow-hidden"
+      style={{
+        backgroundImage: `url(${storyBgImg})`,
+        backgroundPosition: 'center',
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      {/* Dark overlay for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/70 to-black/80 pointer-events-none" />
+      
+      <div className="relative z-10 max-w-7xl mx-auto space-y-10 sm:space-y-12 md:space-y-16">
         {/* Section Header */}
         <div className="text-center space-y-4 sm:space-y-6 px-2">
           <h2 
