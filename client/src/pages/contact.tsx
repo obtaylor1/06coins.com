@@ -9,9 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Mail, Phone, Building2, Send, CheckCircle2, AlertCircle } from "lucide-react";
+import { Mail, Building2, Send, CheckCircle2, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, ApiError } from "@/lib/queryClient";
 import separatorBarImg from "@assets/0_0_640_N_1763339269798.png";
 
 interface FormData {
@@ -47,6 +47,7 @@ export default function Contact() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<{ title: string; message: string } | null>(null);
   const formStartTime = useRef<number>(Date.now());
 
   useEffect(() => {
@@ -84,6 +85,10 @@ export default function Contact() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Clear previous submit error
+    setSubmitError(null);
+    setSubmitSuccess(false);
+    
     if (!validateForm()) {
       toast({
         variant: "destructive",
@@ -99,23 +104,17 @@ export default function Contact() {
       // Calculate time elapsed for spam protection
       const timeElapsed = Date.now() - formStartTime.current;
       
-      await apiRequest("/api/contact", {
-        method: "POST",
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          chapter: formData.chapter,
-          subject: formData.subject,
-          message: formData.message,
-          inquiryType: formData.inquiryType,
-          honeypot: formData.honeypot,
-          timestamp: formStartTime.current,
-          timeElapsed: timeElapsed,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
+      await apiRequest("POST", "/api/contact", {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        chapter: formData.chapter,
+        subject: formData.subject,
+        message: formData.message,
+        inquiryType: formData.inquiryType,
+        honeypot: formData.honeypot,
+        timestamp: formStartTime.current,
+        timeElapsed: timeElapsed,
       });
 
       setSubmitSuccess(true);
@@ -138,13 +137,56 @@ export default function Contact() {
 
       // Scroll to top to show success message
       window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Contact form error:", error);
+      
+      // Extract structured error data from ApiError
+      let errorTitle = "Failed to send message";
+      let errorDescription = "There was an error sending your message. Please try again or email us directly.";
+      
+      if (error instanceof ApiError) {
+        // Structured ApiError with status and data
+        const { status, data } = error;
+        
+        // Extract message from data (handle strings, objects, and arrays)
+        if (typeof data === 'string') {
+          errorDescription = data;
+        } else if (data?.message) {
+          errorDescription = data.message;
+        } else if (data && typeof data === 'object') {
+          // Handle structured validation errors or other objects
+          if (Array.isArray(data)) {
+            errorDescription = data.join(', ');
+          } else {
+            // Try to extract meaningful error information
+            errorDescription = JSON.stringify(data);
+          }
+        }
+        
+        // Set contextual title based on status code
+        if (status === 429) {
+          errorTitle = "Please slow down";
+        } else if (status === 400) {
+          errorTitle = "Validation error";
+        } else if (status >= 500) {
+          errorTitle = "Server error";
+        }
+      } else if (error?.message) {
+        // Fallback to error message for non-ApiError errors
+        errorDescription = error.message;
+      }
+      
+      // Show error in both toast and inline alert for accessibility
+      setSubmitError({ title: errorTitle, message: errorDescription });
+      
       toast({
         variant: "destructive",
-        title: "Failed to send message",
-        description: "There was an error sending your message. Please try again or email us directly.",
+        title: errorTitle,
+        description: errorDescription,
       });
+      
+      // Scroll to top to show error alert
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } finally {
       setIsSubmitting(false);
     }
@@ -203,9 +245,19 @@ export default function Contact() {
           </Alert>
         )}
 
-        {/* Error Alert */}
-        {Object.keys(errors).length > 0 && (
-          <Alert variant="destructive" className="mb-8" data-testid="alert-error">
+        {/* Submit Error Alert */}
+        {submitError && (
+          <Alert variant="destructive" className="mb-8" data-testid="alert-submit-error">
+            <AlertCircle className="h-5 w-5" />
+            <AlertDescription className="ml-2">
+              <strong>{submitError.title}:</strong> {submitError.message}
+            </AlertDescription>
+          </Alert>
+        )}
+        
+        {/* Validation Error Alert */}
+        {Object.keys(errors).length > 0 && !submitError && (
+          <Alert variant="destructive" className="mb-8" data-testid="alert-validation-error">
             <AlertCircle className="h-5 w-5" />
             <AlertDescription className="ml-2">
               Please correct the highlighted fields below.
@@ -252,26 +304,6 @@ export default function Contact() {
                     >
                       orders@06coins.com
                     </a>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Phone className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground mb-1">Phone</h3>
-                    <p className="text-muted-foreground mb-1">Customer service:</p>
-                    <a 
-                      href="tel:+18005551906" 
-                      className="text-primary hover:text-primary/80 transition-colors font-medium"
-                      data-testid="link-phone"
-                    >
-                      (800) 555-1906
-                    </a>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Mon - Fri, 9:00 AM - 5:00 PM EST
-                    </p>
                   </div>
                 </div>
 
