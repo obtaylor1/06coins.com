@@ -1,4 +1,3 @@
-import { User, Gift, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import coinFrontImg from "@assets/apa coin front_1762505793054.png";
 import coinBackImg from "@assets/apa coin back_1762505793054.png";
@@ -11,7 +10,6 @@ interface WhyOwnSectionProps {
 export function WhyOwnSection({ onCtaClick }: WhyOwnSectionProps) {
   const reasons = [
     {
-      icon: User,
       label: "For the Brothers",
       title: "The Brother",
       subtitle: "Wear Your Pride",
@@ -19,7 +17,6 @@ export function WhyOwnSection({ onCtaClick }: WhyOwnSectionProps) {
       bgImage: coinFrontImg,
     },
     {
-      icon: Gift,
       label: "Perfect Gift",
       title: "The Mentor",
       subtitle: "Gift the Legacy",
@@ -27,7 +24,6 @@ export function WhyOwnSection({ onCtaClick }: WhyOwnSectionProps) {
       bgImage: coinBackImg,
     },
     {
-      icon: Trophy,
       label: "Limited Forever",
       title: "The Collector",
       subtitle: "Own Scarcity",
@@ -60,7 +56,6 @@ export function WhyOwnSection({ onCtaClick }: WhyOwnSectionProps) {
 
         <div className="grid md:grid-cols-3 gap-8 md:gap-10 lg:gap-12">
           {reasons.map((reason, index) => {
-            const Icon = reason.icon;
             return (
               <div 
                 key={index} 
@@ -74,9 +69,13 @@ export function WhyOwnSection({ onCtaClick }: WhyOwnSectionProps) {
                 />
                 
                 <div className="relative p-8 md:p-10 space-y-6 text-center z-10">
-                  {/* Icon */}
-                  <div className="mx-auto w-20 h-20 rounded-full border-2 border-primary/30 flex items-center justify-center bg-primary/10">
-                    <Icon className="w-10 h-10 text-primary" />
+                  {/* Coin Image */}
+                  <div className="mx-auto w-20 h-20 rounded-full border-2 border-primary/30 flex items-center justify-center bg-background/80 overflow-hidden">
+                    <img 
+                      src={coinBackImg} 
+                      alt="Alpha Phi Alpha Coin" 
+                      className="w-full h-full object-cover"
+                    />
                   </div>
 
                   {/* Label */}
