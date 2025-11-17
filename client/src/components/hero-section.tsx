@@ -52,7 +52,7 @@ export function HeroSection({ onCtaClick }: HeroSectionProps) {
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary font-serif leading-tight"
               data-testid="text-hero-title"
             >
-              120 Years Forged in Gold: The Official Commemorative Coin
+              120 Years Forged in Gold: The Exclusive Commemorative Coin
             </h1>
             
             {/* Motto with left border */}
