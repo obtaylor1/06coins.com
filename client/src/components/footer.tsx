@@ -64,11 +64,11 @@ export function Footer() {
               <div className="space-y-2 text-sm">
                 <p className="text-foreground/70">For inquiries about your order:</p>
                 <a 
-                  href="mailto:orders@apa120coin.com" 
+                  href="mailto:orders@06coins.com" 
                   className="text-primary hover:text-primary/80 transition-colors"
                   data-testid="link-contact-email"
                 >
-                  orders@apa120coin.com
+                  orders@06coins.com
                 </a>
               </div>
             </div>
