@@ -241,7 +241,7 @@ export function PurchaseModule() {
             <div className="grid md:grid-cols-2 gap-x-8 gap-y-3">
               <div className="flex items-start gap-3 text-foreground/70">
                 <span className="text-primary mt-0.5">✓</span>
-                <span>Official 120th Anniversary Commemorative Coin (4" diameter)</span>
+                <span>120th Anniversary Commemorative Coin (4" diameter)</span>
               </div>
               <div className="flex items-start gap-3 text-foreground/70">
                 <span className="text-primary mt-0.5">✓</span>
