@@ -31,7 +31,7 @@ export function orderConfirmation(order: Order): string {
   const firstName = getFirstName(order.customerName);
   const total = formatCurrency(order.totalAmount);
   
-  return `Thank you ${firstName}! Your Alpha Phi Alpha coin order (${total}) is confirmed. Order #${order.id.slice(0, 8)}. We'll text you when it ships!`;
+  return `Thank you ${firstName}! Your Alpha Phi Alpha coin order (${total}) is confirmed. Order #${order.id.slice(0, 8)}. We'll text you when it ships! Reply STOP to opt out.`;
 }
 
 // 2. Shipping Confirmation SMS (sent when order ships)
@@ -42,10 +42,10 @@ export function shippingConfirmation(order: Order): string {
   const products = getProductSummary(order);
   
   if (tracking === 'pending') {
-    return `${firstName}, your ${products} has shipped via ${carrier}! Tracking info coming soon. Order #${order.id.slice(0, 8)}`;
+    return `${firstName}, your ${products} has shipped via ${carrier}! Tracking info coming soon. Order #${order.id.slice(0, 8)}. Reply STOP to opt out.`;
   }
   
-  return `${firstName}, your ${products} has shipped via ${carrier}! Track: ${tracking}. Order #${order.id.slice(0, 8)}`;
+  return `${firstName}, your ${products} has shipped via ${carrier}! Track: ${tracking}. Order #${order.id.slice(0, 8)}. Reply STOP to opt out.`;
 }
 
 // 3. Delivery Confirmation SMS (sent when order delivered)
@@ -60,7 +60,7 @@ export function deliveryConfirmation(order: Order): string {
 export function orderProblem(order: Order, issue: string = 'issue'): string {
   const firstName = getFirstName(order.customerName);
   
-  return `${firstName}, we have an ${issue} with order #${order.id.slice(0, 8)}. Please check your email or contact us at support@06coins.com`;
+  return `${firstName}, we have an ${issue} with order #${order.id.slice(0, 8)}. Please check your email or contact us at support@06coins.com. Reply STOP to opt out.`;
 }
 
 // 5. Thank You Story SMS (sent 1-2 days after delivery)
@@ -83,7 +83,7 @@ export function adminNewOrderAlert(order: Order): string {
   const products = getProductSummary(order);
   const customerName = order.customerName || 'Unknown';
   
-  return `🔔 NEW ORDER: ${customerName} - ${products} (${total}). Order #${order.id.slice(0, 8)}`;
+  return `NEW ORDER: ${customerName} - ${products} (${total}). Order #${order.id.slice(0, 8)}`;
 }
 
 // 8. Admin High Value Alert (sent for orders over threshold)
@@ -91,14 +91,14 @@ export function adminHighValueAlert(order: Order, threshold: number): string {
   const total = formatCurrency(order.totalAmount);
   const customerName = order.customerName || 'Unknown';
   
-  return `💰 HIGH VALUE: ${customerName} - ${total} (>${formatCurrency(threshold)}). Order #${order.id.slice(0, 8)}`;
+  return `HIGH VALUE: ${customerName} - ${total} (>${formatCurrency(threshold)}). Order #${order.id.slice(0, 8)}`;
 }
 
 // 9. Admin Problem Alert (sent when there's a delivery issue)
 export function adminProblemAlert(order: Order, problem: string): string {
   const customerName = order.customerName || 'Unknown';
   
-  return `⚠️ ISSUE: ${problem} - Order #${order.id.slice(0, 8)} (${customerName})`;
+  return `ISSUE: ${problem} - Order #${order.id.slice(0, 8)} (${customerName})`;
 }
 
 // Marketing SMS template (for future campaigns)

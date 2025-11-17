@@ -11,7 +11,7 @@ const SMS_CONFIG = {
   adminNumber: process.env.SMS_ADMIN_NUMBER,
   adminAlertsEnabled: process.env.SMS_ADMIN_ALERTS_ENABLED === 'true',
   quietHoursStart: process.env.SMS_QUIET_HOURS_START || '21:00',
-  quietHoursEnd: process.env.SMS_QUIET_HOURS_END || '08:00',
+  quietHoursEnd: process.env.SMS_QUIET_HOURS_END || '09:00',
   maxSmsPerOrderPerDay: parseInt(process.env.SMS_MAX_PER_ORDER_PER_DAY || '3'),
 };
 

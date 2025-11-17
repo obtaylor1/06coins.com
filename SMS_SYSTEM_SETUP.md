@@ -62,7 +62,7 @@ SMS_ADMIN_HIGH_VALUE_THRESHOLD=30000  # $300
 ```bash
 # Quiet hours (24-hour format, no marketing SMS during these hours)
 SMS_QUIET_HOURS_START=21:00  # 9 PM
-SMS_QUIET_HOURS_END=08:00    # 8 AM
+SMS_QUIET_HOURS_END=09:00    # 9 AM
 
 # Rate limiting (max SMS per order per day)
 SMS_MAX_PER_ORDER_PER_DAY=3
