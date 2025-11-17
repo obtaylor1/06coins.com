@@ -59,6 +59,9 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
           backgroundRepeat: 'no-repeat',
         }}
       >
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/70 pointer-events-none" />
+        
         <div className="relative z-10 max-w-7xl mx-auto space-y-12 sm:space-y-16 md:space-y-20 lg:space-y-28">
 
         {/* The Scale and Significance */}
