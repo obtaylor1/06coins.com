@@ -121,48 +121,48 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
 
             {/* Title */}
             <div className="text-center space-y-2">
-              <h3 className="text-xl md:text-2xl font-serif font-bold text-foreground">
+              <h3 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
                 The Front (Obverse): <span className="text-primary">Foundations & Global Impact</span>
               </h3>
             </div>
             
             {/* Details */}
-            <div className="space-y-4">
-              <div className="flex gap-3">
-                <Star className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+            <div className="space-y-5">
+              <div className="flex gap-4">
+                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <h4 className="text-base font-serif font-bold text-primary mb-1">The Seven Jewels</h4>
-                  <p className="text-sm text-foreground/70 leading-relaxed">
+                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">The Seven Jewels</h4>
+                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
                     Seven distinct stars are arranged in formation to pay direct homage to our seven visionary founders—The Jewels—who dared to lay the foundation at Cornell.
                   </p>
                 </div>
               </div>
 
-              <div className="flex gap-3">
-                <Star className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+              <div className="flex gap-4">
+                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <h4 className="text-base font-serif font-bold text-primary mb-1">The Founding Seal</h4>
-                  <p className="text-sm text-foreground/70 leading-relaxed">
+                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">The Founding Seal</h4>
+                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
                     The official Greek-letter seal is centrally placed, a constant reminder of our intercollegiate origins.
                   </p>
                 </div>
               </div>
 
-              <div className="flex gap-3">
-                <Star className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+              <div className="flex gap-4">
+                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <h4 className="text-base font-serif font-bold text-primary mb-1">The Motto</h4>
-                  <p className="text-sm text-foreground/70 leading-relaxed">
+                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">The Motto</h4>
+                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
                     The complete mantra, <em className="text-primary">"First of All, Servants of All, We Shall Transcend All,"</em> is elegantly inscribed along the perimeter, serving as the call to action for every brother who views it.
                   </p>
                 </div>
               </div>
 
-              <div className="flex gap-3">
-                <Star className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+              <div className="flex gap-4">
+                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <h4 className="text-base font-serif font-bold text-primary mb-1">Precision Engraving</h4>
-                  <p className="text-sm text-foreground/70 leading-relaxed">
+                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">Precision Engraving</h4>
+                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
                     The entire surface features micro-engraving texture, designed to catch and reflect light, giving the Old Gold finish a vibrant, enduring luster.
                   </p>
                 </div>
@@ -184,48 +184,48 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
 
             {/* Title */}
             <div className="text-center space-y-2">
-              <h3 className="text-xl md:text-2xl font-serif font-bold text-foreground">
+              <h3 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
                 The Back (Reverse): <span className="text-primary">Founders & Future Promise</span>
               </h3>
             </div>
             
             {/* Details */}
-            <div className="space-y-4">
-              <div className="flex gap-3">
-                <Star className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+            <div className="space-y-5">
+              <div className="flex gap-4">
+                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <h4 className="text-base font-serif font-bold text-primary mb-1">The Sphinx</h4>
-                  <p className="text-sm text-foreground/70 leading-relaxed">
+                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">The Sphinx</h4>
+                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
                     The iconic Great Sphinx of Giza, the cornerstone of our sacred bond, stands prominently in high relief, watching over the inscription.
                   </p>
                 </div>
               </div>
 
-              <div className="flex gap-3">
-                <Star className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+              <div className="flex gap-4">
+                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <h4 className="text-base font-serif font-bold text-primary mb-1">The Alpha Shield</h4>
-                  <p className="text-sm text-foreground/70 leading-relaxed">
+                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">The Alpha Shield</h4>
+                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
                     Subtly integrated in the background, the official Shield represents the Manly Deeds, Scholarship, and Love for All Mankind upon which we are built.
                   </p>
                 </div>
               </div>
 
-              <div className="flex gap-3">
-                <Star className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+              <div className="flex gap-4">
+                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <h4 className="text-base font-serif font-bold text-primary mb-1">Global Reach</h4>
-                  <p className="text-sm text-foreground/70 leading-relaxed">
+                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">Global Reach</h4>
+                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
                     Encircling the design are stylized lines hinting at a global map, recognizing Alpha Phi Alpha's expansion across the U.S., the Caribbean, Africa, and beyond since its founding.
                   </p>
                 </div>
               </div>
 
-              <div className="flex gap-3">
-                <Star className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+              <div className="flex gap-4">
+                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <h4 className="text-base font-serif font-bold text-primary mb-1">Inscriptions</h4>
-                  <p className="text-sm text-foreground/70 leading-relaxed">
+                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">Inscriptions</h4>
+                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
                     Clearly marked are the founding year <strong className="text-primary">1906</strong> and the commemorative year <strong className="text-primary">2026</strong>.
                   </p>
                 </div>
