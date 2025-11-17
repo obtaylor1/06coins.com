@@ -76,18 +76,6 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Copyright Section */}
-      <div className="border-b border-primary/10">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 py-8 text-center">
-          <p className="text-sm text-foreground/60">
-            © 2026 Alpha Phi Alpha Fraternity, Inc. All rights reserved.
-          </p>
-          <p className="text-sm text-foreground/50 mt-1">
-            120th Anniversary Commemorative Coin
-          </p>
-        </div>
-      </div>
-
       {/* Detailed Footer Section */}
       <div className="border-b border-primary/10 bg-background/50">
         <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-20">
@@ -117,57 +105,14 @@ export function Footer() {
               </a>
             </div>
 
-            {/* Coin & Order Support */}
-            <div className="space-y-6">
-              <h4 className="text-lg font-serif font-bold text-foreground">
-                Coin & Order Support
-              </h4>
-              
-              <div className="space-y-4">
-                <div>
-                  <h5 className="text-sm font-semibold text-foreground mb-2">Email Support</h5>
-                  <p className="text-sm text-foreground/70 mb-1">
-                    For order inquiries, shipping updates, and damage claims:
-                  </p>
-                  <a 
-                    href="mailto:support@06coins.com" 
-                    className="text-sm text-primary hover:text-primary/80 transition-colors"
-                  >
-                    support@06coins.com
-                  </a>
-                </div>
-
-                <div>
-                  <h5 className="text-sm font-semibold text-foreground mb-2">Helpful Resources</h5>
-                  <ul className="space-y-1 text-sm">
-                    <li>
-                      <Link href="/faq" className="text-foreground/70 hover:text-primary transition-colors">
-                        FAQ: Shipping, Returns, and Security
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/privacy" className="text-foreground/70 hover:text-primary transition-colors">
-                        Secure Payment & Privacy Policy
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h5 className="text-sm font-semibold text-foreground mb-2">Secured Payment Processing</h5>
-                  <div className="flex items-center gap-3">
-                    <div className="bg-white px-3 py-2 rounded border border-foreground/10">
-                      <span className="text-xs font-bold text-black">VISA</span>
-                    </div>
-                    <div className="bg-primary px-3 py-2 rounded">
-                      <span className="text-xs font-bold text-black">stripe</span>
-                    </div>
-                    <div className="bg-white px-3 py-2 rounded border border-foreground/10">
-                      <span className="text-xs font-bold text-black">SSL</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {/* Copyright */}
+            <div className="space-y-2 text-center md:text-left">
+              <p className="text-sm text-foreground/60">
+                © 2026 Alpha Phi Alpha Fraternity, Inc. All rights reserved.
+              </p>
+              <p className="text-sm text-foreground/50">
+                120th Anniversary Commemorative Coin
+              </p>
             </div>
           </div>
         </div>
