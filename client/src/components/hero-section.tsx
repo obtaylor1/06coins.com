@@ -4,7 +4,7 @@ import { ShoppingCart, Lock, ShieldCheck, Package } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import coinFrontImg from "@assets/apa coin front_1762505793054.png";
-import heroBackgroundImg from "@assets/0_0_1763334659938.jpg";
+import heroBackgroundImg from "@assets/0_0-1_1763338140136.jpg";
 
 interface HeroSectionProps {
   onCtaClick: () => void;
