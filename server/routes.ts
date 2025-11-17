@@ -176,6 +176,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      // Prepare cart items for storage
+      const cartItemsForStorage = cartItems && Array.isArray(cartItems) && cartItems.length > 0
+        ? cartItems.map((item: any) => {
+            const catalogProduct = PRODUCT_CATALOG.get(item.id);
+            return {
+              id: item.id,
+              name: catalogProduct?.name || item.name,
+              quantity: item.quantity,
+              price: catalogProduct?.price ? Math.round(catalogProduct.price * 100) : 0, // Store in cents
+            };
+          })
+        : [{
+            id: 'coin120year',
+            name: PRODUCT_CATALOG.get('coin120year')?.name || '120-Year Anniversary Coin',
+            quantity: quantity,
+            price: Math.round((PRODUCT_CATALOG.get('coin120year')?.price || 50.06) * 100),
+          }];
+
       // Execute entire decrement + order creation in a database transaction
       // Ensures all-or-nothing: if any decrement fails, all are rolled back
       try {
@@ -185,12 +203,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
             stripePaymentIntentId: paymentIntentId,
             quantity: totalQuantity,
             totalAmount: paymentIntent.amount,
-            status: "completed",
+            status: "processing", // Order needs to be shipped
             customerName: paymentIntent.shipping?.name || 'Unknown Customer',
             customerEmail: paymentIntent.receipt_email || null,
             shippingAddress: paymentIntent.shipping?.address || null,
+            cartItems: cartItemsForStorage as any,
+            emailConfirmationSent: 0, // Will be set to 1 after email sent
           }
         );
+
+        // Get the created order to send confirmation email
+        const order = await storage.getOrderByPaymentIntent(paymentIntentId);
+        
+        // Send order confirmation email (async, don't block response)
+        if (order && order.customerEmail) {
+          // Import dynamically to avoid blocking
+          import('./services/emailService.js').then(({ sendOrderConfirmationEmail }) => {
+            sendOrderConfirmationEmail(order).catch((error: any) => {
+              console.error('[EMAIL] Failed to send order confirmation:', error);
+            });
+          }).catch((error: any) => {
+            console.error('[EMAIL] Failed to import email service:', error);
+          });
+        }
 
         // Sync main coin to Firestore (for header counter)
         const mainCoinUpdate = result.updatedInventories.find(inv => inv.productId === 'coin120year');
@@ -555,6 +590,80 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin endpoint to mark order as shipped (sends shipping confirmation email)
+  app.patch("/api/admin/orders/:id/ship", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { trackingNumber, carrier } = req.body;
+      const orderId = req.params.id;
+
+      if (!trackingNumber || !carrier) {
+        return res.status(400).json({ message: "Tracking number and carrier are required" });
+      }
+
+      // Update order with shipping info
+      const updatedOrder = await storage.updateOrder(orderId, {
+        status: "shipped",
+        trackingNumber,
+        carrier,
+        shippedAt: new Date(),
+      });
+
+      if (!updatedOrder) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      // Send shipping confirmation email (async, don't block response)
+      if (updatedOrder.customerEmail) {
+        import('./services/emailService.js').then(({ sendShippingConfirmationEmail }) => {
+          sendShippingConfirmationEmail(updatedOrder).catch((error: any) => {
+            console.error('[EMAIL] Failed to send shipping confirmation:', error);
+          });
+        }).catch((error: any) => {
+          console.error('[EMAIL] Failed to import email service:', error);
+        });
+      }
+
+      res.json(updatedOrder);
+    } catch (error: any) {
+      console.error('Error marking order as shipped:', error);
+      res.status(500).json({ message: "Error marking order as shipped: " + error.message });
+    }
+  });
+
+  // Admin endpoint to mark order as delivered (sends delivery confirmation email)
+  app.patch("/api/admin/orders/:id/deliver", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const orderId = req.params.id;
+
+      // Update order status to delivered
+      const updatedOrder = await storage.updateOrder(orderId, {
+        status: "delivered",
+        deliveredAt: new Date(),
+      });
+
+      if (!updatedOrder) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      // Send delivery confirmation email (async, don't block response)
+      // This will also schedule thank you and review request emails
+      if (updatedOrder.customerEmail) {
+        import('./services/emailService.js').then(({ sendDeliveryConfirmationEmail }) => {
+          sendDeliveryConfirmationEmail(updatedOrder).catch((error: any) => {
+            console.error('[EMAIL] Failed to send delivery confirmation:', error);
+          });
+        }).catch((error: any) => {
+          console.error('[EMAIL] Failed to import email service:', error);
+        });
+      }
+
+      res.json(updatedOrder);
+    } catch (error: any) {
+      console.error('Error marking order as delivered:', error);
+      res.status(500).json({ message: "Error marking order as delivered: " + error.message });
+    }
+  });
+
   // Contact form submission endpoint
   // POST /api/contact - Handle contact form submissions with spam protection and validation
   app.post("/api/contact", async (req, res) => {
@@ -609,9 +718,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Log the contact form submission (in production, this would send an email)
+      // Prepare contact form data
       const contactData = {
-        timestamp: new Date().toISOString(),
         name: name.trim(),
         email: email.trim(),
         phone: phone?.trim() || '',
@@ -633,40 +741,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('Message:', contactData.message);
       console.log('='.repeat(60));
 
-      // TODO: In production, implement email sending using nodemailer
-      // Example configuration needed in environment variables:
-      // - CONTACT_TO_EMAIL: Email address to receive contact form submissions
-      // - SMTP_HOST: SMTP server host
-      // - SMTP_PORT: SMTP server port
-      // - SMTP_USER: SMTP username
-      // - SMTP_PASS: SMTP password
-      //
-      // Example nodemailer implementation:
-      // const transporter = nodemailer.createTransport({
-      //   host: process.env.SMTP_HOST,
-      //   port: parseInt(process.env.SMTP_PORT || '587'),
-      //   secure: false,
-      //   auth: {
-      //     user: process.env.SMTP_USER,
-      //     pass: process.env.SMTP_PASS,
-      //   },
-      // });
-      //
-      // await transporter.sendMail({
-      //   from: process.env.SMTP_USER,
-      //   to: process.env.CONTACT_TO_EMAIL,
-      //   subject: `Contact Form: ${contactData.subject}`,
-      //   html: `
-      //     <h2>New Contact Form Submission</h2>
-      //     <p><strong>From:</strong> ${contactData.name} (${contactData.email})</p>
-      //     <p><strong>Phone:</strong> ${contactData.phone || 'Not provided'}</p>
-      //     <p><strong>Chapter/Org:</strong> ${contactData.chapter || 'Not provided'}</p>
-      //     <p><strong>Inquiry Type:</strong> ${contactData.inquiryType}</p>
-      //     <p><strong>Subject:</strong> ${contactData.subject}</p>
-      //     <p><strong>Message:</strong></p>
-      //     <p>${contactData.message.replace(/\n/g, '<br>')}</p>
-      //   `,
-      // });
+      // Send emails (async, don't block response)
+      import('./services/emailService.js').then(({ sendInquiryReceivedEmail, sendInternalContactNotification }) => {
+        // Send auto-reply to customer
+        sendInquiryReceivedEmail(contactData).catch((error: any) => {
+          console.error('[EMAIL] Failed to send contact auto-reply:', error);
+        });
+        
+        // Send internal notification to admin
+        sendInternalContactNotification(contactData).catch((error: any) => {
+          console.error('[EMAIL] Failed to send internal contact notification:', error);
+        });
+      }).catch((error: any) => {
+        console.error('[EMAIL] Failed to import email service:', error);
+      });
 
       res.json({ 
         success: true, 
@@ -678,6 +766,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         success: false, 
         message: "An error occurred while processing your message. Please try again later." 
       });
+    }
+  });
+
+  // Scheduled email processing endpoint (called periodically via cron)
+  // This endpoint processes thank you and review request emails that are due
+  app.post("/api/admin/process-scheduled-emails", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      console.log('[EMAIL] Processing scheduled emails...');
+      
+      const { processScheduledEmails } = await import('./services/emailService.js');
+      await processScheduledEmails();
+      
+      res.json({ success: true, message: "Scheduled emails processed" });
+    } catch (error: any) {
+      console.error('Error processing scheduled emails:', error);
+      res.status(500).json({ message: "Error processing scheduled emails: " + error.message });
     }
   });
 
