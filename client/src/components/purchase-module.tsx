@@ -162,7 +162,7 @@ export function PurchaseModule() {
                 <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground" data-testid="text-coin-price">
                   ${COIN_PRICE.toFixed(2)}
                 </p>
-                <p className="text-xs sm:text-sm text-foreground/60">+ Free shipping in the continental US</p>
+                <p className="text-xs sm:text-sm text-foreground/60">+ Shipping in the continental US</p>
               </div>
 
               {/* Quantity Selector */}
