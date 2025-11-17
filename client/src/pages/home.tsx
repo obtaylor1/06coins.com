@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/cart-context";
 import { JEWEL_SET } from "@/lib/products";
 import separatorBarImg from "@assets/0_0_640_N_1763339269798.png";
+import separatorBar2Img from "@assets/0_0_640_N_1763340226514.png";
 
 export default function Home() {
   const { toast } = useToast();
@@ -85,6 +86,19 @@ export default function Home() {
         />
         
         <ProductShowcase onCtaClick={scrollToPurchase} />
+        
+        {/* Decorative Separator Bar */}
+        <div 
+          className="w-full bg-background py-4 sm:py-6 md:py-8"
+          style={{
+            backgroundImage: `url(${separatorBar2Img})`,
+            backgroundRepeat: 'repeat-x',
+            backgroundPosition: 'center',
+            backgroundSize: 'auto 32px',
+            minHeight: '32px',
+          }}
+          data-testid="container-separator-bar-2"
+        />
         
         <WhyOwnSection onCtaClick={scrollToPurchase} />
         
