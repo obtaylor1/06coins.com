@@ -85,8 +85,6 @@ export default function Home() {
           onViewSet={scrollToFoundersSet}
         />
         
-        <ProductShowcase onCtaClick={scrollToPurchase} />
-        
         {/* Decorative Separator Bar */}
         <div 
           className="w-full bg-background py-4 sm:py-6 md:py-8"
@@ -99,6 +97,8 @@ export default function Home() {
           }}
           data-testid="container-separator-bar-2"
         />
+        
+        <ProductShowcase onCtaClick={scrollToPurchase} />
         
         <WhyOwnSection onCtaClick={scrollToPurchase} />
         
