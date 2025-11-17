@@ -3,6 +3,8 @@
 ## Overview
 A premium e-commerce website for the Alpha Phi Alpha Fraternity's 120th Anniversary Commemorative Coin. The site features real-time inventory tracking and secure payment processing. The project aims to provide a luxurious online shopping experience for commemorative merchandise, emphasizing the fraternity's rich history and the limited-edition nature of the products.
 
+**Deployment:** The site will be deployed at **06coins.com**
+
 ## User Preferences
 - Dark mode only (Alpha Phi Alpha branding)
 - Monumental, prestigious aesthetic
@@ -16,7 +18,7 @@ The platform is built with a premium luxury design system featuring a Black (#12
 - **Premium Design Overhaul:** Utilizes a dark theme with gold accents, serif typography for headings, and refined messaging across all product descriptions and site elements.
 - **Dynamic Header:** A sticky header with a bright red background (using destructive theme color matching "The Complete Collection" badge), featuring the Alpha Phi Alpha shield, a real-time stock counter, and a prominent CTA button.
 - **Enhanced Hero Section:** Features a split layout with content on the left and a coin image on the right, including a "120th Anniversary Edition" badge, gold headlines, and trust indicators.
-- **Founders' Legacy Set Section:** Highlights "The Complete Collection" with specific pricing, founder images, and a CTA for the jewel set.
+- **Founders' Legacy Set Section:** Highlights "The Complete Collection" with specific pricing, founder images with interactive hover zoom effect (1.5x scale on desktop, 1.3x on mobile with gold glow), and a CTA for the jewel set.
 - **Honor Your Favorite Jewel Carousel:** An interactive carousel allowing users to view and select individual "jewel" coins, featuring detailed founder information and quantity selection.
 - **Luxury Product Showcase:** Displays actual coin renderings and elegant specifications.
 - **Timeline Story Section:** A vertical timeline narrating the fraternity's history, encouraging engagement and purchase.
