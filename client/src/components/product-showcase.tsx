@@ -107,69 +107,6 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
 
         {/* Coins Side by Side */}
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Back (Reverse) */}
-          <div className="space-y-6">
-            {/* Coin Image */}
-            <div className="aspect-square rounded-full overflow-hidden shadow-2xl max-w-md mx-auto">
-              <img 
-                src={coinBackImg} 
-                alt="Alpha Phi Alpha 120th Anniversary Commemorative Coin - Back (Reverse)" 
-                className="w-full h-full object-cover"
-                data-testid="img-coin-back-showcase"
-              />
-            </div>
-
-            {/* Title */}
-            <div className="text-center space-y-2">
-              <h3 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
-                The Back (Reverse): <span className="text-primary">Founders & Future Promise</span>
-              </h3>
-            </div>
-            
-            {/* Details */}
-            <div className="space-y-5">
-              <div className="flex gap-4">
-                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-                <div>
-                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">The Sphinx</h4>
-                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
-                    The iconic Great Sphinx of Giza, the cornerstone of our sacred bond, stands prominently in high relief, watching over the inscription.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-                <div>
-                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">The Alpha Shield</h4>
-                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
-                    Subtly integrated in the background, the official Shield represents the Manly Deeds, Scholarship, and Love for All Mankind upon which we are built.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-                <div>
-                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">Global Reach</h4>
-                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
-                    Encircling the design are stylized lines hinting at a global map, recognizing Alpha Phi Alpha's expansion across the U.S., the Caribbean, Africa, and beyond since its founding.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-                <div>
-                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">Inscriptions</h4>
-                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
-                    Clearly marked are the founding year <strong className="text-primary">1906</strong> and the commemorative year <strong className="text-primary">2026</strong>.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Front (Obverse) */}
           <div className="space-y-6">
             {/* Coin Image */}
@@ -227,6 +164,69 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
                   <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">Precision Engraving</h4>
                   <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
                     The entire surface features micro-engraving texture, designed to catch and reflect light, giving the Old Gold finish a vibrant, enduring luster.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Back (Reverse) */}
+          <div className="space-y-6">
+            {/* Coin Image */}
+            <div className="aspect-square rounded-full overflow-hidden shadow-2xl max-w-md mx-auto">
+              <img 
+                src={coinBackImg} 
+                alt="Alpha Phi Alpha 120th Anniversary Commemorative Coin - Back (Reverse)" 
+                className="w-full h-full object-cover"
+                data-testid="img-coin-back-showcase"
+              />
+            </div>
+
+            {/* Title */}
+            <div className="text-center space-y-2">
+              <h3 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
+                The Back (Reverse): <span className="text-primary">Founders & Future Promise</span>
+              </h3>
+            </div>
+            
+            {/* Details */}
+            <div className="space-y-5">
+              <div className="flex gap-4">
+                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                <div>
+                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">The Sphinx</h4>
+                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
+                    The iconic Great Sphinx of Giza, the cornerstone of our sacred bond, stands prominently in high relief, watching over the inscription.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                <div>
+                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">The Alpha Shield</h4>
+                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
+                    Subtly integrated in the background, the official Shield represents the Manly Deeds, Scholarship, and Love for All Mankind upon which we are built.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                <div>
+                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">Global Reach</h4>
+                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
+                    Encircling the design are stylized lines hinting at a global map, recognizing Alpha Phi Alpha's expansion across the U.S., the Caribbean, Africa, and beyond since its founding.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                <div>
+                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">Inscriptions</h4>
+                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
+                    Clearly marked are the founding year <strong className="text-primary">1906</strong> and the commemorative year <strong className="text-primary">2026</strong>.
                   </p>
                 </div>
               </div>
