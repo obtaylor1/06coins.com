@@ -56,8 +56,14 @@ export const orders = pgTable("orders", {
   status: text("status").notNull().default("pending"), // pending, processing, shipped, delivered, completed, failed
   customerName: text("customer_name"),
   customerEmail: text("customer_email"),
+  customerPhone: text("customer_phone"), // Phone number for SMS
   shippingAddress: jsonb("shipping_address"), // { line1, line2, city, state, postal_code, country }
   cartItems: jsonb("cart_items"), // Array of {id, name, quantity, price} for each item ordered
+  
+  // SMS opt-in preferences
+  smsOrderUpdatesOptIn: integer("sms_order_updates_opt_in").default(0).notNull(), // 0 = no, 1 = yes
+  smsMarketingOptIn: integer("sms_marketing_opt_in").default(0).notNull(), // 0 = no, 1 = yes
+  smsOptedOutAt: timestamp("sms_opted_out_at"), // Timestamp when customer opted out
   
   // Shipping & delivery tracking
   trackingNumber: text("tracking_number"),
@@ -73,6 +79,20 @@ export const orders = pgTable("orders", {
   emailReviewSent: integer("email_review_sent").default(0).notNull(),
   emailThankYouScheduledFor: timestamp("email_thank_you_scheduled_for"), // 1-2 days after delivery
   emailReviewScheduledFor: timestamp("email_review_scheduled_for"), // 5-7 days after delivery
+  
+  // SMS tracking (to prevent duplicate sends and track delivery)
+  smsConfirmationSent: integer("sms_confirmation_sent").default(0).notNull(),
+  smsShippingSent: integer("sms_shipping_sent").default(0).notNull(),
+  smsDeliverySent: integer("sms_delivery_sent").default(0).notNull(),
+  smsThankYouSent: integer("sms_thank_you_sent").default(0).notNull(),
+  smsReviewSent: integer("sms_review_sent").default(0).notNull(),
+  smsProblemSent: integer("sms_problem_sent").default(0).notNull(),
+  smsThankYouScheduledFor: timestamp("sms_thank_you_scheduled_for"), // 1-2 days after delivery
+  smsReviewScheduledFor: timestamp("sms_review_scheduled_for"), // 5-7 days after delivery
+  smsSentToday: integer("sms_sent_today").default(0).notNull(), // Rate limiting counter
+  smsLastSentDate: text("sms_last_sent_date"), // Date string (YYYY-MM-DD) for rate limiting reset
+  smsError: integer("sms_error").default(0).notNull(), // 0 = no error, 1 = error occurred
+  smsLog: jsonb("sms_log"), // Array of {type, timestamp, status, error} for admin visibility
   
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),

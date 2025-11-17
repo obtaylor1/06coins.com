@@ -212,7 +212,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         );
 
-        // Get the created order to send confirmation email
+        // Get the created order to send confirmation email and SMS
         const order = await storage.getOrderByPaymentIntent(paymentIntentId);
         
         // Send order confirmation email (async, don't block response)
@@ -224,6 +224,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
             });
           }).catch((error: any) => {
             console.error('[EMAIL] Failed to import email service:', error);
+          });
+        }
+        
+        // Send order confirmation SMS (async, don't block response)
+        if (order) {
+          import('./services/smsTriggers.js').then(({ sendOrderConfirmationSms, sendAdminNewOrderAlert, sendAdminHighValueAlert }) => {
+            sendOrderConfirmationSms(order).catch((error: any) => {
+              console.error('[SMS] Failed to send order confirmation SMS:', error);
+            });
+            
+            // Send admin alerts
+            sendAdminNewOrderAlert(order).catch((error: any) => {
+              console.error('[SMS] Failed to send admin new order alert:', error);
+            });
+            
+            sendAdminHighValueAlert(order).catch((error: any) => {
+              console.error('[SMS] Failed to send admin high-value alert:', error);
+            });
+          }).catch((error: any) => {
+            console.error('[SMS] Failed to import SMS triggers:', error);
           });
         }
 
@@ -622,6 +642,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.error('[EMAIL] Failed to import email service:', error);
         });
       }
+      
+      // Send shipping confirmation SMS (async, don't block response)
+      import('./services/smsTriggers.js').then(({ sendShippingConfirmationSms }) => {
+        sendShippingConfirmationSms(updatedOrder).catch((error: any) => {
+          console.error('[SMS] Failed to send shipping confirmation SMS:', error);
+        });
+      }).catch((error: any) => {
+        console.error('[SMS] Failed to import SMS triggers:', error);
+      });
 
       res.json(updatedOrder);
     } catch (error: any) {
@@ -656,6 +685,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.error('[EMAIL] Failed to import email service:', error);
         });
       }
+      
+      // Send delivery confirmation SMS (async, don't block response)
+      // This will also schedule thank you and review SMS
+      import('./services/smsTriggers.js').then(({ sendDeliveryConfirmationSms }) => {
+        sendDeliveryConfirmationSms(updatedOrder).catch((error: any) => {
+          console.error('[SMS] Failed to send delivery confirmation SMS:', error);
+        });
+      }).catch((error: any) => {
+        console.error('[SMS] Failed to import SMS triggers:', error);
+      });
 
       res.json(updatedOrder);
     } catch (error: any) {
@@ -782,6 +821,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error('Error processing scheduled emails:', error);
       res.status(500).json({ message: "Error processing scheduled emails: " + error.message });
+    }
+  });
+
+  // Scheduled SMS processing endpoint (called periodically via cron)
+  // This endpoint processes thank you and review request SMS that are due
+  app.post("/api/admin/process-scheduled-sms", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      console.log('[SMS] Processing scheduled SMS...');
+      
+      const { processScheduledSms } = await import('./services/smsTriggers.js');
+      await processScheduledSms();
+      
+      res.json({ success: true, message: "Scheduled SMS processed" });
+    } catch (error: any) {
+      console.error('Error processing scheduled SMS:', error);
+      res.status(500).json({ message: "Error processing scheduled SMS: " + error.message });
+    }
+  });
+
+  // Twilio SMS webhook handler (for receiving STOP/opt-out messages)
+  // This endpoint is called by Twilio when a customer replies to an SMS
+  app.post("/api/webhooks/sms", async (req, res) => {
+    try {
+      const { From, Body } = req.body;
+      
+      console.log('[SMS WEBHOOK] Received message from:', From);
+      console.log('[SMS WEBHOOK] Message body:', Body);
+      
+      // Check if message contains STOP, UNSUBSCRIBE, etc. (case insensitive)
+      const optOutKeywords = ['stop', 'unsubscribe', 'cancel', 'end', 'quit'];
+      const messageBody = (Body || '').toLowerCase().trim();
+      const isOptOut = optOutKeywords.some(keyword => messageBody.includes(keyword));
+      
+      if (isOptOut && From) {
+        // Find all orders with this phone number and mark as opted out
+        const orders = await storage.getAllOrders();
+        const matchingOrders = orders.filter(order => {
+          if (!order.customerPhone) return false;
+          const normalizedOrderPhone = order.customerPhone.replace(/\D/g, '');
+          const normalizedFromPhone = From.replace(/\D/g, '');
+          return normalizedOrderPhone === normalizedFromPhone;
+        });
+        
+        for (const order of matchingOrders) {
+          await storage.updateOrder(order.id, {
+            smsOrderUpdatesOptIn: 0,
+            smsMarketingOptIn: 0,
+            smsOptedOutAt: new Date(),
+          });
+        }
+        
+        console.log(`[SMS WEBHOOK] Opted out ${matchingOrders.length} orders for phone: ${From}`);
+        
+        // Send auto-reply confirming opt-out (if Twilio is configured)
+        const { isSmsConfigured } = await import('./services/smsService.js');
+        if (isSmsConfigured()) {
+          const { sendSms } = await import('./services/smsService.js');
+          await sendSms({
+            to: From,
+            body: 'You have been unsubscribed from Alpha Phi Alpha Coin Shop SMS. You will not receive further messages.',
+            type: 'transactional',
+          });
+        }
+      }
+      
+      // Respond with TwiML (required by Twilio)
+      res.set('Content-Type', 'text/xml');
+      res.send('<?xml version="1.0" encoding="UTF-8"?><Response></Response>');
+    } catch (error: any) {
+      console.error('Error processing SMS webhook:', error);
+      res.status(500).send('<?xml version="1.0" encoding="UTF-8"?><Response></Response>');
     }
   });
 
