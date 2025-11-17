@@ -81,8 +81,16 @@ The application includes comprehensive Google Analytics 4 tracking for monitorin
 3. **Verify Tracking:**
    - Navigate to the `/admin` dashboard
    - Check the "Google Analytics Tracking" section
-   - Status should show "GA4 Enabled" with your Measurement ID
+   - Status should show "GA4 Active" with your Measurement ID
    - Click "Open Google Analytics Console" to view real-time data
+
+### Technical Implementation
+
+The GA4 integration uses a React Context pattern (`AnalyticsProvider` in `client/src/contexts/analytics-context.tsx`) to manage initialization state reactively. This ensures:
+- The admin dashboard shows accurate real-time status (Active/Failed/Not Configured)
+- All tracking calls are properly gated behind initialization checks
+- PII data is automatically sanitized in e-commerce events
+- Components can subscribe to analytics state changes via the `useAnalytics()` hook
 
 ### Tracked Events
 
