@@ -9,6 +9,7 @@ import { useCart } from "@/contexts/cart-context";
 import { MAIN_COIN } from "@/lib/products";
 import { ShieldCheck, CreditCard, Package, ShoppingCart, Lock } from "lucide-react";
 import coinFrontImg from "@assets/apa coin front_1762505793054.png";
+import animatedBgGif from "@assets/obtaylor_refined_Ancient_Egyptian_inspired_background_for_pro_7a6208a9-e0bc-43c5-9964-000bc386ff8d_1_1763341950890.gif";
 
 const COIN_PRICE = 50.06;
 
@@ -81,8 +82,19 @@ export function PurchaseModule() {
   };
 
   return (
-    <section className="py-12 sm:py-16 md:py-20 lg:py-32 px-4 sm:px-6 md:px-12 bg-gradient-to-b from-background to-card/30 border-t border-primary/20">
-      <div className="max-w-6xl mx-auto space-y-8 sm:space-y-10 md:space-y-12 lg:space-y-16">
+    <section 
+      className="relative py-12 sm:py-16 md:py-20 lg:py-32 px-4 sm:px-6 md:px-12 border-t border-primary/20 overflow-hidden"
+      style={{
+        backgroundImage: `url(${animatedBgGif})`,
+        backgroundPosition: 'center',
+        backgroundSize: 'cover',
+        backgroundRepeat: 'repeat',
+      }}
+    >
+      {/* Dark overlay for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/80 to-black/85 pointer-events-none" />
+      
+      <div className="relative z-10 max-w-6xl mx-auto space-y-8 sm:space-y-10 md:space-y-12 lg:space-y-16">
         <div className="text-center space-y-4 sm:space-y-6 px-2">
           <h2 
             className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-serif font-bold text-foreground tracking-tight leading-tight"
