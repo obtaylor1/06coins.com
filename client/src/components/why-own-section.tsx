@@ -2,6 +2,7 @@ import { User, Gift, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import coinFrontImg from "@assets/apa coin front_1762505793054.png";
 import coinBackImg from "@assets/apa coin back_1762505793054.png";
+import sectionBgImg from "@assets/0_0-5_1763342224856.jpg";
 
 interface WhyOwnSectionProps {
   onCtaClick?: () => void;
@@ -36,8 +37,19 @@ export function WhyOwnSection({ onCtaClick }: WhyOwnSectionProps) {
   ];
 
   return (
-    <section className="py-20 md:py-32 px-6 md:px-12 bg-gradient-to-b from-background/95 to-background">
-      <div className="max-w-7xl mx-auto space-y-16 md:space-y-20">
+    <section 
+      className="relative py-20 md:py-32 px-6 md:px-12 overflow-hidden"
+      style={{
+        backgroundImage: `url(${sectionBgImg})`,
+        backgroundPosition: 'center',
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      {/* Dark overlay for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/80 to-black/85 pointer-events-none" />
+      
+      <div className="relative z-10 max-w-7xl mx-auto space-y-16 md:space-y-20">
         <div className="text-center space-y-6">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-foreground tracking-tight leading-tight">
             A Symbol of Brotherhood.
