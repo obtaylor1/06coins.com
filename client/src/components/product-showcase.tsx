@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Ruler, Scale, Sparkles, Globe, Star, Shield } from "lucide-react";
-import coinFrontImg from "@assets/apa coin front_1762505793054.png";
+import coinFrontImg from "@assets/apa coin back_1763347654109.png";
 import coinBackImg from "@assets/apa coin back_1762505793054.png";
 import showcaseHeaderBgImg from "@assets/0_0-4_1763339722286.jpg";
 import showcaseContentBgImg from "@assets/white graphic_1763345066331.png";
