@@ -11,7 +11,7 @@ import { Footer } from "@/components/footer";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/cart-context";
 import { JEWEL_SET } from "@/lib/products";
-import separatorBarImg from "@assets/0_0_640_N_1763339151088.webp";
+import separatorBarImg from "@assets/0_0_640_N_1763339269798.png";
 
 export default function Home() {
   const { toast } = useToast();
