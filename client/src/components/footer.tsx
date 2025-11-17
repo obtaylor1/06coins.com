@@ -83,7 +83,7 @@ export function Footer() {
             © 2026 Alpha Phi Alpha Fraternity, Inc. All rights reserved.
           </p>
           <p className="text-sm text-foreground/50 mt-1">
-            Official 120th Anniversary Commemorative Coin
+            120th Anniversary Commemorative Coin
           </p>
         </div>
       </div>
