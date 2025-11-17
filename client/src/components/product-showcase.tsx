@@ -55,8 +55,8 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
         style={{
           backgroundImage: `url(${showcaseContentBgImg})`,
           backgroundPosition: 'top center',
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
+          backgroundSize: '50%',
+          backgroundRepeat: 'repeat',
         }}
       >
         <div className="relative z-10 max-w-7xl mx-auto space-y-12 sm:space-y-16 md:space-y-20 lg:space-y-28">
