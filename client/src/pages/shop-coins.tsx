@@ -11,6 +11,7 @@ import { StickyHeader } from "@/components/sticky-header";
 import heroBackgroundImg from "@assets/0_2_1763332961118.jpg";
 import goldTextureImg from "@assets/0_0-8_1763355352629.jpg";
 import museumDisplayImg from "@assets/0_1_1763355638824.jpg";
+import egyptianPortalImg from "@assets/0_0-9_1763355883898.jpg";
 
 export default function ShopCoins() {
   const { addItem } = useCart();
@@ -510,7 +511,14 @@ export default function ShopCoins() {
               <div className="absolute bottom-0 left-0 w-16 h-16 border-b-2 border-l-2 border-primary" />
               <div className="absolute bottom-0 right-0 w-16 h-16 border-b-2 border-r-2 border-primary" />
 
-              <div className="p-8 md:p-16 text-center space-y-6 relative z-10">
+              <div 
+                className="p-8 md:p-16 text-center space-y-6 relative z-10"
+                style={{
+                  backgroundImage: `linear-gradient(rgba(18, 18, 18, 0.75), rgba(18, 18, 18, 0.75)), url(${egyptianPortalImg})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              >
                 <Badge className="bg-primary text-black font-bold px-6 py-2 text-sm">
                   <Sparkles className="w-4 h-4 mr-2 inline" />
                   Ultimate Collector's Package
