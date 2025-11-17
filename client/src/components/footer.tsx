@@ -24,6 +24,23 @@ export function Footer() {
               <p className="text-sm text-foreground/60 italic">
                 "First of All, Servants of All, We Shall Transcend All"
               </p>
+              <p className="text-sm text-foreground/70 leading-relaxed">
+                This Fraternity's motto encapsulates our profound legacy as the first intercollegiate Greek-letter organization founded by African American men, our unwavering commitment to community service, and the high ideals we instill in every member. This commemorative coin honors the 120th Anniversary (1906–2026) of Alpha Phi Alpha Fraternity, Incorporated.
+              </p>
+              <a 
+                href="https://apa1906.net" 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                <Button 
+                  variant="outline" 
+                  className="border-primary text-primary hover:bg-primary/10"
+                  data-testid="button-visit-apa-site"
+                >
+                  Visit the Official APA Site
+                  <span className="ml-2 text-xs">↗</span>
+                </Button>
+              </a>
             </div>
 
             {/* Quick Links */}
@@ -77,44 +94,15 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Detailed Footer Section */}
-      <div className="border-b border-primary/10 bg-background/50">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-20">
-          <div className="grid md:grid-cols-2 gap-12 md:gap-16">
-            {/* Alpha Phi Alpha Fraternity Info */}
-            <div className="space-y-6">
-              <h4 className="text-lg font-serif font-bold text-foreground">
-                Alpha Phi Alpha Fraternity, Inc.
-              </h4>
-              <p className="text-sm text-foreground/70 leading-relaxed">
-                "First of all, Servants of All, We Shall Transcend All." This Fraternity's motto encapsulates our profound legacy as the first intercollegiate Greek-letter organization founded by African American men, our unwavering commitment to community service, and the high ideals we instill in every member. This commemorative coin honors the 120th Anniversary (1906–2026) of Alpha Phi Alpha Fraternity, Incorporated.
-              </p>
-              <a 
-                href="https://apa1906.net" 
-                target="_blank" 
-                rel="noopener noreferrer"
-              >
-                <Button 
-                  variant="outline" 
-                  className="border-primary text-primary hover:bg-primary/10"
-                  data-testid="button-visit-apa-site"
-                >
-                  Visit the Official APA Site
-                  <span className="ml-2 text-xs">↗</span>
-                </Button>
-              </a>
-            </div>
-
-            {/* Copyright */}
-            <div className="space-y-2 text-center md:text-left">
-              <p className="text-sm text-foreground/60">
-                © 2026 06coins.com. All rights reserved.
-              </p>
-              <p className="text-sm text-foreground/50">
-                120th Anniversary Exclusive Commemorative Coin
-              </p>
-            </div>
-          </div>
+      {/* Copyright Section */}
+      <div className="border-b border-primary/10">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 py-8 text-center">
+          <p className="text-sm text-foreground/60">
+            © 2026 06coins.com. All rights reserved.
+          </p>
+          <p className="text-sm text-foreground/50 mt-1">
+            120th Anniversary Exclusive Commemorative Coin
+          </p>
         </div>
       </div>
 
