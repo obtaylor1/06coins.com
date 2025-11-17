@@ -130,10 +130,10 @@ export function Footer() {
                     For order inquiries, shipping updates, and damage claims:
                   </p>
                   <a 
-                    href="mailto:support@apa120coin.com" 
+                    href="mailto:support@06coins.com" 
                     className="text-sm text-primary hover:text-primary/80 transition-colors"
                   >
-                    support@apa120coin.com
+                    support@06coins.com
                   </a>
                 </div>
 
