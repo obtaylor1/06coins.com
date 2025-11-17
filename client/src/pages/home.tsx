@@ -60,14 +60,18 @@ export default function Home() {
         <HeroSection onCtaClick={scrollToPurchase} />
         
         {/* Decorative Separator Bar */}
-        <div className="w-full bg-background py-4 sm:py-6 md:py-8">
-          <img 
-            src={separatorBarImg} 
-            alt="Decorative gold separator bar with Egyptian hieroglyphics"
-            className="w-full h-auto object-cover max-h-16 sm:max-h-20 md:max-h-24"
-            data-testid="img-separator-bar"
-          />
-        </div>
+        <div 
+          className="w-full bg-background py-4 sm:py-6 md:py-8"
+          style={{
+            backgroundImage: `url(${separatorBarImg})`,
+            backgroundRepeat: 'repeat-x',
+            backgroundPosition: 'center',
+            backgroundSize: 'auto 32px',
+            minHeight: '32px',
+          }}
+          data-testid="container-separator-bar"
+        />
+
         
         <div ref={foundersSetRef}>
           <FoundersLegacySection onCtaClick={handleAddJewelSetToCart} />
