@@ -11,6 +11,7 @@ import { Footer } from "@/components/footer";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/cart-context";
 import { JEWEL_SET } from "@/lib/products";
+import separatorBarImg from "@assets/0_0-2_1763338680750.jpg";
 
 export default function Home() {
   const { toast } = useToast();
@@ -57,6 +58,16 @@ export default function Home() {
       
       <main>
         <HeroSection onCtaClick={scrollToPurchase} />
+        
+        {/* Decorative Separator Bar */}
+        <div className="w-full bg-background py-4 sm:py-6 md:py-8">
+          <img 
+            src={separatorBarImg} 
+            alt="Decorative gold separator bar with Egyptian hieroglyphics"
+            className="w-full h-auto object-cover max-h-16 sm:max-h-20 md:max-h-24"
+            data-testid="img-separator-bar"
+          />
+        </div>
         
         <div ref={foundersSetRef}>
           <FoundersLegacySection onCtaClick={handleAddJewelSetToCart} />
