@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import type { Order } from '@shared/schema';
-import { storage } from '../storage';
+import { storage } from '../storage.js';
 import { 
   orderConfirmationTemplate,
   shippingConfirmationTemplate,
@@ -8,7 +8,7 @@ import {
   thankYouStoryTemplate,
   reviewRequestTemplate,
   inquiryReceivedTemplate
-} from '../emails/templates/index';
+} from '../emails/templates/index.js';
 
 // Email configuration from environment variables
 const EMAIL_CONFIG = {
