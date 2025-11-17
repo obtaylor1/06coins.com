@@ -1,0 +1,147 @@
+Your task is to add SMS capabilities to the app with:
+Transactional order updates
+Optional marketing messages
+Strict opt-in/opt-out rules
+Admin alerts
+and to implement it in a safe, scalable, and configurable way.
+Assume Node/Express or similar. Work within the existing stack and project structure.
+1. Inspect the project
+Locate:
+The order model and how order status is stored (e.g., created, paid, processing, shipped, delivered, cancelled).
+The checkout or order creation route.
+Any user/customer model (if exists).
+Any existing integration with an SMS or notification service (reuse if present).
+Do not break existing routes or payment flows.
+2. Set up SMS service integration
+Use a standard provider (e.g., Twilio or similar). Abstract it so it can be swapped later.
+Create a module like services/smsService.js with:
+async function sendSms({ to, body, type = 'transactional' }) { ... }
+
+module.exports = {
+  sendSms,
+};
+Read configuration from environment variables only (do not hard-code):
+SMS_PROVIDER (e.g. "twilio")
+SMS_ACCOUNT_SID
+SMS_AUTH_TOKEN
+SMS_FROM_NUMBER
+SMS_ADMIN_NUMBER (for internal alerts)
+Implement Twilio (or generic) client in that service file.
+Handle errors gracefully and log failures without crashing the app.
+3. Add opt-in / opt-out fields
+In the customer or order model:
+Add flags for:
+smsOrderUpdatesOptIn (boolean)
+smsMarketingOptIn (boolean)
+phone (string), if not already present
+In the checkout form / flow:
+Add a phone number input (if not already present).
+Add a checkbox (checked by default) for transactional updates:
+Label:
+"Text me important updates about my order (order + shipping SMS)."
+Add a second checkbox (unchecked by default) for marketing:
+Label:
+"Text me about new commemorative coin releases and special offers."
+Ensure these values are saved with the order (and customer, if applicable).
+4. Create an SMS template system
+Create services/smsTemplates.js that exports functions returning message strings. Example:
+function orderConfirmation(order, customer) { ... }
+function shippingConfirmation(order, customer) { ... }
+function deliveryConfirmation(order, customer) { ... }
+function orderProblem(order, customer) { ... }
+function thankYouStory(order, customer) { ... }
+function reviewRequest(order, customer) { ... }
+function adminNewOrderAlert(order) { ... }
+Keep templates short (ideally ≤160 characters), using placeholders like:
+{{firstName}}
+{{orderNumber}}
+{{total}}
+{{trackingLink}}
+{{shortUrl}} (if you have link-shortening)
+Export an object like:
+module.exports = {
+  orderConfirmation,
+  shippingConfirmation,
+  deliveryConfirmation,
+  orderProblem,
+  thankYouStory,
+  reviewRequest,
+  adminNewOrderAlert,
+};
+5. Wire SMS triggers into the order lifecycle
+Use event-style integration around existing logic:
+When order is successfully created / paid
+If smsOrderUpdatesOptIn is true and phone is valid:
+Send transactional SMS using orderConfirmation(order, customer).
+When order status changes to “shipped”
+Trigger shippingConfirmation SMS with tracking info (if available).
+When order status changes to “delivered”
+Trigger deliveryConfirmation SMS.
+When there is an order problem (e.g. payment failure, address issue, backorder):
+Optionally send orderProblem SMS.
+Keep message short and direct them to email or a support link.
+Schedule optional post-purchase SMS (if desired):
+After delivered, schedule:
+thankYouStory SMS 1–2 days later (if you want SMS thank-you).
+reviewRequest SMS 5–7 days later.
+For now, this can be as simple as:
+Storing timestamps on the order (e.g. thankYouSmsDueAt, reviewSmsDueAt).
+Creating a small cron or interval job to check and send due messages.
+If you prefer to keep SMS minimal, skip scheduling and just implement core transactional ones.
+6. Implement admin SMS alerts (optional but recommended)
+Use SMS_ADMIN_NUMBER to send internal notifications such as:
+New order over a certain threshold (e.g. total > $300).
+New bulk/chapter order request (if you have such a flag or type).
+Repeated delivery failures or address issues.
+Implement a template adminNewOrderAlert(order) in smsTemplates.js.
+Guard this feature behind an env flag:
+SMS_ADMIN_ALERTS_ENABLED=true/false.
+7. Add guardrails: rate limiting, quiet hours, and error handling
+Rate limiting:
+Add simple logic to track how many SMS were sent per order and per customer per day.
+For example: max 3 transactional SMS per order per day.
+Store counts in the order document or a lightweight table.
+Quiet hours:
+Introduce config:
+SMS_QUIET_HOURS_START (e.g. "21:00")
+SMS_QUIET_HOURS_END (e.g. "08:00")
+For non-urgent messages (e.g. thank-you or review request), if current time is in quiet hours:
+Delay sending until outside the quiet window.
+Transactional messages like immediate order confirmation can still be sent, but keep the system flexible.
+Error handling:
+If SMS sending fails:
+Log the error with order ID and phone.
+Do not crash the request/response flow.
+Optionally mark order.smsError = true for admin visibility.
+8. Implement opt-out handling
+If your SMS provider supports receiving replies (webhook):
+Add an endpoint like POST /webhooks/sms that:
+Parses inbound messages.
+If the message text contains “STOP” (case insensitive), mark:
+smsOrderUpdatesOptIn = false
+smsMarketingOptIn = false
+Store an smsOptedOutAt timestamp.
+Ensure future SMS respects these flags and does not send to opted-out numbers.
+For marketing SMS:
+Include “Reply STOP to opt out.” at the end of the message.
+9. UI Changes in Admin Dashboard (optional but helpful)
+In the admin area:
+Show SMS preferences:
+On order detail or customer detail view:
+Display smsOrderUpdatesOptIn, smsMarketingOptIn, and phone number.
+Show a log or list of SMS sent for that order (type, timestamp, status).
+Add a simple section:
+“Customer Notification Preferences”
+Allow admin to manually toggle SMS marketing opt-in OFF (but not ON without explicit customer consent).
+10. Finalization and documentation
+When you’re done:
+List the files created/modified:
+services/smsService.js
+services/smsTemplates.js
+Any updated models, order controllers, checkout logic, admin UI, and webhook routes.
+Document:
+How to configure SMS provider and env vars.
+Which events trigger SMS.
+How to disable SMS entirely (e.g., SMS_ENABLED=false).
+How opt-in/opt-out works.
+Make all of these changes now.
