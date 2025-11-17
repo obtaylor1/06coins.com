@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import shieldImg from "@assets/IMG_0093_1762507090202.jpeg";
+import coinBackImg from "@assets/apa coin back_1762505793054.png";
 
 export function Footer() {
   return (
@@ -12,8 +12,8 @@ export function Footer() {
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <img 
-                  src={shieldImg} 
-                  alt="Alpha Phi Alpha Shield" 
+                  src={coinBackImg} 
+                  alt="Alpha Phi Alpha 120th Anniversary Coin" 
                   className="w-12 h-12 object-contain"
                 />
                 <h3 className="text-xl font-serif font-bold text-foreground">
