@@ -10,7 +10,7 @@ import { MAIN_COIN } from "@/lib/products";
 import { ShieldCheck, CreditCard, Package, ShoppingCart, Lock, RotateCw } from "lucide-react";
 import coinFrontImg from "@assets/apa coin front_1762505793054.png";
 import coinBackImg from "@assets/apa coin back_1762505793054.png";
-import animatedBgGif from "@assets/obtaylor_refined_Ancient_Egyptian_inspired_background_for_pro_7a6208a9-e0bc-43c5-9964-000bc386ff8d_1_1763341950890.gif";
+import egyptianBgImg from "@assets/0_0-6_1763344416952.jpg";
 
 const COIN_PRICE = 50.06;
 
@@ -87,10 +87,10 @@ export function PurchaseModule() {
     <section 
       className="relative py-12 sm:py-16 md:py-20 lg:py-32 px-4 sm:px-6 md:px-12 border-t border-primary/20 overflow-hidden"
       style={{
-        backgroundImage: `url(${animatedBgGif})`,
+        backgroundImage: `url(${egyptianBgImg})`,
         backgroundPosition: 'center',
         backgroundSize: 'cover',
-        backgroundRepeat: 'repeat',
+        backgroundRepeat: 'no-repeat',
       }}
     >
       {/* Dark overlay for text readability */}
