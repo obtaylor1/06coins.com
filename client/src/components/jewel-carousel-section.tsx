@@ -156,15 +156,15 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
             Honor Your Favorite Jewel
           </h2>
           
-          <p className="text-base sm:text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto px-2">
+          <p className="text-base sm:text-lg md:text-xl text-gray-700 max-w-2xl mx-auto px-2">
             Select and purchase individual 3-inch founder coins to celebrate the legacy of a specific Jewel.
           </p>
 
           <div className="flex flex-col items-center gap-1 sm:gap-2">
             <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary">
-              $19.06 <span className="text-xl sm:text-2xl md:text-3xl text-foreground/60">Each</span>
+              $19.06 <span className="text-xl sm:text-2xl md:text-3xl text-gray-600">Each</span>
             </div>
-            <p className="text-xs sm:text-sm text-foreground/50">
+            <p className="text-xs sm:text-sm text-gray-500">
               Commemorating the founding year 1906
             </p>
           </div>
@@ -207,7 +207,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
                 
                 {/* Coin Container */}
                 <div 
-                  className="relative h-40 w-40 xs:h-48 xs:w-48 sm:h-56 sm:w-56 lg:h-64 lg:w-64 rounded-full border-2 border-primary/60 bg-gradient-to-b from-primary/10 to-background flex items-center justify-center shadow-2xl overflow-hidden"
+                  className="relative h-40 w-40 xs:h-48 xs:w-48 sm:h-56 sm:w-56 lg:h-64 lg:w-64 rounded-full border-2 border-primary/60 bg-gradient-to-b from-primary/10 to-white flex items-center justify-center shadow-2xl overflow-hidden"
                   data-testid={`carousel-coin-${activeJewel.id}`}
                 >
                   <img
@@ -240,7 +240,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
                   className={`h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-full border-2 transition-all shrink-0 overflow-hidden ${
                     index === activeIndex
                       ? "border-primary ring-2 ring-primary/30 scale-110"
-                      : "border-foreground/20 hover:border-primary/50 opacity-60 hover:opacity-100"
+                      : "border-gray-300 hover:border-primary/50 opacity-60 hover:opacity-100"
                   }`}
                   aria-label={`View ${jewel.name} coin`}
                   data-testid={`thumbnail-${jewel.id}`}
@@ -266,23 +266,23 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
                 <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-primary">
                   {activeJewel.fullName}
                 </h3>
-                <p className="text-xs sm:text-sm text-foreground/60 font-medium">
+                <p className="text-xs sm:text-sm text-gray-600 font-medium">
                   {activeJewel.years}
                 </p>
-                <p className="text-sm sm:text-base text-foreground/70">
+                <p className="text-sm sm:text-base text-gray-700">
                   {activeJewel.title}
                 </p>
               </div>
 
               {/* Description */}
-              <p className="text-sm md:text-base text-foreground/60 text-center leading-relaxed">
+              <p className="text-sm md:text-base text-gray-600 text-center leading-relaxed">
                 {activeJewel.description}
               </p>
 
               {/* Price & Quantity */}
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-foreground/10">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-200">
                 <div className="text-center sm:text-left">
-                  <div className="text-xs text-foreground/50 uppercase tracking-wide mb-1">
+                  <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">
                     Price per Coin
                   </div>
                   <div className="text-2xl sm:text-3xl font-bold text-primary">
@@ -292,10 +292,10 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
 
                 {/* Quantity Selector */}
                 <div className="flex flex-col items-center gap-2">
-                  <label className="text-xs text-foreground/50 uppercase tracking-wide">
+                  <label className="text-xs text-gray-500 uppercase tracking-wide">
                     Quantity
                   </label>
-                  <div className="inline-flex items-center rounded-full border border-foreground/20 bg-background">
+                  <div className="inline-flex items-center rounded-full border border-gray-300 bg-white">
                     <Button
                       variant="ghost"
                       size="icon"
@@ -339,7 +339,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
               </Button>
 
               {/* Microcopy */}
-              <p className="text-xs text-foreground/40 text-center">
+              <p className="text-xs text-gray-500 text-center">
                 Ships in 5–7 days • Commemorative packaging included
               </p>
             </div>
@@ -348,14 +348,14 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
 
         {/* Upsell Banner */}
         <div 
-          className="mt-6 sm:mt-8 max-w-xl mx-auto rounded-xl sm:rounded-2xl border border-foreground/10 bg-card/80 backdrop-blur px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-center sm:justify-between gap-3 sm:gap-4"
+          className="mt-6 sm:mt-8 max-w-xl mx-auto rounded-xl sm:rounded-2xl border border-gray-200 bg-gray-50 px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-center sm:justify-between gap-3 sm:gap-4"
           data-testid="banner-collect-all"
         >
           <div className="flex-1 text-center sm:text-left">
-            <h4 className="text-sm sm:text-base md:text-lg font-bold text-foreground">
+            <h4 className="text-sm sm:text-base md:text-lg font-bold text-gray-900">
               Collect All 7 Founder Coins
             </h4>
-            <p className="text-xs sm:text-sm text-foreground/60 mt-0.5">
+            <p className="text-xs sm:text-sm text-gray-600 mt-0.5">
               Special set pricing available
             </p>
           </div>
