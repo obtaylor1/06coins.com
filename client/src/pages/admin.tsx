@@ -22,7 +22,10 @@ import {
   CheckCircle2,
   XCircle,
   Filter,
+  BarChart3,
+  ExternalLink,
 } from "lucide-react";
+import { isGAInitialized } from "@/lib/analytics";
 import type { Order } from "@shared/schema";
 import { 
   LineChart, 
@@ -317,6 +320,87 @@ export default function Admin() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Google Analytics Section */}
+        <Card className="bg-card/80 border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-primary" />
+              Google Analytics Tracking
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Status Column */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  {isGAInitialized() ? (
+                    <>
+                      <CheckCircle2 className="h-5 w-5 text-green-500" />
+                      <span className="text-sm font-medium text-foreground">GA4 Enabled</span>
+                    </>
+                  ) : (
+                    <>
+                      <XCircle className="h-5 w-5 text-destructive" />
+                      <span className="text-sm font-medium text-foreground">GA4 Not Configured</span>
+                    </>
+                  )}
+                </div>
+                
+                {isGAInitialized() ? (
+                  <div className="space-y-2">
+                    <p className="text-xs text-foreground/60">
+                      Measurement ID: {import.meta.env.VITE_GA4_MEASUREMENT_ID?.substring(0, 5)}...
+                    </p>
+                    <p className="text-xs text-foreground/60">
+                      Tracking page views, purchases, and cart events
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <p className="text-xs text-foreground/60">
+                      To enable Google Analytics tracking, add your GA4 Measurement ID to the environment variables:
+                    </p>
+                    <code className="text-xs bg-background/80 px-2 py-1 rounded block">
+                      VITE_GA4_MEASUREMENT_ID=G-XXXXXXXXX
+                    </code>
+                  </div>
+                )}
+              </div>
+
+              {/* Actions Column */}
+              <div className="space-y-3">
+                <a
+                  href="https://analytics.google.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                >
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-between"
+                    data-testid="button-open-ga-console"
+                  >
+                    Open Google Analytics Console
+                    <ExternalLink className="h-4 w-4" />
+                  </Button>
+                </a>
+                
+                {isGAInitialized() && (
+                  <div className="bg-background/50 rounded-lg p-3 space-y-1">
+                    <p className="text-xs font-semibold text-foreground/80">Tracked Events:</p>
+                    <ul className="text-xs text-foreground/60 space-y-0.5">
+                      <li>• Page views (all routes)</li>
+                      <li>• Add to cart events</li>
+                      <li>• Purchase events</li>
+                      <li>• E-commerce tracking</li>
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Sales & Inventory Analytics */}
         <div className="grid lg:grid-cols-2 gap-6">
