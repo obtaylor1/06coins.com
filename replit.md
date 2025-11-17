@@ -30,6 +30,15 @@ The platform is built with a premium luxury design system featuring a Black (#12
 - **Inventory Management:** Initial stock of 1906 coins, decremented with each purchase, with real-time updates via Firebase Firestore or a 5-second polling fallback.
 - **Admin Access:** Requires Replit Auth, with an `isAdmin` flag in the database for role-based access control.
 - **Google Analytics 4 Integration:** Comprehensive tracking of user behavior, page views, e-commerce events (add to cart, purchases), and conversion tracking. Integrated into the admin dashboard for easy access to analytics console.
+- **Comprehensive SEO Optimization:**
+  - Dynamic meta tags and Open Graph tags on all pages
+  - JSON-LD structured data (Product, Organization, Article, BreadcrumbList schemas)
+  - Optimized images with keyword-rich alt text and lazy loading
+  - 300+ word SEO-rich content on shop page with internal linking
+  - Heritage "About" page with 1500+ words of historical content
+  - XML sitemap and robots.txt for search engine crawlers
+  - Canonical URLs on all pages
+  - Configuration-based SEO (shared/seo-config.ts) for production URLs
 
 **Project Structure:**
 - `client/`: Houses the React frontend components, contexts, hooks, libraries, and pages.
@@ -123,3 +132,28 @@ The application automatically tracks the following events:
 - Reports → Engagement: View page views and user engagement
 - Reports → Monetization: View e-commerce data and purchases
 - Reports → Conversions: Track purchase completions and conversion rates
+
+## SEO Implementation
+
+Comprehensive search engine optimization has been implemented across the site. See `SEO_IMPLEMENTATION.md` for full details.
+
+**Key SEO Features:**
+- **Dynamic Meta Tags**: Unique titles, descriptions, and Open Graph tags for each page
+- **Structured Data**: JSON-LD schemas for products, organization, articles, and breadcrumbs
+- **Image Optimization**: All images have descriptive alt text, lazy loading, and dimensions
+- **Rich Content**: 300+ words on shop page, 1500+ words on About heritage page
+- **Technical SEO**: Sitemap.xml, robots.txt, canonical URLs, internal linking
+
+**Pages:**
+- `/` - Home page with Organization and Product schemas
+- `/shop-coins` - Shop page with BreadcrumbList, Product schemas, and SEO-rich content
+- `/about` - Heritage page with Article schema and Seven Jewels history
+
+**SPA Limitation:**  
+This is a client-side SPA, so meta tags are injected via JavaScript. For production, consider using a prerendering service (Prerender.io) or migrating to Next.js/Astro for SSR/SSG capabilities. See SEO_IMPLEMENTATION.md for recommendations.
+
+**Monitoring:**
+- Set up Google Search Console at https://search.google.com/search-console
+- Submit sitemap: https://06coins.com/sitemap.xml
+- Monitor index coverage, structured data, and Core Web Vitals
+- Use Rich Results Test to verify structured data: https://search.google.com/test/rich-results

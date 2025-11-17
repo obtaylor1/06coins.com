@@ -1,0 +1,8 @@
+# robots.txt for Alpha Phi Alpha 120th Anniversary Commemorative Coin
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /checkout
+
+# Sitemap location
+Sitemap: https://06coins.com/sitemap.xml

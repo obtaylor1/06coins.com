@@ -1,0 +1,44 @@
+You are a senior full-stack SEO expert working on the existing website for the Alpha Phi Alpha 120-Year Anniversary Commemorative Coin campaign (site located at https://0828372e-9efa-4899-8d8f-1f62e6980f22-00-34itd1c88tlhk.spock.replit.dev/).
+
+Your task is to implement and optimize the SEO features across the site. Do the following:
+
+1. **Metadata & Title Tags**  
+   - For the /shop-coins page and each unique product page (4″ coin, jewel set, individual coins) create optimized `<title>`, `<meta name="description">`, and appropriate `<h1>` tags.  
+   - Ensure primary keywords are at or near the front of titles (e.g., “Alpha Phi Alpha 120-Year Anniversary Coin — 4″ Diameter”, “Alpha Phi Alpha Jewel Coin Set 7 Coins”).  
+   - Ensure meta descriptions are unique, 150-160 characters, include target keyword and a call to action.
+
+2. **URL Structure & Canonicalization**  
+   - Ensure clean, descriptive URLs for each product page (e.g., `/shop-coins/120-year-anniversary-coin-4inch`, `/shop-coins/jewel-set-7-coins`, `/shop-coins/jewel-coin-henry-callis`).  
+   - Add `<link rel="canonical">` tags if any duplicate URLs exist (e.g., query parameters).  
+   - Make sure the site is indexing the canonical version only.
+
+3. **Structured Data (JSON-LD)**  
+   - For each product page, add structured data of type `"Product"` with fields: `name`, `image` (array), `description`, `sku`, `brand` (“Alpha Phi Alpha”), `offers` { `price`, `priceCurrency`: “USD”, `availability`: “InStock” } and `aggregateRating` if you have ratings.  
+   - For the shop landing page, add `"BreadcrumbList"` schema.  
+   - Ensure the structured data is valid (testable via Google’s Rich Results Test).
+
+4. **Image & Alt Text Optimization**  
+   - For every product image, add descriptive `alt` attributes including the product name and relevant keywords (e.g., “Alpha Phi Alpha 120-Year Anniversary Coin 4 inch diameter”).  
+   - Compress large images (target < 200 KB) and use `loading="lazy"` where appropriate.  
+   - Add `width` and `height` attributes or CSS to reduce layout shift.
+
+5. **Content & Internal Linking**  
+   - On the `/shop-coins` page, add brief rich content (≥ 300 words) that includes the main keyword, context about the 120-year anniversary, value of the coin collection, and internal links to each product page.  
+   - On each product page, add “You may also like” section with internal links to the other coins.  
+   - Use clear anchor text in links (e.g., “Explore the 7-Jewel Coin Set” not “click here”).
+
+6. **Page Speed & Technical Improvements**  
+   - Audit loading time; defer non-critical JS; minify CSS; ensure caching headers.  
+   - Ensure mobile usability: viewport meta tag, tap targets adequate size, no intrusive interstitials.  
+   - Use a sitemap (XML) if not present; submit to Google Search Console.
+
+7. **Backlinking & Social Signals (Implementation Plan)**  
+   - Create a page “About the 120-Year Anniversary” with heritage story and link to product page — share it on social & fraternity networks.  
+   - Prepare outreach template to fraternity websites, Greek-life blogs, coin-collector forums for backlinks.
+
+8. **Monitoring Setup**  
+   - Add Google Search Console and ensure property is verified.  
+   - Add tracking in Google Analytics (or equivalent) for organic traffic and conversions.  
+   - Set up monthly audit reminders: check for crawl errors, duplicate meta descriptions, broken links, missing structured data.
+
+Implement all of the above now. Provide a summary log of files changed and page URLs updated when complete.

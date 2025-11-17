@@ -48,6 +48,24 @@ export function Footer() {
               <h4 className="font-semibold text-foreground">Quick Links</h4>
               <ul className="space-y-2">
                 <li>
+                  <Link 
+                    href="/about"
+                    className="text-foreground/70 hover:text-primary transition-colors text-sm"
+                    data-testid="link-about-120-anniversary"
+                  >
+                    About the 120th Anniversary
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    href="/shop-coins"
+                    className="text-foreground/70 hover:text-primary transition-colors text-sm"
+                    data-testid="link-shop-coins"
+                  >
+                    Shop Commemorative Coins
+                  </Link>
+                </li>
+                <li>
                   <a 
                     href="https://apa1906.net" 
                     target="_blank" 

@@ -9,6 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 import { CartSummary } from "@/components/cart-summary";
 import { StickyHeader } from "@/components/sticky-header";
 import { Footer } from "@/components/footer";
+import { SEO } from "@/components/seo";
+import { getAbsoluteUrl } from "@/../../shared/seo-config";
 import heroBackgroundImg from "@assets/0_2_1763332961118.jpg";
 import goldTextureImg from "@assets/0_0-8_1763355352629.jpg";
 import museumDisplayImg from "@assets/0_1_1763355638824.jpg";
@@ -86,8 +88,72 @@ export default function ShopCoins() {
 
   const selectedJewel = JEWEL_COINS[selectedJewelIndex];
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": getAbsoluteUrl("/")
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Shop Coins",
+        "item": getAbsoluteUrl("/shop-coins")
+      }
+    ]
+  };
+
+  const mainCoinSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "Alpha Phi Alpha 120th Anniversary Commemorative Coin - 4 Inch Diameter",
+    "description": "Exclusive limited edition 4-inch diameter commemorative coin celebrating 120 years of Alpha Phi Alpha Fraternity (1906-2026). Only 1906 coins minted.",
+    "brand": {
+      "@type": "Brand",
+      "name": "Alpha Phi Alpha"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "50.06",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock",
+      "url": getAbsoluteUrl("/shop-coins")
+    },
+    "sku": "APA-120-COIN-4IN"
+  };
+
+  const jewelSetSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "Alpha Phi Alpha Seven Jewels Complete Collector's Set",
+    "description": "Complete set of seven 3-inch commemorative coins honoring the Seven Jewels - founding members of Alpha Phi Alpha Fraternity. Limited edition collection.",
+    "brand": {
+      "@type": "Brand",
+      "name": "Alpha Phi Alpha"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "120.06",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock",
+      "url": getAbsoluteUrl("/shop-coins")
+    },
+    "sku": "APA-JEWEL-SET-7"
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#050505] to-[#111111] text-foreground">
+      <SEO
+        title="Shop Alpha Phi Alpha Commemorative Coins - 120th Anniversary Collection"
+        description="Shop exclusive Alpha Phi Alpha 120th Anniversary commemorative coins. Limited edition 4-inch coin (1906 units), Seven Jewels collector's set, and individual Jewel coins. Museum-quality collectibles."
+        canonical={getAbsoluteUrl("/shop-coins")}
+        keywords="Alpha Phi Alpha coins, Seven Jewels coins, 120th anniversary, commemorative coins, fraternity collectibles, APA memorabilia, limited edition"
+        structuredData={[breadcrumbSchema, mainCoinSchema, jewelSetSchema]}
+      />
       <StickyHeader onCtaClick={scrollToProducts} />
       
       {/* Hero Section */}
@@ -148,6 +214,29 @@ export default function ShopCoins() {
         {/* Products Section */}
         <div id="products-section" className="space-y-16 lg:space-y-20">
           
+          {/* SEO-Rich Introduction Section */}
+          <section className="prose prose-invert max-w-none">
+            <div className="bg-card/50 border border-primary/20 rounded-lg p-8 md:p-12">
+              <h2 className="text-3xl md:text-4xl font-serif font-bold text-white mb-6 text-center">
+                Celebrate 120 Years of Alpha Phi Alpha Legacy
+              </h2>
+              <div className="text-gray-300 leading-relaxed space-y-4 text-lg">
+                <p>
+                  The <strong>Alpha Phi Alpha 120th Anniversary Commemorative Coin Collection</strong> represents a historic milestone for the first intercollegiate Greek-letter fraternity established by African American men. Founded on December 4, 1906, at Cornell University, Alpha Phi Alpha Fraternity, Incorporated has been a beacon of excellence, leadership, and service for 120 years.
+                </p>
+                <p>
+                  Our <strong>exclusive limited edition commemorative coins</strong> honor this momentous occasion with museum-quality craftsmanship. Each coin in this collection is meticulously designed to celebrate the brotherhood's enduring legacy and the Seven Jewels who founded this historic organization.
+                </p>
+                <p>
+                  The collection features three distinct offerings: the majestic <strong>4-inch diameter 120th Anniversary Commemorative Coin</strong> (limited to only 1906 units), the comprehensive <strong>Seven Jewels Complete Collector's Set</strong> honoring all seven founding members, and <strong>individual 3-inch Jewel coins</strong> allowing you to honor your favorite founder. Whether you're an Alpha man, a collector of fraternity memorabilia, or a supporter of African American history, these coins represent an unparalleled investment in heritage.
+                </p>
+                <p>
+                  Each coin features intricate details, premium finishes, and symbolic elements that pay tribute to Alpha Phi Alpha's motto: "First of All, Servants of All, We Shall Transcend All." With only 1906 units of the centerpiece coin available - one for each year of the fraternity's history - this is a once-in-a-lifetime opportunity to own a piece of African American Greek-letter organization history.
+                </p>
+              </div>
+            </div>
+          </section>
+
           {/* Product 1: 120-Year 4" Coin */}
           <section className="scroll-mt-24">
             <div className="text-center mb-8">
@@ -182,8 +271,11 @@ export default function ShopCoins() {
                     <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
                     <img
                       src={MAIN_COIN.image}
-                      alt={MAIN_COIN.name}
+                      alt="Alpha Phi Alpha 120th Anniversary 4-inch commemorative coin - limited edition 1906 units"
                       className="relative w-full max-w-md h-auto object-contain drop-shadow-2xl"
+                      loading="lazy"
+                      width="400"
+                      height="400"
                       data-testid="img-main-coin"
                     />
                   </div>
@@ -286,8 +378,11 @@ export default function ShopCoins() {
                         <div key={jewel.id} className="aspect-square rounded-lg overflow-hidden border border-primary/20 bg-background/50">
                           <img
                             src={jewel.image}
-                            alt={jewel.name}
+                            alt={`Alpha Phi Alpha Seven Jewels ${jewel.name} commemorative coin - 3 inch diameter`}
                             className="w-full h-full object-cover"
+                            loading="lazy"
+                            width="100"
+                            height="100"
                           />
                         </div>
                       ))}
@@ -402,8 +497,11 @@ export default function ShopCoins() {
                       <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
                       <img
                         src={selectedJewel.image}
-                        alt={selectedJewel.name}
+                        alt={`Alpha Phi Alpha Seven Jewels ${selectedJewel.name} commemorative coin - 3 inch diameter limited edition`}
                         className="relative w-full h-auto object-contain drop-shadow-2xl transition-all duration-300"
+                        loading="lazy"
+                        width="400"
+                        height="400"
                         data-testid="img-selected-jewel"
                       />
                     </div>
@@ -435,8 +533,11 @@ export default function ShopCoins() {
                     >
                       <img
                         src={jewel.image}
-                        alt={jewel.name}
+                        alt={`Alpha Phi Alpha ${jewel.name} Jewel coin thumbnail`}
                         className="w-full h-full object-cover"
+                        loading="lazy"
+                        width="80"
+                        height="80"
                       />
                     </button>
                   ))}

@@ -8,6 +8,8 @@ import { ProductShowcase } from "@/components/product-showcase";
 import { WhyOwnSection } from "@/components/why-own-section";
 import { PurchaseModule } from "@/components/purchase-module";
 import { Footer } from "@/components/footer";
+import { SEO } from "@/components/seo";
+import { getAbsoluteUrl } from "@/../../shared/seo-config";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/cart-context";
 import { JEWEL_SET } from "@/lib/products";
@@ -53,8 +55,44 @@ export default function Home() {
     });
   };
 
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Alpha Phi Alpha Fraternity, Incorporated",
+    "url": "https://apa1906.net",
+    "logo": getAbsoluteUrl("/favicon.png"),
+    "description": "First intercollegiate Greek-letter organization founded by African American men",
+    "foundingDate": "1906-12-04"
+  };
+
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "Alpha Phi Alpha 120th Anniversary Commemorative Coin - 4 Inch Diameter",
+    "description": "Exclusive limited edition 4-inch commemorative coin celebrating 120 years of Alpha Phi Alpha Fraternity (1906-2026). Only 1906 coins available.",
+    "brand": {
+      "@type": "Brand",
+      "name": "Alpha Phi Alpha"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "50.06",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock",
+      "url": getAbsoluteUrl("/shop-coins")
+    },
+    "sku": "APA-120-COIN-4IN"
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <SEO
+        title="Alpha Phi Alpha 120th Anniversary Commemorative Coin - Limited Edition 1906 Coins"
+        description="Exclusive limited edition 4-inch commemorative coin celebrating 120 years of Alpha Phi Alpha Fraternity (1906-2026). Own a piece of history with only 1906 coins available. Shop now."
+        canonical={getAbsoluteUrl("/")}
+        keywords="Alpha Phi Alpha, commemorative coin, 120th anniversary, 1906, limited edition, fraternity collectibles, APA memorabilia"
+        structuredData={[organizationSchema, productSchema]}
+      />
       <StickyHeader onCtaClick={scrollToPurchase} />
       
       <main>
