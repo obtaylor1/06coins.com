@@ -91,7 +91,7 @@ export function Footer() {
       {/* Detailed Footer Section */}
       <div className="border-b border-primary/10 bg-background/50">
         <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-20">
-          <div className="grid md:grid-cols-3 gap-12 md:gap-16">
+          <div className="grid md:grid-cols-2 gap-12 md:gap-16">
             {/* Alpha Phi Alpha Fraternity Info */}
             <div className="space-y-6">
               <h4 className="text-lg font-serif font-bold text-foreground">
@@ -167,28 +167,6 @@ export function Footer() {
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Legal & Copyright */}
-            <div className="space-y-6">
-              <h4 className="text-lg font-serif font-bold text-foreground">
-                Legal & Copyright
-              </h4>
-              
-              <div className="space-y-4 text-sm">
-                <p className="text-foreground/70">
-                  All rights reserved. Alpha Phi Alpha Fraternity, Inc. is a federally incorporated organization.
-                </p>
-                <p className="text-foreground/70">
-                  Copyright © 2024 Alpha Phi Alpha Fraternity, Inc. 120th Anniversary Coin Project.
-                </p>
-                <p className="text-foreground/60 text-xs leading-relaxed">
-                  This website and its contents are protected by applicable copyright and trademark laws. The Alpha Phi Alpha name, Greek letters, symbols, and insignia are registered trademarks.
-                </p>
-                <p className="text-foreground/60 text-xs">
-                  Designed and built with excellence. Powered by Stripe for secure payments.
-                </p>
               </div>
             </div>
           </div>
