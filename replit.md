@@ -29,6 +29,7 @@ The platform is built with a premium luxury design system featuring a Black (#12
 - **Payment Security:** Implements server-side price authority, payment verification before inventory changes, idempotency to prevent duplicate orders, and amount validation.
 - **Inventory Management:** Initial stock of 1906 coins, decremented with each purchase, with real-time updates via Firebase Firestore or a 5-second polling fallback.
 - **Admin Access:** Requires Replit Auth, with an `isAdmin` flag in the database for role-based access control.
+- **Google Analytics 4 Integration:** Comprehensive tracking of user behavior, page views, e-commerce events (add to cart, purchases), and conversion tracking. Integrated into the admin dashboard for easy access to analytics console.
 
 **Project Structure:**
 - `client/`: Houses the React frontend components, contexts, hooks, libraries, and pages.
@@ -44,6 +45,7 @@ The platform is built with a premium luxury design system featuring a Black (#12
     - Tailwind CSS (styling)
     - Shadcn UI (components)
     - Google Fonts (Playfair Display, Roboto)
+    - react-ga4 (Google Analytics 4 integration)
 - **Backend:**
     - Express.js
     - PostgreSQL with Drizzle ORM
@@ -55,4 +57,61 @@ The platform is built with a premium luxury design system featuring a Black (#12
 - **Environment Variables:**
     - Firebase API Key, App ID, Project ID (client and server)
     - Stripe Public Key (frontend), Secret Key (backend)
+    - Google Analytics 4 Measurement ID (optional, for tracking)
     - Database URL, Session Secret (Replit auto-configured)
+
+## Google Analytics 4 Setup
+
+The application includes comprehensive Google Analytics 4 tracking for monitoring user behavior, conversions, and e-commerce events.
+
+### How to Enable GA4 Tracking
+
+1. **Create a Google Analytics 4 Property:**
+   - Go to [https://analytics.google.com](https://analytics.google.com)
+   - Create a new account or use an existing one
+   - Create a new GA4 property
+   - Copy your Measurement ID (format: `G-XXXXXXXXX`)
+
+2. **Add the Measurement ID to Environment Variables:**
+   - In Replit Secrets, add a new secret:
+     - Key: `VITE_GA4_MEASUREMENT_ID`
+     - Value: Your GA4 Measurement ID (e.g., `G-XXXXXXXXX`)
+   - The app will automatically initialize GA4 tracking once this is configured
+
+3. **Verify Tracking:**
+   - Navigate to the `/admin` dashboard
+   - Check the "Google Analytics Tracking" section
+   - Status should show "GA4 Enabled" with your Measurement ID
+   - Click "Open Google Analytics Console" to view real-time data
+
+### Tracked Events
+
+The application automatically tracks the following events:
+
+**Page Views:**
+- All route changes (home, shop, checkout, admin)
+- Automatically captured with page titles
+
+**E-commerce Events:**
+- `add_to_cart`: When users add items to their cart (includes item ID, name, price, quantity)
+- `view_item`: When users view product details
+- `purchase`: When orders are successfully completed (includes transaction ID, total value, item details)
+
+**Enhanced E-commerce Data:**
+- Transaction IDs (Stripe Payment Intent IDs)
+- Revenue tracking (in USD)
+- Product-level data (item names, IDs, prices, quantities)
+- Currency information
+
+### Accessing Analytics
+
+**From the Admin Dashboard:**
+1. Log in to `/admin` with Replit Auth
+2. Scroll to the "Google Analytics Tracking" section
+3. Click "Open Google Analytics Console" to access the full GA4 dashboard
+
+**Directly in Google Analytics:**
+- Reports → Realtime: View current active users and events
+- Reports → Engagement: View page views and user engagement
+- Reports → Monetization: View e-commerce data and purchases
+- Reports → Conversions: Track purchase completions and conversion rates

@@ -5,7 +5,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/contexts/cart-context";
-import { initGA, trackPageView } from "@/lib/analytics";
+import { AnalyticsProvider } from "@/contexts/analytics-context";
+import { trackPageView } from "@/lib/analytics";
 import Home from "@/pages/home";
 import ShopCoins from "@/pages/shop-coins";
 import Checkout from "@/pages/checkout";
@@ -32,19 +33,16 @@ function Router() {
 }
 
 function App() {
-  // Initialize Google Analytics on app mount
-  useEffect(() => {
-    initGA();
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
-      <CartProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
-      </CartProvider>
+      <AnalyticsProvider>
+        <CartProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </CartProvider>
+      </AnalyticsProvider>
     </QueryClientProvider>
   );
 }

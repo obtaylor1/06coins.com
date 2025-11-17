@@ -25,7 +25,7 @@ import {
   BarChart3,
   ExternalLink,
 } from "lucide-react";
-import { isGAInitialized } from "@/lib/analytics";
+import { useAnalytics } from "@/contexts/analytics-context";
 import type { Order } from "@shared/schema";
 import { 
   LineChart, 
@@ -80,6 +80,7 @@ interface ProductSales {
 export default function Admin() {
   const { toast } = useToast();
   const { user, isLoading, isAuthenticated, isAdmin } = useAuth();
+  const { isInitialized: gaInitialized, isConfigured: gaConfigured, measurementId } = useAnalytics();
   const [editingProduct, setEditingProduct] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [orderFilter, setOrderFilter] = useState<'all' | 'pending' | 'completed' | 'refunded'>('all');
@@ -334,10 +335,15 @@ export default function Admin() {
               {/* Status Column */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                  {isGAInitialized() ? (
+                  {gaInitialized ? (
                     <>
                       <CheckCircle2 className="h-5 w-5 text-green-500" />
-                      <span className="text-sm font-medium text-foreground">GA4 Enabled</span>
+                      <span className="text-sm font-medium text-foreground">GA4 Active</span>
+                    </>
+                  ) : gaConfigured ? (
+                    <>
+                      <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                      <span className="text-sm font-medium text-foreground">GA4 Initialization Failed</span>
                     </>
                   ) : (
                     <>
@@ -347,13 +353,22 @@ export default function Admin() {
                   )}
                 </div>
                 
-                {isGAInitialized() ? (
+                {gaInitialized ? (
                   <div className="space-y-2">
                     <p className="text-xs text-foreground/60">
-                      Measurement ID: {import.meta.env.VITE_GA4_MEASUREMENT_ID?.substring(0, 5)}...
+                      Measurement ID: {measurementId?.substring(0, 5)}...
                     </p>
                     <p className="text-xs text-foreground/60">
-                      Tracking page views, purchases, and cart events
+                      Successfully tracking page views, purchases, and cart events
+                    </p>
+                  </div>
+                ) : gaConfigured ? (
+                  <div className="space-y-2">
+                    <p className="text-xs text-foreground/60">
+                      Measurement ID is configured but initialization failed. Check browser console for errors.
+                    </p>
+                    <p className="text-xs text-foreground/60">
+                      Configured ID: {measurementId?.substring(0, 5)}...
                     </p>
                   </div>
                 ) : (
@@ -386,7 +401,7 @@ export default function Admin() {
                   </Button>
                 </a>
                 
-                {isGAInitialized() && (
+                {gaInitialized && (
                   <div className="bg-background/50 rounded-lg p-3 space-y-1">
                     <p className="text-xs font-semibold text-foreground/80">Tracked Events:</p>
                     <ul className="text-xs text-foreground/60 space-y-0.5">
