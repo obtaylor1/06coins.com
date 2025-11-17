@@ -10,6 +10,7 @@ import { CartSummary } from "@/components/cart-summary";
 import { StickyHeader } from "@/components/sticky-header";
 import heroBackgroundImg from "@assets/0_2_1763332961118.jpg";
 import goldTextureImg from "@assets/0_0-8_1763355352629.jpg";
+import museumDisplayImg from "@assets/0_1_1763355638824.jpg";
 
 export default function ShopCoins() {
   const { addItem } = useCart();
@@ -266,7 +267,14 @@ export default function ShopCoins() {
                 </Badge>
               </div>
 
-              <div className="p-8 md:p-12">
+              <div 
+                className="p-8 md:p-12 relative"
+                style={{
+                  backgroundImage: `linear-gradient(rgba(18, 18, 18, 0.88), rgba(18, 18, 18, 0.88)), url(${museumDisplayImg})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              >
                 <div className="grid md:grid-cols-[1fr_400px] gap-8">
                   {/* Coin grid */}
                   <div>
