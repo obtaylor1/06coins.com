@@ -114,12 +114,12 @@ export function PurchaseModule() {
         <Card className="border-2 border-primary/30 rounded-2xl sm:rounded-3xl overflow-hidden bg-card/95 shadow-2xl">
           <div className="grid lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-12 p-6 sm:p-8 md:p-10">
             {/* Product Image */}
-            <div className="lg:col-span-2 flex justify-center">
-              <div className="aspect-square rounded-full overflow-hidden shadow-2xl w-full max-w-sm">
+            <div className="lg:col-span-2 flex justify-center items-center">
+              <div className="relative w-full max-w-xs">
                 <img 
                   src={coinFrontImg} 
                   alt="Alpha Phi Alpha 120th Anniversary Commemorative Coin" 
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto object-contain drop-shadow-2xl"
                   data-testid="img-coin-purchase"
                 />
               </div>
