@@ -4,6 +4,7 @@ import { Ruler, Scale, Sparkles, Globe, Star, Shield } from "lucide-react";
 import coinFrontImg from "@assets/apa coin front_1762505793054.png";
 import coinBackImg from "@assets/apa coin back_1762505793054.png";
 import showcaseHeaderBgImg from "@assets/0_0-4_1763339722286.jpg";
+import showcaseContentBgImg from "@assets/0_0-7_1763344643721.jpg";
 
 interface ProductShowcaseProps {
   onCtaClick?: () => void;
@@ -49,7 +50,15 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
       </div>
 
       {/* Main Content Section */}
-      <div className="relative py-12 sm:py-16 md:py-20 lg:py-32 px-4 sm:px-6 md:px-12">
+      <div 
+        className="relative py-12 sm:py-16 md:py-20 lg:py-32 px-4 sm:px-6 md:px-12"
+        style={{
+          backgroundImage: `url(${showcaseContentBgImg})`,
+          backgroundPosition: 'top center',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
         <div className="relative z-10 max-w-7xl mx-auto space-y-12 sm:space-y-16 md:space-y-20 lg:space-y-28">
 
         {/* The Scale and Significance */}
