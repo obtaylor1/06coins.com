@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, integer, timestamp, jsonb, index } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, integer, timestamp, jsonb, index, serial } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -106,3 +106,42 @@ export const insertOrderSchema = createInsertSchema(orders).omit({
 
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type Order = typeof orders.$inferSelect;
+
+// SMS Logs for admin tracking and monitoring
+export const smsLogs = pgTable("sms_logs", {
+  id: serial("id").primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  type: text("type").notNull(), // transactional, marketing, admin
+  templateName: text("template_name").notNull(), // orderConfirmation, shippingConfirmation, etc.
+  orderId: varchar("order_id"), // nullable, reference to orders table
+  customerName: text("customer_name"), // nullable, for display
+  phone: text("phone").notNull(),
+  status: text("status").notNull().default("sent"), // sent, delivered, failed, opted_out
+  providerMessageId: text("provider_message_id"), // Twilio SID
+  errorMessage: text("error_message"), // nullable
+  body: text("body").notNull(), // Full SMS text
+});
+
+export const insertSmsLogSchema = createInsertSchema(smsLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertSmsLog = z.infer<typeof insertSmsLogSchema>;
+export type SmsLog = typeof smsLogs.$inferSelect;
+
+// SMS Settings for admin configuration
+export const smsSettings = pgTable("sms_settings", {
+  id: serial("id").primaryKey(),
+  key: text("key").notNull().unique(),
+  value: text("value").notNull(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertSmsSettingsSchema = createInsertSchema(smsSettings).omit({
+  id: true,
+  updatedAt: true,
+});
+
+export type InsertSmsSettings = z.infer<typeof insertSmsSettingsSchema>;
+export type SmsSettings = typeof smsSettings.$inferSelect;
