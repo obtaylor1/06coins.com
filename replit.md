@@ -61,12 +61,14 @@ The platform is built with a premium luxury design system featuring a Black (#12
     - Replit Auth (admin authentication)
     - Firebase Firestore (real-time inventory)
     - Stripe API (payment processing)
+    - Nodemailer (transactional emails)
 - **Database:**
     - PostgreSQL
 - **Environment Variables:**
     - Firebase API Key, App ID, Project ID (client and server)
     - Stripe Public Key (frontend), Secret Key (backend)
     - Google Analytics 4 Measurement ID (optional, for tracking)
+    - SMTP Configuration (SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, EMAIL_FROM, CONTACT_TO_EMAIL)
     - Database URL, Session Secret (Replit auto-configured)
 
 ## Google Analytics 4 Setup
@@ -157,3 +159,39 @@ This is a client-side SPA, so meta tags are injected via JavaScript. For product
 - Submit sitemap: https://06coins.com/sitemap.xml
 - Monitor index coverage, structured data, and Core Web Vitals
 - Use Rich Results Test to verify structured data: https://search.google.com/test/rich-results
+
+## Transactional Email System
+
+A comprehensive email flow system has been implemented to guide customers through their purchase journey and provide support.
+
+**Email Flow:**
+1. **Order Confirmation** - Sent immediately after successful payment with order details
+2. **Shipping Confirmation** - Sent when admin marks order as shipped (includes tracking number)
+3. **Delivery Confirmation** - Sent when admin marks order as delivered
+4. **Thank You Story** - Sent 1-2 days after delivery (shares fraternity heritage)
+5. **Review Request** - Sent 5-7 days after delivery (requests product review)
+6. **Contact Form Auto-Reply** - Sent when customer submits inquiry via contact form
+
+**Implementation Details:**
+- All emails use luxury black/gold aesthetic matching site design
+- Order confirmation sent automatically after successful Stripe payment
+- Shipping/delivery emails triggered by admin order status updates
+- Scheduled emails (thank you, review) processed via cron job endpoint: `/api/admin/process-scheduled-emails`
+- Contact form sends dual emails: auto-reply to customer + internal notification to support@06coins.com
+- Email tracking flags stored in database to prevent duplicate sends
+- Non-blocking async email sending to avoid slowing down API responses
+
+**Technical Architecture:**
+- Email service: `server/services/emailService.ts`
+- Templates: `server/emails/templates/` (6 template files with HTML + text versions)
+- Database tracking: Order schema includes email-sent flags, order status, tracking info, delivery timestamps
+- Security: Honeypot + time-based validation on contact form
+
+**Required Setup:**
+- SMTP environment variables must be configured (see EMAIL_SYSTEM_SETUP.md)
+- Cron job must be set up to call `/api/admin/process-scheduled-emails` endpoint periodically
+- Admin must mark orders as shipped/delivered to trigger shipping and delivery emails
+
+**Documentation:**
+- Full setup guide: `EMAIL_SYSTEM_SETUP.md`
+- Includes SMTP configuration, email testing, troubleshooting, production best practices
