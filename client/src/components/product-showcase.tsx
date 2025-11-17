@@ -107,69 +107,6 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
 
         {/* Coins Side by Side */}
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Front (Obverse) */}
-          <div className="space-y-6">
-            {/* Coin Image */}
-            <div className="aspect-square rounded-full overflow-hidden shadow-2xl max-w-md mx-auto">
-              <img 
-                src={coinFrontImg} 
-                alt="Alpha Phi Alpha 120th Anniversary Commemorative Coin - Front (Obverse)" 
-                className="w-full h-full object-cover"
-                data-testid="img-coin-front-showcase"
-              />
-            </div>
-
-            {/* Title */}
-            <div className="text-center space-y-2">
-              <h3 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
-                The Front (Obverse): <span className="text-primary">Foundations & Global Impact</span>
-              </h3>
-            </div>
-            
-            {/* Details */}
-            <div className="space-y-5">
-              <div className="flex gap-4">
-                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-                <div>
-                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">The Seven Jewels</h4>
-                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
-                    Seven distinct stars are arranged in formation to pay direct homage to our seven visionary founders—The Jewels—who dared to lay the foundation at Cornell.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-                <div>
-                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">The Founding Seal</h4>
-                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
-                    The official Greek-letter seal is centrally placed, a constant reminder of our intercollegiate origins.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-                <div>
-                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">The Motto</h4>
-                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
-                    The complete mantra, <em className="text-primary">"First of All, Servants of All, We Shall Transcend All,"</em> is elegantly inscribed along the perimeter, serving as the call to action for every brother who views it.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-                <div>
-                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">Precision Engraving</h4>
-                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
-                    The entire surface features micro-engraving texture, designed to catch and reflect light, giving the Old Gold finish a vibrant, enduring luster.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Back (Reverse) */}
           <div className="space-y-6">
             {/* Coin Image */}
@@ -227,6 +164,69 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
                   <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">Inscriptions</h4>
                   <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
                     Clearly marked are the founding year <strong className="text-primary">1906</strong> and the commemorative year <strong className="text-primary">2026</strong>.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Front (Obverse) */}
+          <div className="space-y-6">
+            {/* Coin Image */}
+            <div className="aspect-square rounded-full overflow-hidden shadow-2xl max-w-md mx-auto">
+              <img 
+                src={coinFrontImg} 
+                alt="Alpha Phi Alpha 120th Anniversary Commemorative Coin - Front (Obverse)" 
+                className="w-full h-full object-cover"
+                data-testid="img-coin-front-showcase"
+              />
+            </div>
+
+            {/* Title */}
+            <div className="text-center space-y-2">
+              <h3 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
+                The Front (Obverse): <span className="text-primary">Foundations & Global Impact</span>
+              </h3>
+            </div>
+            
+            {/* Details */}
+            <div className="space-y-5">
+              <div className="flex gap-4">
+                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                <div>
+                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">The Seven Jewels</h4>
+                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
+                    Seven distinct stars are arranged in formation to pay direct homage to our seven visionary founders—The Jewels—who dared to lay the foundation at Cornell.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                <div>
+                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">The Founding Seal</h4>
+                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
+                    The official Greek-letter seal is centrally placed, a constant reminder of our intercollegiate origins.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                <div>
+                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">The Motto</h4>
+                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
+                    The complete mantra, <em className="text-primary">"First of All, Servants of All, We Shall Transcend All,"</em> is elegantly inscribed along the perimeter, serving as the call to action for every brother who views it.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                <div>
+                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">Precision Engraving</h4>
+                  <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
+                    The entire surface features micro-engraving texture, designed to catch and reflect light, giving the Old Gold finish a vibrant, enduring luster.
                   </p>
                 </div>
               </div>
