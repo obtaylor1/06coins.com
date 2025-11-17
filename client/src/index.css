@@ -352,3 +352,30 @@
     box-shadow: 0 0 20px hsl(42 48% 56% / 0.8);
   }
 }
+
+/* Coin Hover Zoom Effect */
+.coin-hover-wrapper {
+  display: inline-block;
+  overflow: visible;
+  transition: transform 0.3s ease-in-out;
+  cursor: pointer;
+  position: relative;
+}
+
+.coin-hover-wrapper img {
+  transition: transform 0.35s ease-in-out, filter 0.35s ease-in-out;
+  transform-origin: center center;
+  max-width: 100%;
+  height: auto;
+}
+
+.coin-hover-wrapper:hover img {
+  transform: scale(1.35);
+  filter: drop-shadow(0 8px 12px rgba(212, 175, 55, 0.35));
+}
+
+@media (max-width: 768px) {
+  .coin-hover-wrapper:hover img {
+    transform: scale(1.15);
+  }
+}
