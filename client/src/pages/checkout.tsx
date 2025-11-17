@@ -8,6 +8,9 @@ import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/cart-context";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { trackPurchase } from "@/lib/analytics";
 
 // Load Stripe outside of component to avoid recreating on every render
@@ -28,6 +31,11 @@ function CheckoutForm({ quantity, totalAmount, useCartData }: CheckoutFormProps)
   const [, setLocation] = useLocation();
   const [isProcessing, setIsProcessing] = useState(false);
   const { items, emptyCart } = useCart();
+  
+  // SMS opt-in state
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [smsOrderUpdatesOptIn, setSmsOrderUpdatesOptIn] = useState(false);
+  const [smsMarketingOptIn, setSmsMarketingOptIn] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,16 +66,22 @@ function CheckoutForm({ quantity, totalAmount, useCartData }: CheckoutFormProps)
       // Payment succeeded! Now decrement inventory (order is created server-side)
       if (paymentIntent && paymentIntent.status === 'succeeded') {
         try {
-          // Decrement inventory (with payment verification + order creation)
+          // Decrement inventory (with payment verification + order creation + SMS opt-in)
           const orderPayload = useCartData ? {
             paymentIntentId: paymentIntent.id,
             cartItems: items.map(item => ({
               id: item.id,
               quantity: item.quantity,
             })),
+            customerPhone: phoneNumber || null,
+            smsOrderUpdatesOptIn: smsOrderUpdatesOptIn ? 1 : 0,
+            smsMarketingOptIn: smsMarketingOptIn ? 1 : 0,
           } : {
             quantity,
-            paymentIntentId: paymentIntent.id
+            paymentIntentId: paymentIntent.id,
+            customerPhone: phoneNumber || null,
+            smsOrderUpdatesOptIn: smsOrderUpdatesOptIn ? 1 : 0,
+            smsMarketingOptIn: smsMarketingOptIn ? 1 : 0,
           };
 
           // Submit order FIRST before clearing cart
@@ -160,6 +174,73 @@ function CheckoutForm({ quantity, totalAmount, useCartData }: CheckoutFormProps)
       </div>
 
       <PaymentElement />
+      
+      {/* SMS Opt-In Section */}
+      <div className="space-y-4 border-t border-primary/20 pt-6">
+        <div className="space-y-2">
+          <Label htmlFor="phone-input" className="text-foreground">
+            Phone Number (Optional)
+          </Label>
+          <Input
+            id="phone-input"
+            type="tel"
+            placeholder="+1 (555) 123-4567"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            className="bg-card border-primary/20"
+            data-testid="input-phone"
+          />
+          <p className="text-xs text-foreground/60">
+            Receive order updates via text message
+          </p>
+        </div>
+        
+        {phoneNumber && (
+          <div className="space-y-3 pl-1">
+            <div className="flex items-start space-x-3">
+              <Checkbox
+                id="sms-order-updates"
+                checked={smsOrderUpdatesOptIn}
+                onCheckedChange={(checked) => setSmsOrderUpdatesOptIn(checked as boolean)}
+                className="mt-1"
+                data-testid="checkbox-sms-order-updates"
+              />
+              <div className="space-y-1">
+                <Label
+                  htmlFor="sms-order-updates"
+                  className="text-sm font-normal cursor-pointer text-foreground leading-tight"
+                >
+                  Send me order updates via SMS
+                </Label>
+                <p className="text-xs text-foreground/60">
+                  Get notified when your order ships and is delivered
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-start space-x-3">
+              <Checkbox
+                id="sms-marketing"
+                checked={smsMarketingOptIn}
+                onCheckedChange={(checked) => setSmsMarketingOptIn(checked as boolean)}
+                className="mt-1"
+                data-testid="checkbox-sms-marketing"
+              />
+              <div className="space-y-1">
+                <Label
+                  htmlFor="sms-marketing"
+                  className="text-sm font-normal cursor-pointer text-foreground leading-tight"
+                >
+                  Send me exclusive updates about Alpha Phi Alpha
+                </Label>
+                <p className="text-xs text-foreground/60">
+                  Receive heritage stories and special announcements. Reply STOP to opt out anytime.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
       
       <Button
         type="submit"

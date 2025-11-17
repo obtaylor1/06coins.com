@@ -120,7 +120,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const { quantity, paymentIntentId, cartItems } = req.body;
+      const { quantity, paymentIntentId, cartItems, customerPhone, smsOrderUpdatesOptIn, smsMarketingOptIn } = req.body;
 
       if (!paymentIntentId) {
         return res.status(400).json({ message: "Payment intent required" });
@@ -206,9 +206,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
             status: "processing", // Order needs to be shipped
             customerName: paymentIntent.shipping?.name || 'Unknown Customer',
             customerEmail: paymentIntent.receipt_email || null,
+            customerPhone: customerPhone || null,
             shippingAddress: paymentIntent.shipping?.address || null,
             cartItems: cartItemsForStorage as any,
             emailConfirmationSent: 0, // Will be set to 1 after email sent
+            smsOrderUpdatesOptIn: smsOrderUpdatesOptIn ?? 0,
+            smsMarketingOptIn: smsMarketingOptIn ?? 0,
           }
         );
 
