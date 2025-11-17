@@ -98,7 +98,7 @@ export function Footer() {
                 Alpha Phi Alpha Fraternity, Inc.
               </h4>
               <p className="text-sm text-foreground/70 leading-relaxed">
-                This commemorative coin sale is an officially licensed project celebrating the 120th Anniversary (1906-2026) of Alpha Phi Alpha Fraternity, Incorporated. Proceeds support the fraternity's national programs and educational foundation.
+                "First of all, Servants of All, We Shall Transcend All." This Fraternity's motto encapsulates our profound legacy as the first intercollegiate Greek-letter organization founded by African American men, our unwavering commitment to community service, and the high ideals we instill in every member. This commemorative coin honors the 120th Anniversary (1906–2026) of Alpha Phi Alpha Fraternity, Incorporated.
               </p>
               <div className="inline-flex items-center gap-2 bg-card border border-primary/20 rounded-lg px-4 py-2">
                 <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
