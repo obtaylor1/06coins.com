@@ -1,0 +1,144 @@
+Your task is to implement a complete email flow for the customer journey, including core transactional emails and a couple of post-purchase emails.
+Assume the stack is Node/Express (or similar) and work within the existing tech and structure.
+1. Inspect the existing project for order logic & email
+Find:
+Where orders are created (checkout route, order model, etc.).
+How order status is stored (e.g., pending, paid, processing, shipped, delivered).
+Whether any email sending utility already exists (e.g., nodemailer, third-party API).
+If an email utility already exists, reuse it.
+If no email utility exists, set up a basic email sender using nodemailer with configuration via environment variables:
+EMAIL_FROM
+SMTP_HOST
+SMTP_PORT
+SMTP_USER
+SMTP_PASS
+Do not hard-code secrets.
+2. Create a reusable email service
+Create a module like services/emailService.js (or similar) that exports reusable functions such as:
+sendOrderConfirmationEmail(order, customer)
+sendShippingConfirmationEmail(order, customer)
+sendDeliveryConfirmationEmail(order, customer)
+sendThankYouStoryEmail(order, customer)
+sendReviewRequestEmail(order, customer)
+(optional) sendInquiryReceivedEmail(contactFormSubmission)
+Each function should:
+Accept structured data (order, customer).
+Build a subject, HTML body, and plain text body.
+Call a common sendEmail({ to, subject, html, text }) utility.
+3. Implement core email templates (HTML + text)
+Create a folder like emails/templates/ and implement at least the following templates:
+a) Order Confirmation Email (Required)
+Trigger: immediately after a successful order is placed.
+Content:
+Subject example:
+“Order Confirmed – Alpha Phi Alpha 120-Year Commemorative Coins (Order #{{orderNumber}})”
+Body includes:
+Customer name
+Order number
+List of items (4″ coin, Jewel set, individual coins) with quantities and prices
+Shipping address
+Billing summary
+Link to view order or contact support
+b) Shipping Confirmation Email (Required)
+Trigger: when order status changes to “shipped”.
+Content:
+Subject example:
+“Your Order is on the Way – Alpha Phi Alpha Commemorative Coins (Order #{{orderNumber}})”
+Include:
+Tracking number (if available)
+Carrier name
+Tracking link
+Estimated delivery window
+Items summary
+c) Delivery Confirmation Email (Required if tracking supports it)
+Trigger: when status changes to “delivered” or when you mark it delivered.
+Content:
+Subject example:
+“Delivered – Your Alpha Phi Alpha Commemorative Coins”
+Include:
+Delivery date
+Reminder to inspect package
+Instructions in case they didn’t receive it
+Support link
+d) Thank You + Story Email (Strongly Recommended)
+Trigger: scheduled 1–2 days after delivery.
+Content:
+Subject example:
+“Thank You for Honoring 120 Years of Alpha Phi Alpha”
+Includes:
+Personalized thank you
+Short story about the 120-Year Anniversary and the meaning of the coin / Seven Jewels
+Invitation to share photos on social media or with their chapter
+Link back to the shop (e.g., to buy the Jewel set if they only bought 4″ coin)
+e) Review Request Email (Strongly Recommended)
+Trigger: 5–7 days after delivery.
+Content:
+Subject example:
+“How Do You Like Your Commemorative Coin? Leave a Review.”
+Includes:
+Friendly ask to rate their purchase
+Direct link to the product review page or simple feedback form
+Optional note: “Your feedback helps other Brothers and collectors.”
+f) Inquiry Received Email (Optional, if contact form exists)
+Trigger: when someone submits the contact/“Contact Us” form.
+Content:
+Subject example:
+“We’ve Received Your Message – Alpha Phi Alpha Coin Campaign”
+Includes:
+Copy of their message
+Response time expectation (e.g., 24–48 hours)
+Link back to the store
+Make the HTML templates match the site’s branding (black, white, gold, Egyptian accents), but keep the layout simple for email clients (single column, 600–700px width).
+4. Wire up email triggers in the order lifecycle
+Using the existing order logic:
+After successful checkout (order creation & payment success)
+Call sendOrderConfirmationEmail(order, customer).
+When order status moves to “shipped”
+Where you mark an order as shipped, call sendShippingConfirmationEmail(order, customer).
+When order status moves to “delivered”
+Where you mark an order as delivered (or when tracking says delivered), call sendDeliveryConfirmationEmail(order, customer).
+Schedule Thank You + Story email
+When marking delivered, also schedule a delayed email task for 1–2 days later:
+For now, you may:
+Store a thankYouEmailScheduledAt timestamp in the order, and
+Implement a simple cron-style job or periodic script that sends emails where the time is due and a “thank you” hasn’t been sent yet.
+Call sendThankYouStoryEmail(order, customer) when due.
+Schedule Review Request email
+Similarly, schedule another task 5–7 days after delivery.
+Call sendReviewRequestEmail(order, customer).
+If a full scheduling system is too heavy, at minimum:
+Implement immediate transactional emails (confirmation + shipping + delivery).
+Create helper functions to manually trigger “thank you” and “review request” emails from an admin or script.
+5. Integrate with the Contact Form (if present)
+If a Contact page/form already exists (e.g. /contact):
+When the form POST handler successfully receives and validates a message:
+Call sendInquiryReceivedEmail(contactSubmission) to send the auto-reply to the customer.
+Optionally, send an internal notification email to the site admin with the submission details.
+6. Configuration & Environment Variables
+Add or verify an env-based email configuration, for example:
+EMAIL_FROM="Alpha Coin Shop <no-reply@example.com>"
+CONTACT_TO_EMAIL="info@example.com"
+SMTP_HOST=...
+SMTP_PORT=...
+SMTP_USER=...
+SMTP_PASS=...
+Make sure the project reads these values from the environment (e.g. using process.env).
+Document in a README section how to configure email credentials.
+7. Logging, Error Handling, and Safety
+Log when an email is successfully sent (order ID, email type, recipient).
+If sending fails:
+Do not crash the checkout flow.
+Log the failure with enough detail to debug (but not secrets).
+Optionally, flag the order as “emailFailed” for admin visibility.
+Ensure no stack traces or sensitive info are leaked to users in responses.
+8. Final Deliverables
+When complete, provide:
+A list of:
+New files created (e.g., services/emailService.js, emails/templates/*).
+Existing files modified (e.g., order controller, contact controller, cron/scheduler).
+A short description of:
+Which emails are sent at each stage.
+How to change email subjects / content.
+How delayed “thank you” and “review request” emails are triggered or scheduled.
+Implement all of the above now.
+End of Replit Agent Prompt

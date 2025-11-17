@@ -53,16 +53,35 @@ export const orders = pgTable("orders", {
   stripePaymentIntentId: text("stripe_payment_intent_id").notNull(),
   quantity: integer("quantity").notNull(),
   totalAmount: integer("total_amount").notNull(), // in cents
-  status: text("status").notNull().default("pending"), // pending, completed, failed
+  status: text("status").notNull().default("pending"), // pending, processing, shipped, delivered, completed, failed
   customerName: text("customer_name"),
   customerEmail: text("customer_email"),
   shippingAddress: jsonb("shipping_address"), // { line1, line2, city, state, postal_code, country }
+  cartItems: jsonb("cart_items"), // Array of {id, name, quantity, price} for each item ordered
+  
+  // Shipping & delivery tracking
+  trackingNumber: text("tracking_number"),
+  carrier: text("carrier"), // e.g., "USPS", "FedEx", "UPS"
+  shippedAt: timestamp("shipped_at"),
+  deliveredAt: timestamp("delivered_at"),
+  
+  // Email tracking (to prevent duplicate sends)
+  emailConfirmationSent: integer("email_confirmation_sent").default(0).notNull(), // 0 = not sent, 1 = sent
+  emailShippingSent: integer("email_shipping_sent").default(0).notNull(),
+  emailDeliverySent: integer("email_delivery_sent").default(0).notNull(),
+  emailThankYouSent: integer("email_thank_you_sent").default(0).notNull(),
+  emailReviewSent: integer("email_review_sent").default(0).notNull(),
+  emailThankYouScheduledFor: timestamp("email_thank_you_scheduled_for"), // 1-2 days after delivery
+  emailReviewScheduledFor: timestamp("email_review_scheduled_for"), // 5-7 days after delivery
+  
   createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 export const insertOrderSchema = createInsertSchema(orders).omit({
   id: true,
   createdAt: true,
+  updatedAt: true,
 });
 
 export type InsertOrder = z.infer<typeof insertOrderSchema>;

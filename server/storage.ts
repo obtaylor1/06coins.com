@@ -22,6 +22,9 @@ export interface IStorage {
   getOrderByPaymentIntent(paymentIntentId: string): Promise<Order | undefined>;
   getAllOrders(): Promise<Order[]>;
   updateOrderStatus(id: string, status: string): Promise<Order | undefined>;
+  updateOrder(id: string, updates: Partial<Order>): Promise<Order | undefined>;
+  markEmailSent(id: string, emailType: 'confirmation' | 'shipping' | 'delivery' | 'thankYou' | 'review'): Promise<Order | undefined>;
+  getOrdersNeedingScheduledEmails(): Promise<Order[]>;
 }
 
 export class DbStorage implements IStorage {
@@ -240,11 +243,73 @@ export class DbStorage implements IStorage {
   async updateOrderStatus(id: string, status: string): Promise<Order | undefined> {
     const result = await db
       .update(ordersTable)
-      .set({ status })
+      .set({ 
+        status,
+        updatedAt: new Date(),
+      })
       .where(eq(ordersTable.id, id))
       .returning();
 
     return result[0];
+  }
+
+  async updateOrder(id: string, updates: Partial<Order>): Promise<Order | undefined> {
+    const result = await db
+      .update(ordersTable)
+      .set({
+        ...updates,
+        updatedAt: new Date(),
+      })
+      .where(eq(ordersTable.id, id))
+      .returning();
+
+    return result[0];
+  }
+
+  async markEmailSent(id: string, emailType: 'confirmation' | 'shipping' | 'delivery' | 'thankYou' | 'review'): Promise<Order | undefined> {
+    const fieldMap = {
+      confirmation: 'emailConfirmationSent',
+      shipping: 'emailShippingSent',
+      delivery: 'emailDeliverySent',
+      thankYou: 'emailThankYouSent',
+      review: 'emailReviewSent',
+    };
+
+    const field = fieldMap[emailType];
+    const result = await db
+      .update(ordersTable)
+      .set({ 
+        [field]: 1,
+        updatedAt: new Date(),
+      })
+      .where(eq(ordersTable.id, id))
+      .returning();
+
+    return result[0];
+  }
+
+  async getOrdersNeedingScheduledEmails(): Promise<Order[]> {
+    const now = new Date();
+    
+    // Get orders where scheduled email time has passed and email hasn't been sent
+    const result = await db
+      .select()
+      .from(ordersTable)
+      .where(
+        sql`(
+          (${ordersTable.emailThankYouScheduledFor} IS NOT NULL 
+           AND ${ordersTable.emailThankYouScheduledFor} <= ${now}
+           AND ${ordersTable.emailThankYouSent} = 0
+           AND ${ordersTable.customerEmail} IS NOT NULL)
+          OR
+          (${ordersTable.emailReviewScheduledFor} IS NOT NULL 
+           AND ${ordersTable.emailReviewScheduledFor} <= ${now}
+           AND ${ordersTable.emailReviewSent} = 0
+           AND ${ordersTable.customerEmail} IS NOT NULL)
+        )`
+      );
+
+    return result;
   }
 }
 
