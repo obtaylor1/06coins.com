@@ -489,6 +489,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // SMS Management Routes
+  app.get("/api/admin/sms/analytics", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      // Use SQL aggregation instead of loading all logs
+      const analytics = await storage.getSmsAnalytics();
+      
+      res.json(analytics);
+    } catch (error: any) {
+      console.error('Error fetching SMS analytics:', error);
+      res.status(500).json({ message: "Error fetching SMS analytics: " + error.message });
+    }
+  });
+
+  // Order-specific SMS logs (secure, scoped to single order)
+  app.get("/api/admin/sms/logs/:orderId", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const smsLogs = await storage.getSmsLogsByOrder(orderId);
+      res.json(smsLogs);
+    } catch (error: any) {
+      console.error('Error fetching SMS logs for order:', error);
+      res.status(500).json({ message: "Error fetching SMS logs: " + error.message });
+    }
+  });
+
   // Admin sales chart data endpoint (last 30 days)
   app.get("/api/admin/sales-chart", isAuthenticated, isAdmin, async (req, res) => {
     try {

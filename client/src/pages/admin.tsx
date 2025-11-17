@@ -24,9 +24,12 @@ import {
   Filter,
   BarChart3,
   ExternalLink,
+  MessageSquare,
+  Send,
+  Clock,
 } from "lucide-react";
 import { useAnalytics } from "@/contexts/analytics-context";
-import type { Order } from "@shared/schema";
+import type { Order, SmsLog } from "@shared/schema";
 import { 
   LineChart, 
   Line, 
@@ -75,6 +78,79 @@ interface ProductSales {
   productName: string;
   unitsSold: number;
   percentage: number;
+}
+
+interface SmsAnalytics {
+  totalSent: number;
+  totalFailed: number;
+  totalDelivered: number;
+  totalOptedOut: number;
+  successRate: string;
+  transactionalCount: number;
+  marketingCount: number;
+  adminCount: number;
+  recentSms: number;
+  totalMessages: number;
+}
+
+function OrderSmsTimeline({ orderId }: { orderId: string }) {
+  const { isAuthenticated, isAdmin } = useAuth();
+  
+  const { data: smsLogs } = useQuery<SmsLog[]>({
+    queryKey: ['/api/admin/sms/logs', { orderId }],
+    queryFn: async () => {
+      const response = await fetch(`/api/admin/sms/logs/${orderId}`, {
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch SMS logs');
+      }
+      return response.json();
+    },
+    enabled: isAuthenticated && isAdmin && !!orderId,
+  });
+
+  if (!smsLogs || smsLogs.length === 0) {
+    return (
+      <div className="text-xs text-foreground/50 italic">
+        No SMS messages sent for this order
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      {smsLogs.map((log) => (
+        <div 
+          key={log.id} 
+          className="flex items-start gap-2 text-xs"
+          data-testid={`sms-log-${log.id}`}
+        >
+          <MessageSquare className="w-3 h-3 text-primary mt-0.5" />
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              <span className="font-medium text-foreground/80">{log.templateName}</span>
+              <Badge 
+                className={`text-xs ${
+                  log.status === 'sent' || log.status === 'delivered' 
+                    ? 'bg-green-500/20 text-green-500 border-green-500/30' 
+                    : 'bg-red-500/20 text-red-500 border-red-500/30'
+                }`}
+              >
+                {log.status}
+              </Badge>
+            </div>
+            <p className="text-foreground/60">
+              {new Date(log.createdAt).toLocaleString()}
+            </p>
+            {log.errorMessage && (
+              <p className="text-red-500 text-xs mt-1">{log.errorMessage}</p>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 export default function Admin() {
@@ -134,6 +210,11 @@ export default function Admin() {
 
   const { data: productSales } = useQuery<ProductSales[]>({
     queryKey: ['/api/admin/product-sales'],
+    enabled: isAuthenticated && isAdmin,
+  });
+
+  const { data: smsAnalytics } = useQuery<SmsAnalytics>({
+    queryKey: ['/api/admin/sms/analytics'],
     enabled: isAuthenticated && isAdmin,
   });
 
@@ -412,6 +493,84 @@ export default function Admin() {
                     </ul>
                   </div>
                 )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* SMS Analytics Card */}
+        <Card className="bg-card/80 border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 text-primary" />
+              SMS Campaign Analytics
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Send className="w-4 h-4 text-green-500" />
+                  <p className="text-xs text-foreground/60">Messages Sent</p>
+                </div>
+                <p className="text-2xl font-bold text-primary" data-testid="text-sms-sent">
+                  {smsAnalytics?.totalSent || 0}
+                </p>
+                <p className="text-xs text-foreground/50">{smsAnalytics?.successRate || 0}% success rate</p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary" />
+                  <p className="text-xs text-foreground/60">Delivered</p>
+                </div>
+                <p className="text-2xl font-bold text-primary" data-testid="text-sms-delivered">
+                  {smsAnalytics?.totalDelivered || 0}
+                </p>
+                <p className="text-xs text-foreground/50">Confirmed by carrier</p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <XCircle className="w-4 h-4 text-red-500" />
+                  <p className="text-xs text-foreground/60">Failed</p>
+                </div>
+                <p className="text-2xl font-bold text-red-500" data-testid="text-sms-failed">
+                  {smsAnalytics?.totalFailed || 0}
+                </p>
+                <p className="text-xs text-foreground/50">Errors & bounces</p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-primary" />
+                  <p className="text-xs text-foreground/60">Recent (24h)</p>
+                </div>
+                <p className="text-2xl font-bold text-primary" data-testid="text-sms-recent">
+                  {smsAnalytics?.recentSms || 0}
+                </p>
+                <p className="text-xs text-foreground/50">Last day activity</p>
+              </div>
+            </div>
+
+            <div className="grid gap-3 md:grid-cols-3 mt-4 pt-4 border-t border-primary/10">
+              <div className="space-y-1">
+                <p className="text-xs text-foreground/60">Transactional</p>
+                <p className="text-lg font-semibold text-foreground" data-testid="text-sms-transactional">
+                  {smsAnalytics?.transactionalCount || 0}
+                </p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs text-foreground/60">Marketing</p>
+                <p className="text-lg font-semibold text-foreground" data-testid="text-sms-marketing">
+                  {smsAnalytics?.marketingCount || 0}
+                </p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs text-foreground/60">Admin Alerts</p>
+                <p className="text-lg font-semibold text-foreground" data-testid="text-sms-admin">
+                  {smsAnalytics?.adminCount || 0}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -737,6 +896,17 @@ export default function Admin() {
                       Stripe Payment Intent: <span className="font-mono">{order.stripePaymentIntentId}</span>
                     </p>
                   </div>
+
+                  {/* SMS Timeline */}
+                  {order.customerPhone && (
+                    <div className="pt-3 border-t border-primary/10">
+                      <div className="flex items-center gap-2 mb-2">
+                        <MessageSquare className="w-4 h-4 text-primary" />
+                        <p className="text-xs font-semibold text-foreground/80">SMS Timeline</p>
+                      </div>
+                      <OrderSmsTimeline orderId={order.id} />
+                    </div>
+                  )}
                 </div>
               ))
             ) : (

@@ -121,38 +121,59 @@ export async function checkRateLimit(orderId: string): Promise<{ allowed: boolea
   }
 }
 
-// Log SMS to order record
-async function logSmsToOrder(orderId: string, type: string, status: 'sent' | 'failed', error?: string) {
+// Log SMS to database (and order record if orderId provided)
+async function logSmsToDatabase(type: string, status: 'sent' | 'failed', error?: string, body?: string, phone?: string, templateName?: string, providerMessageId?: string, orderId?: string, customerName?: string) {
   try {
-    const order = await storage.getOrder(orderId);
-    if (!order) return;
-    
-    const smsLog = (order.smsLog as any[]) || [];
-    smsLog.push({
-      type,
-      timestamp: new Date().toISOString(),
+    // Always create SMS log in database
+    await storage.createSmsLog({
+      type: type === 'admin_alert' ? 'admin' : type,
+      templateName: templateName || type,
+      orderId: orderId || null,
+      customerName: customerName || undefined,
+      phone: phone || '',
       status,
-      error: error || null,
+      providerMessageId,
+      errorMessage: error,
+      body: body || '',
     });
     
-    const updates: any = {
-      smsLog,
-    };
-    
-    // Increment sent counter if successful
-    if (status === 'sent') {
-      updates.smsSentToday = (order.smsSentToday || 0) + 1;
-      updates.smsLastSentDate = new Date().toISOString().split('T')[0];
+    // If orderId provided, also update order record
+    if (orderId) {
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        console.log(`[SMS] Order ${orderId} not found, skipping order update`);
+        return;
+      }
+      
+      const smsLog = (order.smsLog as any[]) || [];
+      smsLog.push({
+        type,
+        timestamp: new Date().toISOString(),
+        status,
+        error: error || null,
+      });
+      
+      const updates: any = {
+        smsLog,
+      };
+      
+      // Increment sent counter if successful
+      if (status === 'sent') {
+        updates.smsSentToday = (order.smsSentToday || 0) + 1;
+        updates.smsLastSentDate = new Date().toISOString().split('T')[0];
+      }
+      
+      // Mark error flag if failed
+      if (status === 'failed') {
+        updates.smsError = 1;
+      }
+      
+      await storage.updateOrder(orderId, updates);
     }
     
-    // Mark error flag if failed
-    if (status === 'failed') {
-      updates.smsError = 1;
-    }
-    
-    await storage.updateOrder(orderId, updates);
+    console.log(`[SMS] Logged ${status} ${type} SMS${orderId ? ` for order ${orderId}` : ''}${error ? ': ' + error : ''}`);
   } catch (error) {
-    console.error('[SMS] Error logging SMS to order:', error);
+    console.error('[SMS] Error logging SMS:', error);
   }
 }
 
@@ -180,9 +201,7 @@ export async function sendSms({
   const formattedPhone = formatPhoneNumber(to);
   if (!isValidPhoneNumber(formattedPhone)) {
     console.error('[SMS] Invalid phone number:', to);
-    if (orderId) {
-      await logSmsToOrder(orderId, type, 'failed', 'Invalid phone number');
-    }
+    await logSmsToDatabase(type, 'failed', 'Invalid phone number', body, formattedPhone, type, undefined, orderId);
     return { success: false, error: 'Invalid phone number' };
   }
   
@@ -197,7 +216,7 @@ export async function sendSms({
     const rateLimitCheck = await checkRateLimit(orderId);
     if (!rateLimitCheck.allowed) {
       console.warn('[SMS] Rate limit exceeded for order:', orderId);
-      await logSmsToOrder(orderId, type, 'failed', 'Rate limit exceeded');
+      await logSmsToDatabase(type, 'failed', 'Rate limit exceeded', body, formattedPhone, type, undefined, orderId);
       return { success: false, error: 'Rate limit exceeded' };
     }
   }
@@ -217,19 +236,15 @@ export async function sendSms({
     
     console.log(`[SMS] Sent ${type} message to ${formattedPhone} (SID: ${message.sid})`);
     
-    // Log success
-    if (orderId) {
-      await logSmsToOrder(orderId, type, 'sent');
-    }
+    // Log success to database
+    await logSmsToDatabase(type, 'sent', undefined, body, formattedPhone, type, message.sid, orderId);
     
     return { success: true };
   } catch (error: any) {
     console.error(`[SMS] Error sending ${type} message:`, error.message);
     
-    // Log failure
-    if (orderId) {
-      await logSmsToOrder(orderId, type, 'failed', error.message);
-    }
+    // Log failure to database
+    await logSmsToDatabase(type, 'failed', error.message, body, formattedPhone, type, undefined, orderId);
     
     return { success: false, error: error.message };
   }

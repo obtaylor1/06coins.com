@@ -1,4 +1,4 @@
-import { type Inventory, type InsertInventory, type Order, type InsertOrder, type User, type UpsertUser, inventory as inventoryTable, orders as ordersTable, users as usersTable } from "@shared/schema";
+import { type Inventory, type InsertInventory, type Order, type InsertOrder, type User, type UpsertUser, type SmsLog, type InsertSmsLog, type SmsSettings, type InsertSmsSettings, inventory as inventoryTable, orders as ordersTable, users as usersTable, smsLogs as smsLogsTable, smsSettings as smsSettingsTable } from "@shared/schema";
 import { db } from "../db/index.js";
 import { eq, desc, sql, gte } from "drizzle-orm";
 
@@ -25,6 +25,28 @@ export interface IStorage {
   updateOrder(id: string, updates: Partial<Order>): Promise<Order | undefined>;
   markEmailSent(id: string, emailType: 'confirmation' | 'shipping' | 'delivery' | 'thankYou' | 'review'): Promise<Order | undefined>;
   getOrdersNeedingScheduledEmails(): Promise<Order[]>;
+  
+  // SMS Log methods
+  createSmsLog(log: InsertSmsLog): Promise<SmsLog>;
+  getSmsLogsByOrder(orderId: string): Promise<SmsLog[]>;
+  updateSmsLogStatus(id: number, status: string, errorMessage?: string): Promise<SmsLog | undefined>;
+  getSmsAnalytics(): Promise<{
+    totalSent: number;
+    totalFailed: number;
+    totalDelivered: number;
+    totalOptedOut: number;
+    successRate: string;
+    transactionalCount: number;
+    marketingCount: number;
+    adminCount: number;
+    recentSms: number;
+    totalMessages: number;
+  }>;
+  
+  // SMS Settings methods
+  getSmsSettings(): Promise<SmsSettings[]>;
+  getSmsSettingByKey(key: string): Promise<SmsSettings | undefined>;
+  upsertSmsSettings(setting: InsertSmsSettings): Promise<SmsSettings>;
 }
 
 export class DbStorage implements IStorage {
@@ -310,6 +332,109 @@ export class DbStorage implements IStorage {
       );
 
     return result;
+  }
+
+  // SMS Log operations
+  async createSmsLog(log: InsertSmsLog): Promise<SmsLog> {
+    const result = await db
+      .insert(smsLogsTable)
+      .values(log)
+      .returning();
+    return result[0];
+  }
+
+  async getSmsLogsByOrder(orderId: string): Promise<SmsLog[]> {
+    return await db
+      .select()
+      .from(smsLogsTable)
+      .where(eq(smsLogsTable.orderId, orderId))
+      .orderBy(desc(smsLogsTable.createdAt));
+  }
+
+  async updateSmsLogStatus(id: number, status: string, errorMessage?: string): Promise<SmsLog | undefined> {
+    const result = await db
+      .update(smsLogsTable)
+      .set({ 
+        status,
+        errorMessage: errorMessage || null,
+      })
+      .where(eq(smsLogsTable.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async getSmsAnalytics() {
+    // Efficient SQL aggregation for SMS analytics with COALESCE to handle empty table
+    const result = await db
+      .select({
+        totalSent: sql<number>`COALESCE(COUNT(CASE WHEN status = 'sent' THEN 1 END), 0)`,
+        totalFailed: sql<number>`COALESCE(COUNT(CASE WHEN status = 'failed' THEN 1 END), 0)`,
+        totalDelivered: sql<number>`COALESCE(COUNT(CASE WHEN status = 'delivered' THEN 1 END), 0)`,
+        totalOptedOut: sql<number>`COALESCE(COUNT(CASE WHEN status = 'opted_out' THEN 1 END), 0)`,
+        totalMessages: sql<number>`COALESCE(COUNT(*), 0)`,
+        transactionalCount: sql<number>`COALESCE(COUNT(CASE WHEN type = 'transactional' THEN 1 END), 0)`,
+        marketingCount: sql<number>`COALESCE(COUNT(CASE WHEN type = 'marketing' THEN 1 END), 0)`,
+        adminCount: sql<number>`COALESCE(COUNT(CASE WHEN type = 'admin' THEN 1 END), 0)`,
+        recentSms: sql<number>`COALESCE(COUNT(CASE WHEN created_at > NOW() - INTERVAL '24 hours' THEN 1 END), 0)`,
+      })
+      .from(smsLogsTable);
+
+    const stats = result[0] || {
+      totalSent: 0,
+      totalFailed: 0,
+      totalDelivered: 0,
+      totalOptedOut: 0,
+      totalMessages: 0,
+      transactionalCount: 0,
+      marketingCount: 0,
+      adminCount: 0,
+      recentSms: 0,
+    };
+    
+    const totalAttempted = stats.totalSent + stats.totalFailed;
+    const successRate = totalAttempted > 0 ? ((stats.totalSent / totalAttempted) * 100).toFixed(1) : '0.0';
+
+    return {
+      totalSent: stats.totalSent,
+      totalFailed: stats.totalFailed,
+      totalDelivered: stats.totalDelivered,
+      totalOptedOut: stats.totalOptedOut,
+      successRate,
+      transactionalCount: stats.transactionalCount,
+      marketingCount: stats.marketingCount,
+      adminCount: stats.adminCount,
+      recentSms: stats.recentSms,
+      totalMessages: stats.totalMessages,
+    };
+  }
+
+  // SMS Settings operations
+  async getSmsSettings(): Promise<SmsSettings[]> {
+    return await db.select().from(smsSettingsTable);
+  }
+
+  async getSmsSettingByKey(key: string): Promise<SmsSettings | undefined> {
+    const result = await db
+      .select()
+      .from(smsSettingsTable)
+      .where(eq(smsSettingsTable.key, key))
+      .limit(1);
+    return result[0];
+  }
+
+  async upsertSmsSettings(setting: InsertSmsSettings): Promise<SmsSettings> {
+    const result = await db
+      .insert(smsSettingsTable)
+      .values(setting)
+      .onConflictDoUpdate({
+        target: smsSettingsTable.key,
+        set: {
+          value: setting.value,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return result[0];
   }
 }
 
