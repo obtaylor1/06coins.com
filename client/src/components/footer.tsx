@@ -108,10 +108,10 @@ export function Footer() {
             {/* Copyright */}
             <div className="space-y-2 text-center md:text-left">
               <p className="text-sm text-foreground/60">
-                © 2026 Alpha Phi Alpha Fraternity, Inc. All rights reserved.
+                © 2026 06coins.com. All rights reserved.
               </p>
               <p className="text-sm text-foreground/50">
-                120th Anniversary Commemorative Coin
+                120th Anniversary Exclusive Commemorative Coin
               </p>
             </div>
           </div>
