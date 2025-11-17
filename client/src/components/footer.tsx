@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
 import coinBackImg from "@assets/apa coin back_1762505793054.png";
 
 export function Footer() {
@@ -88,20 +89,19 @@ export function Footer() {
               <p className="text-sm text-foreground/70 leading-relaxed">
                 "First of all, Servants of All, We Shall Transcend All." This Fraternity's motto encapsulates our profound legacy as the first intercollegiate Greek-letter organization founded by African American men, our unwavering commitment to community service, and the high ideals we instill in every member. This commemorative coin honors the 120th Anniversary (1906–2026) of Alpha Phi Alpha Fraternity, Incorporated.
               </p>
-              <div className="inline-flex items-center gap-2 bg-card border border-primary/20 rounded-lg px-4 py-2">
-                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                  <span className="text-primary font-bold text-xs">✓</span>
-                </div>
-                <span className="text-sm font-semibold text-foreground">Official APA Project</span>
-              </div>
               <a 
                 href="https://apa1906.net" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors"
               >
-                Visit the Official APA Site
-                <span className="text-xs">↗</span>
+                <Button 
+                  variant="outline" 
+                  className="border-primary text-primary hover:bg-primary/10"
+                  data-testid="button-visit-apa-site"
+                >
+                  Visit the Official APA Site
+                  <span className="ml-2 text-xs">↗</span>
+                </Button>
               </a>
             </div>
 
