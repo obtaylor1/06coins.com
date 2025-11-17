@@ -185,7 +185,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
           className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mt-8 sm:mt-12 items-start"
         >
           {/* LEFT: Carousel Container */}
-          <div className="flex flex-col items-center gap-6 sm:gap-8 border-2 border-primary/60 rounded-2xl sm:rounded-3xl bg-transparent backdrop-blur px-4 sm:px-6 py-6 sm:py-8">
+          <div className="flex flex-col items-center gap-6 sm:gap-8 border-2 border-primary/60 rounded-2xl sm:rounded-3xl bg-gray-800 px-4 sm:px-6 py-6 sm:py-8">
             {/* Carousel Navigation */}
             <div className="flex items-center justify-center gap-4 sm:gap-6 md:gap-12 w-full">
               {/* Left Arrow */}
@@ -207,7 +207,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
                 
                 {/* Coin Container */}
                 <div 
-                  className="relative h-40 w-40 xs:h-48 xs:w-48 sm:h-56 sm:w-56 lg:h-64 lg:w-64 rounded-full border-2 border-primary/60 bg-gradient-to-b from-primary/10 to-white flex items-center justify-center shadow-2xl overflow-hidden"
+                  className="relative h-40 w-40 xs:h-48 xs:w-48 sm:h-56 sm:w-56 lg:h-64 lg:w-64 rounded-full border-2 border-primary/60 bg-gradient-to-b from-primary/10 to-gray-900 flex items-center justify-center shadow-2xl overflow-hidden"
                   data-testid={`carousel-coin-${activeJewel.id}`}
                 >
                   <img
@@ -240,7 +240,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
                   className={`h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-full border-2 transition-all shrink-0 overflow-hidden ${
                     index === activeIndex
                       ? "border-primary ring-2 ring-primary/30 scale-110"
-                      : "border-gray-300 hover:border-primary/50 opacity-60 hover:opacity-100"
+                      : "border-gray-600 hover:border-primary/50 opacity-60 hover:opacity-100"
                   }`}
                   aria-label={`View ${jewel.name} coin`}
                   data-testid={`thumbnail-${jewel.id}`}
@@ -258,7 +258,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
           {/* RIGHT: Detail & Add-to-Cart Panel */}
           <div className="w-full">
             <div 
-              className="rounded-2xl sm:rounded-3xl border-2 border-primary/60 bg-transparent backdrop-blur px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-4 sm:gap-6"
+              className="rounded-2xl sm:rounded-3xl border-2 border-primary/60 bg-gray-800 px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-4 sm:gap-6"
               data-testid="card-jewel-detail"
             >
               {/* Name & Title */}
@@ -266,23 +266,23 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
                 <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-primary">
                   {activeJewel.fullName}
                 </h3>
-                <p className="text-xs sm:text-sm text-gray-600 font-medium">
+                <p className="text-xs sm:text-sm text-gray-400 font-medium">
                   {activeJewel.years}
                 </p>
-                <p className="text-sm sm:text-base text-gray-700">
+                <p className="text-sm sm:text-base text-gray-300">
                   {activeJewel.title}
                 </p>
               </div>
 
               {/* Description */}
-              <p className="text-sm md:text-base text-gray-600 text-center leading-relaxed">
+              <p className="text-sm md:text-base text-gray-400 text-center leading-relaxed">
                 {activeJewel.description}
               </p>
 
               {/* Price & Quantity */}
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-200">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-700">
                 <div className="text-center sm:text-left">
-                  <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+                  <div className="text-xs text-gray-400 uppercase tracking-wide mb-1">
                     Price per Coin
                   </div>
                   <div className="text-2xl sm:text-3xl font-bold text-primary">
@@ -292,10 +292,10 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
 
                 {/* Quantity Selector */}
                 <div className="flex flex-col items-center gap-2">
-                  <label className="text-xs text-gray-500 uppercase tracking-wide">
+                  <label className="text-xs text-gray-400 uppercase tracking-wide">
                     Quantity
                   </label>
-                  <div className="inline-flex items-center rounded-full border border-gray-300 bg-white">
+                  <div className="inline-flex items-center rounded-full border border-gray-600 bg-gray-700">
                     <Button
                       variant="ghost"
                       size="icon"
@@ -339,7 +339,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
               </Button>
 
               {/* Microcopy */}
-              <p className="text-xs text-gray-500 text-center">
+              <p className="text-xs text-gray-400 text-center">
                 Ships in 5–7 days • Commemorative packaging included
               </p>
             </div>
