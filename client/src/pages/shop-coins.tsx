@@ -12,6 +12,7 @@ import heroBackgroundImg from "@assets/0_2_1763332961118.jpg";
 import goldTextureImg from "@assets/0_0-8_1763355352629.jpg";
 import museumDisplayImg from "@assets/0_1_1763355638824.jpg";
 import egyptianPortalImg from "@assets/0_0-9_1763355883898.jpg";
+import hieroglyphicsImg from "@assets/0_0-10_1763356084962.jpg";
 
 export default function ShopCoins() {
   const { addItem } = useCart();
@@ -373,9 +374,16 @@ export default function ShopCoins() {
               </div>
             </div>
 
-            <Card className="overflow-hidden border-2 border-primary/30 bg-gradient-to-br from-card/95 to-card/80 shadow-2xl p-8 md:p-12">
+            <Card className="overflow-hidden border-2 border-primary/30 bg-gradient-to-br from-card/95 to-card/80 shadow-2xl">
               {/* Carousel */}
-              <div className="relative">
+              <div 
+                className="relative p-8 md:p-12"
+                style={{
+                  backgroundImage: `linear-gradient(rgba(18, 18, 18, 0.85), rgba(18, 18, 18, 0.85)), url(${hieroglyphicsImg})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              >
                 {/* Main coin display */}
                 <div className="flex items-center justify-center gap-8 mb-8">
                   <Button
