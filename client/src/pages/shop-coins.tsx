@@ -119,7 +119,7 @@ export default function ShopCoins() {
     },
     "offers": {
       "@type": "Offer",
-      "price": "50.06",
+      "price": "49.06",
       "priceCurrency": "USD",
       "availability": "https://schema.org/InStock",
       "url": getAbsoluteUrl("/shop-coins")

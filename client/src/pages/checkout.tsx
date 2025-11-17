@@ -163,7 +163,7 @@ function CheckoutForm({ quantity, totalAmount, useCartData }: CheckoutFormProps)
             </div>
             <div className="flex justify-between text-foreground/80">
               <span>Price per coin:</span>
-              <span className="font-bold">$50.06</span>
+              <span className="font-bold">$49.06</span>
             </div>
           </>
         )}
@@ -272,7 +272,7 @@ export default function Checkout() {
   const queryQuantity = parseInt(params.get('quantity') || '1');
   
   const quantity = useCartData ? items.reduce((sum, item) => sum + item.quantity, 0) : queryQuantity;
-  const totalAmount = useCartData ? total : (queryQuantity * 50.06);
+  const totalAmount = useCartData ? total : (queryQuantity * 49.06);
 
   useEffect(() => {
     // Set dark mode

@@ -8,7 +8,7 @@ import Stripe from "stripe";
 // Server-side product catalog (price authority)
 // SECURITY: This is the source of truth for all product pricing
 const PRODUCT_CATALOG = new Map([
-  ['coin120year', { name: '120-Year Anniversary Commemorative Coin — 4" Premium Edition', price: 50.06, type: 'main-coin' }],
+  ['coin120year', { name: '120-Year Anniversary Commemorative Coin — 4" Premium Edition', price: 49.06, type: 'main-coin' }],
   ['jewelset7', { name: 'Complete 7-Jewel Collector\'s Set — 3" Coins', price: 120.06, type: 'jewel-set' }],
   ['jewel_callis', { name: 'Callis — The Philosopher', price: 19.06, type: 'jewel-coin' }],
   ['jewel_chapman', { name: 'Chapman — The Educator', price: 19.06, type: 'jewel-coin' }],
@@ -191,7 +191,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             id: 'coin120year',
             name: PRODUCT_CATALOG.get('coin120year')?.name || '120-Year Anniversary Coin',
             quantity: quantity,
-            price: Math.round((PRODUCT_CATALOG.get('coin120year')?.price || 50.06) * 100),
+            price: Math.round((PRODUCT_CATALOG.get('coin120year')?.price || 49.06) * 100),
           }];
 
       // Execute entire decrement + order creation in a database transaction
@@ -467,9 +467,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const initialStock = mainCoinInventory?.initialStock || 1906;
       const remainingStock = mainCoinInventory?.remainingStock || 0;
       
-      // Calculate profit (assuming $30 cost per coin = $20.06 profit per coin sold)
+      // Calculate profit (assuming $30 cost per coin = $19.06 profit per coin sold)
       const COST_PER_COIN = 30; // $30 cost basis
-      const PRICE_PER_COIN = 50.06; // $50.06 selling price
+      const PRICE_PER_COIN = 49.06; // $49.06 selling price
       const PROFIT_PER_COIN = PRICE_PER_COIN - COST_PER_COIN;
       const totalProfit = totalCoinsSold * PROFIT_PER_COIN * 100; // in cents
       
