@@ -32,7 +32,7 @@ export function PurchaseModule() {
     if (isSoldOut) {
       toast({
         title: "Sold Out",
-        description: "Phase I is sold out! Please check back soon or join the waitlist.",
+        description: "LIMITED EDITION is sold out! Please check back soon or join the waitlist.",
         variant: "destructive",
       });
       return;
@@ -107,7 +107,7 @@ export function PurchaseModule() {
             className="text-base sm:text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto"
             data-testid="text-purchase-description"
           >
-            Don't let history pass you by. Only {stock} coins remain in Phase I.
+            Don't let history pass you by. Only {stock} coins remain in LIMITED EDITION.
           </p>
         </div>
 
@@ -139,7 +139,7 @@ export function PurchaseModule() {
                 {/* Stock Badge */}
                 <div className="inline-block bg-background/80 border border-primary/30 rounded-lg sm:rounded-xl px-4 sm:px-6 py-2 sm:py-3">
                   <div className="flex items-center gap-1.5 sm:gap-2">
-                    <span className="text-foreground/70 text-xs sm:text-sm">Phase I: Only</span>
+                    <span className="text-foreground/70 text-xs sm:text-sm">LIMITED EDITION: Only</span>
                     <span className="text-xl sm:text-2xl md:text-3xl font-bold text-primary">{stock}</span>
                     <span className="text-foreground/70 text-xs sm:text-sm">Remaining</span>
                   </div>
