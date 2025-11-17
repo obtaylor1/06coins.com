@@ -168,14 +168,12 @@ export default function ShopCoins() {
                 <div className="flex items-center justify-center">
                   <div className="relative">
                     <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
-                    <div className="coin-hover-wrapper">
-                      <img
-                        src={MAIN_COIN.image}
-                        alt={MAIN_COIN.name}
-                        className="relative w-full max-w-md h-auto object-contain drop-shadow-2xl"
-                        data-testid="img-main-coin"
-                      />
-                    </div>
+                    <img
+                      src={MAIN_COIN.image}
+                      alt={MAIN_COIN.name}
+                      className="relative w-full max-w-md h-auto object-contain drop-shadow-2xl"
+                      data-testid="img-main-coin"
+                    />
                   </div>
                 </div>
 
@@ -267,13 +265,11 @@ export default function ShopCoins() {
                     <div className="grid grid-cols-4 gap-3 mb-6">
                       {JEWEL_COINS.slice(0, 7).map((jewel, idx) => (
                         <div key={jewel.id} className="aspect-square rounded-lg overflow-hidden border border-primary/20 bg-background/50">
-                          <div className="coin-hover-wrapper">
-                            <img
-                              src={jewel.image}
-                              alt={jewel.name}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
+                          <img
+                            src={jewel.image}
+                            alt={jewel.name}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
                       ))}
                       <div className="aspect-square rounded-lg border border-primary/20 bg-primary/10 flex items-center justify-center">
@@ -378,14 +374,12 @@ export default function ShopCoins() {
                   <div className="flex-1 max-w-md">
                     <div className="relative">
                       <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
-                      <div className="coin-hover-wrapper">
-                        <img
-                          src={selectedJewel.image}
-                          alt={selectedJewel.name}
-                          className="relative w-full h-auto object-contain drop-shadow-2xl transition-all duration-300"
-                          data-testid="img-selected-jewel"
-                        />
-                      </div>
+                      <img
+                        src={selectedJewel.image}
+                        alt={selectedJewel.name}
+                        className="relative w-full h-auto object-contain drop-shadow-2xl transition-all duration-300"
+                        data-testid="img-selected-jewel"
+                      />
                     </div>
                   </div>
 
@@ -413,13 +407,11 @@ export default function ShopCoins() {
                       }`}
                       data-testid={`thumb-jewel-${idx}`}
                     >
-                      <div className="coin-hover-wrapper">
-                        <img
-                          src={jewel.image}
-                          alt={jewel.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
+                      <img
+                        src={jewel.image}
+                        alt={jewel.name}
+                        className="w-full h-full object-cover"
+                      />
                     </button>
                   ))}
                 </div>

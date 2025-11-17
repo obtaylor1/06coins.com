@@ -353,29 +353,24 @@
   }
 }
 
-/* Coin Hover Zoom Effect */
+/* Coin Hover Zoom Effect - For Founders' Legacy Section Only */
 .coin-hover-wrapper {
   display: inline-block;
   overflow: visible;
-  transition: transform 0.3s ease-in-out;
+  transition: transform 0.35s ease-in-out, filter 0.35s ease-in-out;
   cursor: pointer;
   position: relative;
+  z-index: 1;
 }
 
-.coin-hover-wrapper img {
-  transition: transform 0.35s ease-in-out, filter 0.35s ease-in-out;
-  transform-origin: center center;
-  max-width: 100%;
-  height: auto;
-}
-
-.coin-hover-wrapper:hover img {
-  transform: scale(1.35);
-  filter: drop-shadow(0 8px 12px rgba(212, 175, 55, 0.35));
+.coin-hover-wrapper:hover {
+  transform: scale(1.5);
+  filter: drop-shadow(0 8px 16px rgba(200, 168, 86, 0.5));
+  z-index: 10;
 }
 
 @media (max-width: 768px) {
-  .coin-hover-wrapper:hover img {
-    transform: scale(1.15);
+  .coin-hover-wrapper:hover {
+    transform: scale(1.3);
   }
 }

@@ -81,13 +81,15 @@ export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps
               className="flex flex-col items-center gap-1 sm:gap-2"
               data-testid={`founder-${founder.name.toLowerCase()}`}
             >
-              <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full overflow-hidden border-2 border-primary/70">
-                <img 
-                  src={founder.image}
-                  alt={`Jewel ${founder.fullName} commemorative coin`}
-                  className="w-full h-full object-cover"
-                  data-testid={`img-founder-${founder.name.toLowerCase()}`}
-                />
+              <div className="coin-hover-wrapper">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full overflow-hidden border-2 border-primary/70">
+                  <img 
+                    src={founder.image}
+                    alt={`Jewel ${founder.fullName} commemorative coin`}
+                    className="w-full h-full object-cover"
+                    data-testid={`img-founder-${founder.name.toLowerCase()}`}
+                  />
+                </div>
               </div>
               <span className="text-[0.6rem] sm:text-xs md:text-sm text-primary font-semibold text-center leading-tight max-w-[60px] sm:max-w-[80px] md:max-w-none">
                 {founder.fullName}
