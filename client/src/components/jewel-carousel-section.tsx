@@ -136,7 +136,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
 
   return (
     <section 
-      className="py-12 sm:py-16 md:py-24 px-4 sm:px-6 md:px-12 bg-background"
+      className="py-12 sm:py-16 md:py-24 px-4 sm:px-6 md:px-12 bg-white"
       data-testid="section-jewel-carousel"
     >
       <div className="max-w-5xl mx-auto">
