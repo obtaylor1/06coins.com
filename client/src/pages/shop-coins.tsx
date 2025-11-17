@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -669,6 +670,46 @@ export default function ShopCoins() {
           <CartSummary />
         </div>
       </div>
+
+      {/* Contact CTA Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 mb-16">
+        <Card className="relative overflow-hidden bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border-2 border-primary/30">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent" />
+          
+          <div className="relative p-8 md:p-12 text-center space-y-6">
+            <div className="inline-block px-4 py-2 bg-primary/20 border border-primary/40 rounded-md">
+              <p className="text-primary text-sm font-semibold uppercase tracking-wider">
+                Questions? We're Here to Help
+              </p>
+            </div>
+
+            <h2 className="font-playfair text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">
+              Need Help or Bulk Order Support?
+            </h2>
+
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              If you have questions about the 120-Year Anniversary Coin, the Seven Jewels set, 
+              shipping details, or bulk chapter orders, reach out and we'll assist you personally.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
+              <Link href="/contact">
+                <Button
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-8 py-6 text-lg"
+                  data-testid="button-contact-cta"
+                >
+                  Contact Us
+                </Button>
+              </Link>
+              
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                <span>Typical response time: 24-48 hours</span>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </section>
       
       <Footer />
     </div>

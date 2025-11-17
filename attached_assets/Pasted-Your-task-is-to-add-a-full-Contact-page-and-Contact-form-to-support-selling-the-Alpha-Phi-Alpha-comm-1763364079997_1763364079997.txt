@@ -1,0 +1,123 @@
+Your task is to add a full Contact page and Contact form to support selling the Alpha Phi Alpha commemorative coins (general questions + bulk/chapter orders), and link it from the footer and navigation.
+1. Inspect the current project
+Open the codebase and determine:
+How routes are defined (Express, static HTML, etc.).
+How views are rendered (EJS, Pug, plain HTML, etc.).
+Where the footer and navigation components are defined.
+Do not change authentication or payment logic.
+Work within the existing stack and file structure.
+2. Create a dedicated Contact page
+Create a route:
+URL: /contact
+Create a view/template for this page using the existing layout system (same header, footer, fonts, colors).
+Contact Page Layout
+Use a two-part layout:
+Left / top (on mobile): Contact Info
+Heading: Contact Us
+Subheading: Questions about the 120-Year Commemorative Coins or bulk orders? We’re here to help.
+Content:
+Short paragraph about:
+General questions
+Shipping
+Bulk & chapter orders
+Display:
+Email (use a placeholder like info@example.com that the user can change easily)
+Optional phone placeholder (xxx) xxx-xxxx
+Use the black + gold + white Egyptian-inspired aesthetic already used in the site.
+Right / bottom (on mobile): Contact Form
+Heading above form: Send Us a Message
+Form fields:
+Full Name (required, text)
+Email Address (required, email)
+Phone Number (optional, tel)
+Chapter / Organization (optional, text)
+Subject (required, text)
+Message (required, textarea, multi-line)
+“Type of Inquiry” (optional select):
+General Question
+Order Status
+Bulk/Chapter Order
+Technical Issue
+Submit button:
+Label: Send Message
+Styled with gold background, black text, subtle hover and focus states.
+Keep the layout responsive (stacked on mobile, side-by-side on desktop).
+3. Implement backend form handling
+Implement a POST endpoint:
+Route: POST /contact
+Validate required fields:
+name, email, subject, message
+On successful validation:
+For now, do one of the following (depending on existing tooling):
+Use nodemailer (if present) to send an email to a configured address.
+OR log the submission to the server console and/or save to a simple JSON file for now.
+Use environment variables for email settings if nodemailer is used (CONTACT_TO_EMAIL, SMTP_HOST, etc.).
+Return the user to either:
+A /contact/thank-you page, or
+The same /contact page with a success message at the top.
+Success UX
+Show a dismissible success alert:
+Thank you!
+We’ve received your message about the commemorative coins and will respond as soon as possible.
+Error Handling UX
+If validation fails:
+Re-render the form with:
+The entered values still filled in.
+Error messages beneath the invalid fields.
+A general error alert at the top: “Please correct the highlighted fields.”
+Do not expose stack traces or internal errors in the browser.
+4. Add basic spam protection
+Add at least one spam protection mechanism:
+A hidden “honeypot” input field (e.g. company or website) that must be left blank by humans.
+If this hidden field is filled out, silently ignore the submission.
+Optionally, add a simple time-based check (e.g., the form must take at least 2–3 seconds to submit).
+5. Style the Contact page with the existing brand
+Apply the existing black + gold + white aesthetic and Egyptian/Kemet design language:
+Background:
+Use a light, subtle background for the form section (white or very light papyrus tone).
+Accents:
+Use gold borders, thin lines, or small hieroglyphic-inspired icons as section dividers.
+Inputs:
+Rounded corners or consistent shape with the rest of the site.
+Clear focus states (gold border on focus).
+Button:
+Gold (#D4AF37 or existing site gold), with subtle hover darkening.
+Ensure good contrast with text.
+Make sure the page is:
+Fully responsive on mobile
+Readable and accessible (sufficient contrast, proper label associations for fields)
+6. Connect the footer and navigation
+Footer
+Locate the existing “Contact” link in the footer.
+Ensure it points to /contact.
+If no visible footer link exists, add a “Contact” link in the footer menu.
+Header / Navigation (Optional But Recommended)
+Add a “Contact” link in the main navigation, or in a secondary menu, so users can easily find it.
+7. Optional: Add a mini contact CTA to /shop-coins
+On /shop-coins, near the bottom (before the footer), add a short CTA section:
+Text:
+Heading: Need Help or Bulk Order Support?
+Body: If you have questions about the 120-Year Anniversary Coin, the Seven Jewels set, or bulk chapter orders, reach out and we’ll assist you personally.
+Button:
+Label: Contact Us
+Links to /contact.
+Style this CTA with the same black + gold theme and make it visually distinct but not overpowering.
+8. Code quality & documentation
+Keep routes and controllers organized according to the existing project structure.
+Add short comments in the new route/controller explaining:
+What the /contact GET and POST do.
+How to change the recipient email or handling logic.
+Avoid breaking current pages or navigation.
+Before finishing:
+Test GET /contact in browser.
+Test a successful form submission.
+Test a validation error (empty required fields).
+Test the spam honeypot by filling the hidden field.
+Confirm that existing pages (like /shop-coins) still render correctly.
+9. Final Output
+When you are done, summarize:
+Files created
+Files modified
+Routes added (GET /contact, POST /contact)
+How/where to change the contact email or handling logic
+Make all of these changes now.

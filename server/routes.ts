@@ -555,6 +555,132 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Contact form submission endpoint
+  // POST /api/contact - Handle contact form submissions with spam protection and validation
+  app.post("/api/contact", async (req, res) => {
+    try {
+      const { name, email, phone, chapter, subject, message, inquiryType, honeypot, timestamp, timeElapsed } = req.body;
+
+      // Server-side honeypot check (spam protection)
+      if (honeypot && honeypot.trim() !== '') {
+        console.log('[SPAM] Honeypot field filled:', { honeypot });
+        // Return success to not tip off bots, but don't actually process
+        return res.json({ success: true, message: "Message received" });
+      }
+
+      // Server-side time-based spam check (form must take at least 3 seconds)
+      if (timeElapsed && timeElapsed < 3000) {
+        console.log('[SPAM] Form submitted too quickly:', { timeElapsed });
+        // Return error to legitimate users who might have autofill
+        return res.status(429).json({ 
+          success: false, 
+          message: "Please take a moment to review your message before submitting." 
+        });
+      }
+
+      // Server-side validation for required fields
+      const errors: { [key: string]: string } = {};
+
+      if (!name || name.trim() === '') {
+        errors.name = 'Full name is required';
+      }
+
+      if (!email || email.trim() === '') {
+        errors.email = 'Email address is required';
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        errors.email = 'Please enter a valid email address';
+      }
+
+      if (!subject || subject.trim() === '') {
+        errors.subject = 'Subject is required';
+      }
+
+      if (!message || message.trim() === '') {
+        errors.message = 'Message is required';
+      } else if (message.trim().length < 10) {
+        errors.message = 'Message must be at least 10 characters';
+      }
+
+      if (Object.keys(errors).length > 0) {
+        return res.status(400).json({ 
+          success: false, 
+          errors,
+          message: "Please correct the highlighted fields" 
+        });
+      }
+
+      // Log the contact form submission (in production, this would send an email)
+      const contactData = {
+        timestamp: new Date().toISOString(),
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone?.trim() || '',
+        chapter: chapter?.trim() || '',
+        subject: subject.trim(),
+        message: message.trim(),
+        inquiryType: inquiryType || 'general',
+      };
+
+      console.log('='.repeat(60));
+      console.log('📧 NEW CONTACT FORM SUBMISSION');
+      console.log('='.repeat(60));
+      console.log('From:', contactData.name);
+      console.log('Email:', contactData.email);
+      console.log('Phone:', contactData.phone || 'Not provided');
+      console.log('Chapter:', contactData.chapter || 'Not provided');
+      console.log('Inquiry Type:', contactData.inquiryType);
+      console.log('Subject:', contactData.subject);
+      console.log('Message:', contactData.message);
+      console.log('='.repeat(60));
+
+      // TODO: In production, implement email sending using nodemailer
+      // Example configuration needed in environment variables:
+      // - CONTACT_TO_EMAIL: Email address to receive contact form submissions
+      // - SMTP_HOST: SMTP server host
+      // - SMTP_PORT: SMTP server port
+      // - SMTP_USER: SMTP username
+      // - SMTP_PASS: SMTP password
+      //
+      // Example nodemailer implementation:
+      // const transporter = nodemailer.createTransport({
+      //   host: process.env.SMTP_HOST,
+      //   port: parseInt(process.env.SMTP_PORT || '587'),
+      //   secure: false,
+      //   auth: {
+      //     user: process.env.SMTP_USER,
+      //     pass: process.env.SMTP_PASS,
+      //   },
+      // });
+      //
+      // await transporter.sendMail({
+      //   from: process.env.SMTP_USER,
+      //   to: process.env.CONTACT_TO_EMAIL,
+      //   subject: `Contact Form: ${contactData.subject}`,
+      //   html: `
+      //     <h2>New Contact Form Submission</h2>
+      //     <p><strong>From:</strong> ${contactData.name} (${contactData.email})</p>
+      //     <p><strong>Phone:</strong> ${contactData.phone || 'Not provided'}</p>
+      //     <p><strong>Chapter/Org:</strong> ${contactData.chapter || 'Not provided'}</p>
+      //     <p><strong>Inquiry Type:</strong> ${contactData.inquiryType}</p>
+      //     <p><strong>Subject:</strong> ${contactData.subject}</p>
+      //     <p><strong>Message:</strong></p>
+      //     <p>${contactData.message.replace(/\n/g, '<br>')}</p>
+      //   `,
+      // });
+
+      res.json({ 
+        success: true, 
+        message: "Thank you for your message. We'll respond as soon as possible." 
+      });
+    } catch (error: any) {
+      console.error('Error processing contact form:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: "An error occurred while processing your message. Please try again later." 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

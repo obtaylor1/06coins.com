@@ -11,6 +11,7 @@ import Home from "@/pages/home";
 import ShopCoins from "@/pages/shop-coins";
 import Checkout from "@/pages/checkout";
 import About from "@/pages/about";
+import Contact from "@/pages/contact";
 import Admin from "@/pages/admin";
 import NotFound from "@/pages/not-found";
 
@@ -27,6 +28,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/shop-coins" component={ShopCoins} />
       <Route path="/about" component={About} />
+      <Route path="/contact" component={Contact} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/admin" component={Admin} />
       <Route component={NotFound} />
