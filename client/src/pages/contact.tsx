@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { Link } from "wouter";
 import { StickyHeader } from "@/components/sticky-header";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Mail, Building2, Send, CheckCircle2, AlertCircle } from "lucide-react";
+import { Mail, Building2, Send, CheckCircle2, AlertCircle, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, ApiError } from "@/lib/queryClient";
 import separatorBarImg from "@assets/0_0_640_N_1763339269798.png";
@@ -205,6 +206,19 @@ export default function Contact() {
       <StickyHeader onCtaClick={() => window.location.href = '/shop-coins'} />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
+        {/* Back to Home Link */}
+        <Button
+          variant="ghost"
+          className="mb-8 text-primary"
+          asChild
+          data-testid="button-back-home"
+        >
+          <Link href="/">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Home
+          </Link>
+        </Button>
+
         {/* Header */}
         <div className="text-center mb-12">
           <Badge 
