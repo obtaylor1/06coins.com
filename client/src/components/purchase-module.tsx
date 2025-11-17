@@ -7,14 +7,16 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/cart-context";
 import { MAIN_COIN } from "@/lib/products";
-import { ShieldCheck, CreditCard, Package, ShoppingCart, Lock } from "lucide-react";
+import { ShieldCheck, CreditCard, Package, ShoppingCart, Lock, RotateCw } from "lucide-react";
 import coinFrontImg from "@assets/apa coin front_1762505793054.png";
+import coinBackImg from "@assets/apa coin back_1762505793054.png";
 import animatedBgGif from "@assets/obtaylor_refined_Ancient_Egyptian_inspired_background_for_pro_7a6208a9-e0bc-43c5-9964-000bc386ff8d_1_1763341950890.gif";
 
 const COIN_PRICE = 50.06;
 
 export function PurchaseModule() {
   const [quantity, setQuantity] = useState(1);
+  const [showBack, setShowBack] = useState(false);
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const { addItem, itemCount } = useCart();
@@ -114,15 +116,24 @@ export function PurchaseModule() {
         <Card className="border-2 border-primary/30 rounded-2xl sm:rounded-3xl overflow-hidden bg-card/95 shadow-2xl">
           <div className="grid lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-12 p-6 sm:p-8 md:p-10">
             {/* Product Image */}
-            <div className="lg:col-span-2 flex justify-center items-center">
+            <div className="lg:col-span-2 flex flex-col justify-center items-center gap-4">
               <div className="relative w-full max-w-xs">
                 <img 
-                  src={coinFrontImg} 
-                  alt="Alpha Phi Alpha 120th Anniversary Commemorative Coin" 
-                  className="w-full h-auto object-contain drop-shadow-2xl"
+                  src={showBack ? coinBackImg : coinFrontImg} 
+                  alt={`Alpha Phi Alpha 120th Anniversary Commemorative Coin - ${showBack ? 'Back' : 'Front'}`} 
+                  className="w-full h-auto object-contain drop-shadow-2xl transition-opacity duration-300"
                   data-testid="img-coin-purchase"
                 />
               </div>
+              <Button
+                variant="outline"
+                onClick={() => setShowBack(!showBack)}
+                className="flex items-center gap-2 bg-background/60 border-primary/30"
+                data-testid="button-toggle-coin-side"
+              >
+                <RotateCw className="w-4 h-4" />
+                {showBack ? 'Show Front' : 'Show Back'}
+              </Button>
             </div>
 
             {/* Purchase Details */}
