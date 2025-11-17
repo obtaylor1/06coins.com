@@ -7,6 +7,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { 
   DollarSign, 
   Package, 
@@ -27,6 +43,8 @@ import {
   MessageSquare,
   Send,
   Clock,
+  Truck,
+  PackageCheck,
 } from "lucide-react";
 import { useAnalytics } from "@/contexts/analytics-context";
 import type { Order, SmsLog } from "@shared/schema";
@@ -160,6 +178,10 @@ export default function Admin() {
   const [editingProduct, setEditingProduct] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [orderFilter, setOrderFilter] = useState<'all' | 'pending' | 'completed' | 'refunded'>('all');
+  const [shippingDialogOpen, setShippingDialogOpen] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [trackingNumber, setTrackingNumber] = useState("");
+  const [carrier, setCarrier] = useState("");
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -263,6 +285,69 @@ export default function Admin() {
       return;
     }
     updateInventoryMutation.mutate({ productId, remainingStock: stock });
+  };
+
+  // Ship order mutation
+  const shipOrderMutation = useMutation({
+    mutationFn: async ({ orderId, trackingNumber, carrier }: { orderId: string; trackingNumber: string; carrier: string }) => {
+      return await apiRequest("PATCH", `/api/admin/orders/${orderId}/ship`, { trackingNumber, carrier });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/orders'] });
+      toast({
+        title: "Order Shipped",
+        description: "Shipping confirmation sent to customer via email and SMS.",
+      });
+      setShippingDialogOpen(false);
+      setTrackingNumber("");
+      setCarrier("");
+      setSelectedOrderId(null);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Shipping Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Deliver order mutation
+  const deliverOrderMutation = useMutation({
+    mutationFn: async (orderId: string) => {
+      return await apiRequest("PATCH", `/api/admin/orders/${orderId}/deliver`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/orders'] });
+      toast({
+        title: "Order Delivered",
+        description: "Delivery confirmation sent to customer via email and SMS.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Delivery Update Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleShipOrder = () => {
+    if (!selectedOrderId || !trackingNumber || !carrier) {
+      toast({
+        title: "Missing Information",
+        description: "Please provide both tracking number and carrier.",
+        variant: "destructive",
+      });
+      return;
+    }
+    shipOrderMutation.mutate({ orderId: selectedOrderId, trackingNumber, carrier });
+  };
+
+  const openShippingDialog = (orderId: string) => {
+    setSelectedOrderId(orderId);
+    setShippingDialogOpen(true);
   };
 
   const startEdit = (productId: string, currentStock: number) => {
@@ -895,6 +980,138 @@ export default function Admin() {
                     <p className="text-xs text-foreground/60">
                       Stripe Payment Intent: <span className="font-mono">{order.stripePaymentIntentId}</span>
                     </p>
+                  </div>
+
+                  {/* Tracking Information */}
+                  {order.trackingNumber && (
+                    <div className="pt-3 border-t border-primary/10">
+                      <div className="flex items-start gap-2">
+                        <Truck className="w-4 h-4 text-primary mt-0.5" />
+                        <div className="flex-1">
+                          <p className="text-xs text-foreground/60">Tracking Information</p>
+                          <p className="text-sm font-medium text-foreground">
+                            {order.carrier}: {order.trackingNumber}
+                          </p>
+                          {order.shippedAt && (
+                            <p className="text-xs text-foreground/50 mt-1">
+                              Shipped on {new Date(order.shippedAt).toLocaleDateString()}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Fulfillment Actions */}
+                  <div className="pt-3 border-t border-primary/10">
+                    <div className="flex gap-2 flex-wrap">
+                      {order.status === 'completed' && !order.trackingNumber && (
+                        <Dialog open={shippingDialogOpen && selectedOrderId === order.id} onOpenChange={(open) => {
+                          if (!open) {
+                            setShippingDialogOpen(false);
+                            setSelectedOrderId(null);
+                            setTrackingNumber("");
+                            setCarrier("");
+                          }
+                        }}>
+                          <DialogTrigger asChild>
+                            <Button
+                              size="sm"
+                              variant="default"
+                              onClick={() => openShippingDialog(order.id)}
+                              data-testid={`button-ship-${order.id}`}
+                            >
+                              <Truck className="w-4 h-4 mr-1" />
+                              Mark as Shipped
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>Ship Order #{order.id.substring(0, 8)}</DialogTitle>
+                              <DialogDescription>
+                                Enter the tracking information to notify the customer.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="space-y-4 py-4">
+                              <div className="space-y-2">
+                                <Label htmlFor="carrier">Carrier</Label>
+                                <Select value={carrier} onValueChange={setCarrier}>
+                                  <SelectTrigger id="carrier" data-testid="select-carrier">
+                                    <SelectValue placeholder="Select carrier" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="USPS">USPS</SelectItem>
+                                    <SelectItem value="FedEx">FedEx</SelectItem>
+                                    <SelectItem value="UPS">UPS</SelectItem>
+                                    <SelectItem value="DHL">DHL</SelectItem>
+                                    <SelectItem value="Other">Other</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor="tracking">Tracking Number</Label>
+                                <Input
+                                  id="tracking"
+                                  placeholder="Enter tracking number"
+                                  value={trackingNumber}
+                                  onChange={(e) => setTrackingNumber(e.target.value)}
+                                  data-testid="input-tracking"
+                                />
+                              </div>
+                            </div>
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="outline"
+                                onClick={() => {
+                                  setShippingDialogOpen(false);
+                                  setSelectedOrderId(null);
+                                  setTrackingNumber("");
+                                  setCarrier("");
+                                }}
+                                data-testid="button-cancel-ship"
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                onClick={handleShipOrder}
+                                disabled={shipOrderMutation.isPending}
+                                data-testid="button-confirm-ship"
+                              >
+                                {shipOrderMutation.isPending ? "Processing..." : "Ship Order"}
+                              </Button>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                      )}
+
+                      {order.status === 'shipped' && (
+                        <Button
+                          size="sm"
+                          variant="default"
+                          onClick={() => deliverOrderMutation.mutate(order.id)}
+                          disabled={deliverOrderMutation.isPending}
+                          data-testid={`button-deliver-${order.id}`}
+                        >
+                          <PackageCheck className="w-4 h-4 mr-1" />
+                          {deliverOrderMutation.isPending ? "Processing..." : "Mark as Delivered"}
+                        </Button>
+                      )}
+
+                      {order.status === 'delivered' && (
+                        <Badge variant="default" className="gap-1">
+                          <CheckCircle2 className="w-3 h-3" />
+                          Delivered
+                          {order.deliveredAt && ` on ${new Date(order.deliveredAt).toLocaleDateString()}`}
+                        </Badge>
+                      )}
+
+                      {order.status === 'refunded' && (
+                        <Badge variant="secondary" className="gap-1">
+                          <XCircle className="w-3 h-3" />
+                          Refunded
+                        </Badge>
+                      )}
+                    </div>
                   </div>
 
                   {/* SMS Timeline */}
