@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { Product } from "@/lib/products";
+import { trackAddToCart } from "@/lib/analytics";
 
 export interface CartItem {
   id: string;
@@ -43,6 +44,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const addItem = (product: Product, quantity: number = 1) => {
+    // Track add to cart event in Google Analytics
+    trackAddToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity,
+    });
+
     setItems((prev) => {
       const existingIndex = prev.findIndex((item) => item.id === product.id);
       

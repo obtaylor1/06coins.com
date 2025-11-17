@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/cart-context";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { trackPurchase } from "@/lib/analytics";
 
 // Load Stripe outside of component to avoid recreating on every render
 const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY
@@ -73,6 +74,27 @@ function CheckoutForm({ quantity, totalAmount, useCartData }: CheckoutFormProps)
           await apiRequest("POST", "/api/inventory/decrement", orderPayload);
 
           const itemCount = useCartData ? items.reduce((sum, item) => sum + item.quantity, 0) : quantity;
+          
+          // Track purchase in Google Analytics
+          const purchaseItems = useCartData 
+            ? items.map(item => ({
+                item_id: item.id,
+                item_name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+              }))
+            : [{
+                item_id: "main-coin",
+                item_name: "Alpha Phi Alpha 120th Anniversary Commemorative Coin",
+                price: totalAmount / quantity,
+                quantity: quantity,
+              }];
+          
+          trackPurchase(
+            paymentIntent.id,
+            totalAmount / 100, // Convert from cents to dollars
+            purchaseItems
+          );
           
           toast({
             title: "Payment Successful!",
