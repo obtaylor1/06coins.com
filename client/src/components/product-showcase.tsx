@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Ruler, Scale, Sparkles, Globe, Star, Shield } from "lucide-react";
 import coinFrontImg from "@assets/apa coin front_1762505793054.png";
 import coinBackImg from "@assets/apa coin back_1762505793054.png";
+import showcaseHeaderBgImg from "@assets/0_0-4_1763339722286.jpg";
 
 interface ProductShowcaseProps {
   onCtaClick?: () => void;
@@ -10,27 +11,46 @@ interface ProductShowcaseProps {
 
 export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
   return (
-    <section className="relative py-12 sm:py-16 md:py-20 lg:py-32 px-4 sm:px-6 md:px-12">
-      <div className="relative z-10 max-w-7xl mx-auto space-y-12 sm:space-y-16 md:space-y-20 lg:space-y-28">
-        {/* Section Header */}
-        <div className="text-center space-y-4 sm:space-y-6 px-2">
-          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-primary/80 font-serif tracking-wider">The Masterpiece</p>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-serif font-bold text-foreground tracking-tight leading-tight">
-            Four Inches of History.
-            <br />
-            <span className="text-primary">Unmatched Quality.</span>
-          </h2>
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-foreground/90 max-w-3xl mx-auto leading-relaxed">
-            Behold the weight of brotherhood. A premium collectible worthy of the Black and Gold.
-          </p>
-        </div>
+    <section className="relative">
+      {/* Full-Width Header Section with Egyptian Background */}
+      <div 
+        className="relative w-full py-16 sm:py-20 md:py-24 lg:py-32 px-4 sm:px-6 md:px-12 overflow-hidden"
+        style={{
+          backgroundImage: `url(${showcaseHeaderBgImg})`,
+          backgroundPosition: 'center',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/75 to-black/80 pointer-events-none" />
+        
+        <div className="relative z-10 max-w-7xl mx-auto space-y-8 sm:space-y-10 md:space-y-12">
+          {/* Section Header */}
+          <div className="text-center space-y-4 sm:space-y-6 px-2">
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl text-primary/80 font-serif tracking-wider">The Masterpiece</p>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-serif font-bold text-foreground tracking-tight leading-tight">
+              Four Inches of History.
+              <br />
+              <span className="text-primary">Unmatched Quality.</span>
+            </h2>
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-foreground/90 max-w-3xl mx-auto leading-relaxed">
+              Behold the weight of brotherhood. A premium collectible worthy of the Black and Gold.
+            </p>
+          </div>
 
-        {/* Introductory Text */}
-        <div className="max-w-4xl mx-auto text-center space-y-6">
-          <p className="text-lg md:text-xl text-foreground/80 leading-relaxed">
-            This coin is more than metal; it is a meticulously crafted artifact that encapsulates 120 years of Alpha history. Every line, inscription, and curve was designed to honor the legacy of the Jewels and the promise of the future.
-          </p>
+          {/* Introductory Text */}
+          <div className="max-w-4xl mx-auto text-center space-y-6">
+            <p className="text-lg md:text-xl text-foreground/80 leading-relaxed">
+              This coin is more than metal; it is a meticulously crafted artifact that encapsulates 120 years of Alpha history. Every line, inscription, and curve was designed to honor the legacy of the Jewels and the promise of the future.
+            </p>
+          </div>
         </div>
+      </div>
+
+      {/* Main Content Section */}
+      <div className="relative py-12 sm:py-16 md:py-20 lg:py-32 px-4 sm:px-6 md:px-12">
+        <div className="relative z-10 max-w-7xl mx-auto space-y-12 sm:space-y-16 md:space-y-20 lg:space-y-28">
 
         {/* The Scale and Significance */}
         <div className="space-y-8 sm:space-y-10 md:space-y-12">
@@ -242,6 +262,7 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
               Claim Your Masterpiece
             </Button>
           </div>
+        </div>
         </div>
       </div>
     </section>
