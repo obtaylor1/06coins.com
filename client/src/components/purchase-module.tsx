@@ -12,7 +12,7 @@ import coinFrontImg from "@assets/apa coin front_1762505793054.png";
 import coinBackImg from "@assets/apa coin back_1762505793054.png";
 import egyptianBgImg from "@assets/0_0-6_1763344416952.jpg";
 
-const COIN_PRICE = 49.06;
+const COIN_PRICE = 39.06;
 
 export function PurchaseModule() {
   const [quantity, setQuantity] = useState(1);

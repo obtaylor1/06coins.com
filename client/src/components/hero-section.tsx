@@ -120,7 +120,7 @@ export function HeroSection({ onCtaClick }: HeroSectionProps) {
               {/* Trust Indicators */}
               <div className="flex flex-wrap items-center gap-3 sm:gap-4 md:gap-6 text-xs sm:text-sm text-foreground/80">
                 <div className="flex items-center gap-1.5 sm:gap-2" data-testid="text-price">
-                  <span className="text-primary font-bold text-sm sm:text-base md:text-lg">$49.06</span>
+                  <span className="text-primary font-bold text-sm sm:text-base md:text-lg">$39.06</span>
                   <span>Each</span>
                 </div>
                 <div className="flex items-center gap-1.5 sm:gap-2" data-testid="text-secure-checkout">

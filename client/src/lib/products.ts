@@ -26,7 +26,7 @@ export interface JewelCoin extends Product {
 export const MAIN_COIN: Product = {
   id: "coin120year",
   name: "120-Year Anniversary Commemorative Coin — 4\" Premium Edition",
-  price: 49.06,
+  price: 39.06,
   image: coinFrontImg,
   description: "A powerful 4-inch museum-grade coin commemorating 120 years of Alpha Phi Alpha leadership, service, and brotherhood. Crafted with deep detail and premium weight.",
   type: "main-coin",
