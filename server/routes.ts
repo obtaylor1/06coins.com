@@ -467,11 +467,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const initialStock = mainCoinInventory?.initialStock || 1906;
       const remainingStock = mainCoinInventory?.remainingStock || 0;
       
-      // Calculate profit (assuming $30 cost per coin = $9.06 profit per coin sold)
-      const COST_PER_COIN = 30; // $30 cost basis
-      const PRICE_PER_COIN = 39.06; // $39.06 selling price
-      const PROFIT_PER_COIN = PRICE_PER_COIN - COST_PER_COIN;
-      const totalProfit = totalCoinsSold * PROFIT_PER_COIN * 100; // in cents
+      // Calculate profit based on actual costs
+      // 4" coin: Cost $8.50, Selling $39.06 → Profit $30.56
+      // 3" coin: Cost $3.30, Selling $19.06 → Profit $15.76
+      const COST_4_INCH = 8.50;
+      const COST_3_INCH = 3.30;
+      const PROFIT_4_INCH = 39.06 - COST_4_INCH; // $30.56
+      const PROFIT_3_INCH = 19.06 - COST_3_INCH; // $15.76
+      
+      // Calculate total profit by iterating through order items
+      let totalProfit = 0;
+      completedOrders.forEach(order => {
+        if (order.cartItems && Array.isArray(order.cartItems)) {
+          order.cartItems.forEach((item: any) => {
+            if (item.id === 'coin120year') {
+              totalProfit += item.quantity * PROFIT_4_INCH * 100; // in cents
+            } else if (item.id?.startsWith('jewel_') || item.id === 'jewelset7') {
+              // Jewel coins and jewel set use 3" coins
+              totalProfit += item.quantity * PROFIT_3_INCH * 100; // in cents
+            }
+          });
+        }
+      });
       
       res.json({
         totalOrders: completedOrders.length,
