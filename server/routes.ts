@@ -470,10 +470,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Calculate profit based on actual costs
       // 4" coin: Cost $8.50, Selling $39.06 → Profit $30.56
       // 3" coin: Cost $3.30, Selling $19.06 → Profit $15.76
+      // Jewel set (7 × 3" coins): Cost $23.10 (7 × $3.30), Selling $120.06 → Profit $96.96
       const COST_4_INCH = 8.50;
       const COST_3_INCH = 3.30;
+      const COST_JEWEL_SET = 3.30 * 7; // $23.10
       const PROFIT_4_INCH = 39.06 - COST_4_INCH; // $30.56
       const PROFIT_3_INCH = 19.06 - COST_3_INCH; // $15.76
+      const PROFIT_JEWEL_SET = 120.06 - COST_JEWEL_SET; // $96.96
       
       // Calculate total profit by iterating through order items
       let totalProfit = 0;
@@ -482,8 +485,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           order.cartItems.forEach((item: any) => {
             if (item.id === 'coin120year') {
               totalProfit += item.quantity * PROFIT_4_INCH * 100; // in cents
-            } else if (item.id?.startsWith('jewel_') || item.id === 'jewelset7') {
-              // Jewel coins and jewel set use 3" coins
+            } else if (item.id === 'jewelset7') {
+              // Jewel set: 7 coins sold as a bundle
+              totalProfit += item.quantity * PROFIT_JEWEL_SET * 100; // in cents
+            } else if (item.id?.startsWith('jewel_')) {
+              // Individual jewel coins
               totalProfit += item.quantity * PROFIT_3_INCH * 100; // in cents
             }
           });
