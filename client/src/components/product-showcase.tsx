@@ -6,6 +6,8 @@ import coinBackImg from "@assets/apa coin front_1763347681442.png";
 import showcaseHeaderBgImg from "@assets/0_0-4_1763339722286.jpg";
 import showcaseContentBgImg from "@assets/white graphic_1763345066331.png";
 
+import apa_coin_back from "@assets/apa coin back.png";
+
 interface ProductShowcaseProps {
   onCtaClick?: () => void;
 }
@@ -48,7 +50,6 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
           </div>
         </div>
       </div>
-
       {/* Main Content Section */}
       <div 
         className="relative py-12 sm:py-16 md:py-20 lg:py-32 px-4 sm:px-6 md:px-12"
@@ -112,7 +113,7 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
             {/* Coin Image */}
             <div className="aspect-square rounded-full overflow-hidden shadow-2xl max-w-md mx-auto">
               <img 
-                src={coinFrontImg} 
+                src={apa_coin_back} 
                 alt="Alpha Phi Alpha 120th Anniversary Commemorative Coin - Front (Obverse)" 
                 className="w-full h-full object-cover"
                 data-testid="img-coin-front-showcase"
