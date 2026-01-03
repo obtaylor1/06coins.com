@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import coinFrontImg from "@assets/apa coin front_1762505793054.png";
-import coinBackImg from "@assets/apa coin back_1762505793054.png";
+import coinBackImg from "@assets/apa_coin_back_1767463206489.png";
 import sectionBgImg from "@assets/0_0-5_1763342224856.jpg";
 
 interface WhyOwnSectionProps {
