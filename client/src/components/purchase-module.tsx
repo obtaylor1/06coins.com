@@ -12,6 +12,8 @@ import coinFrontImg from "@assets/apa_coin_back_1767463401761.png";
 import coinBackImg from "@assets/apa coin back_1762505793054.png";
 import egyptianBgImg from "@assets/0_0-6_1763344416952.jpg";
 
+import apa_coin_back from "@assets/apa coin back.png";
+
 const COIN_PRICE = 39.06;
 
 export function PurchaseModule() {
@@ -95,7 +97,6 @@ export function PurchaseModule() {
     >
       {/* Dark overlay for text readability */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/80 to-black/85 pointer-events-none" />
-      
       <div className="relative z-10 max-w-6xl mx-auto space-y-8 sm:space-y-10 md:space-y-12 lg:space-y-16">
         <div className="text-center space-y-4 sm:space-y-6 px-2">
           <h2 
@@ -119,7 +120,7 @@ export function PurchaseModule() {
             <div className="lg:col-span-2 flex flex-col justify-center items-center gap-4">
               <div className="relative w-full max-w-xs">
                 <img 
-                  src={showBack ? coinBackImg : coinFrontImg} 
+                  src={apa_coin_back} 
                   alt={`Alpha Phi Alpha 120th Anniversary Commemorative Coin - ${showBack ? 'Back' : 'Front'}`} 
                   className="w-full h-auto object-contain drop-shadow-2xl transition-opacity duration-300"
                   data-testid="img-coin-purchase"
