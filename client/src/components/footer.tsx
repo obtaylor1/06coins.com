@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import coinBackImg from "@assets/apa_coin_back_1767463164869.png";
+import coinBackImg from "@assets/apa_coin_back_1767463206489.png";
 
 export function Footer() {
   return (

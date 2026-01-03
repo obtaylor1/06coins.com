@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/contexts/cart-context";
 import { Settings, ShoppingCart, ArrowLeft } from "lucide-react";
 import { Link, useLocation } from "wouter";
-import coinBackImg from "@assets/apa_coin_back_1767463164869.png";
+import coinBackImg from "@assets/apa_coin_back_1767463206489.png";
 
 interface StickyHeaderProps {
   onCtaClick: () => void;
