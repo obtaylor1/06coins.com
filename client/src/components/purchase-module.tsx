@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/cart-context";
 import { MAIN_COIN } from "@/lib/products";
 import { ShieldCheck, CreditCard, Package, ShoppingCart, Lock, RotateCw } from "lucide-react";
-import coinFrontImg from "@assets/apa coin front_1762505793054.png";
+import coinFrontImg from "@assets/apa_coin_back_1767463401761.png";
 import coinBackImg from "@assets/apa coin back_1762505793054.png";
 import egyptianBgImg from "@assets/0_0-6_1763344416952.jpg";
 
