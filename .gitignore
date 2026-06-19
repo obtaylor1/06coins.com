@@ -1,6 +1,36 @@
+# Dependencies
 node_modules
+.pnpm-store
+
+# Build output
 dist
-.DS_Store
+build
 server/public
-vite.config.ts.*
 *.tar.gz
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE / Editor
+.DS_Store
+.idea
+.vscode
+*.swp
+*.swo
+
+# Vite
+vite.config.ts.*
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Testing
+coverage
+
+# Misc
+.cache
+temp
