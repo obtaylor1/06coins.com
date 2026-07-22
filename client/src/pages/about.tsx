@@ -66,7 +66,7 @@ export default function About() {
           <Badge className="mb-6 bg-primary/20 text-primary border border-primary/40 px-6 py-2 text-sm font-serif">
             Est. December 4, 1906
           </Badge>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-white mb-6 leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-medium text-white mb-6 leading-tight">
             120 Years of <span className="text-primary">Excellence</span>,<br />
             Leadership, and Service
           </h1>
@@ -78,7 +78,7 @@ export default function About() {
         {/* Main Content */}
         <div className="prose prose-lg prose-invert max-w-none space-y-8">
           <Card className="p-8 md:p-12 bg-card/50 border border-primary/20">
-            <h2 className="text-3xl font-serif font-bold text-white mb-6 flex items-center gap-3">
+            <h2 className="text-3xl font-serif font-medium text-white mb-6 flex items-center gap-3">
               <BookOpen className="w-8 h-8 text-primary" />
               The Beginning of a Legacy
             </h2>
@@ -96,7 +96,7 @@ export default function About() {
           </Card>
 
           <Card className="p-8 md:p-12 bg-card/50 border border-primary/20">
-            <h2 className="text-3xl font-serif font-bold text-white mb-6 flex items-center gap-3">
+            <h2 className="text-3xl font-serif font-medium text-white mb-6 flex items-center gap-3">
               <Award className="w-8 h-8 text-primary" />
               A Century of Impact
             </h2>
@@ -114,7 +114,7 @@ export default function About() {
           </Card>
 
           <Card className="p-8 md:p-12 bg-card/50 border border-primary/20">
-            <h2 className="text-3xl font-serif font-bold text-white mb-6 flex items-center gap-3">
+            <h2 className="text-3xl font-serif font-medium text-white mb-6 flex items-center gap-3">
               <Users className="w-8 h-8 text-primary" />
               The Seven Jewels: Founders of Excellence
             </h2>
@@ -135,7 +135,7 @@ export default function About() {
           </Card>
 
           <Card className="p-8 md:p-12 bg-card/50 border border-primary/20">
-            <h2 className="text-3xl font-serif font-bold text-white mb-6 flex items-center gap-3">
+            <h2 className="text-3xl font-serif font-medium text-white mb-6 flex items-center gap-3">
               <Heart className="w-8 h-8 text-primary" />
               Commemorating 120 Years
             </h2>
@@ -156,7 +156,7 @@ export default function About() {
         {/* CTA Section */}
         <div className="mt-16 text-center">
           <Card className="p-12 bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/30">
-            <h3 className="text-3xl font-serif font-bold text-white mb-4">
+            <h3 className="text-3xl font-serif font-medium text-white mb-4">
               Own a Piece of History
             </h3>
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">

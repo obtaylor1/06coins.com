@@ -46,7 +46,7 @@ export function StorySection({ onCtaClick }: StorySectionProps) {
         {/* Section Header */}
         <div className="text-center space-y-4 sm:space-y-6 px-2">
           <h2 
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-serif font-bold text-foreground tracking-tight"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-serif font-medium text-foreground tracking-tight"
             data-testid="text-story-title"
           >
             From the Jewels' Vision to a <span className="text-primary">Global Force</span>
@@ -66,13 +66,13 @@ export function StorySection({ onCtaClick }: StorySectionProps) {
             >
               {/* Year */}
               <div className="text-center">
-                <h3 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-primary">
+                <h3 className="text-4xl sm:text-5xl md:text-6xl font-serif font-medium text-primary">
                   {item.year}
                 </h3>
               </div>
 
               {/* Title */}
-              <h4 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-foreground text-center">
+              <h4 className="text-xl sm:text-2xl md:text-3xl font-serif font-medium text-foreground text-center">
                 {item.title}
               </h4>
 

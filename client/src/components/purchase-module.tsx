@@ -100,7 +100,7 @@ export function PurchaseModule() {
       <div className="relative z-10 max-w-6xl mx-auto space-y-8 sm:space-y-10 md:space-y-12 lg:space-y-16">
         <div className="text-center space-y-4 sm:space-y-6 px-2">
           <h2 
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-serif font-bold text-foreground tracking-tight leading-tight"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-serif font-medium text-foreground tracking-tight leading-tight"
             data-testid="text-purchase-heading"
           >
             Secure Your Limited Edition Coin Today
@@ -145,7 +145,7 @@ export function PurchaseModule() {
             <div className="lg:col-span-3 space-y-6 sm:space-y-8">
               {/* Product Title */}
               <div className="space-y-3 sm:space-y-4">
-                <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-foreground">
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-medium text-foreground">
                   Alpha Phi Alpha 120th Anniversary Commemorative Coin
                 </h3>
                 <p className="text-sm sm:text-base text-foreground/70">

@@ -47,7 +47,7 @@ export function WhyOwnSection({ onCtaClick }: WhyOwnSectionProps) {
       
       <div className="relative z-10 max-w-7xl mx-auto space-y-16 md:space-y-20">
         <div className="text-center space-y-6">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-foreground tracking-tight leading-tight">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-medium text-foreground tracking-tight leading-tight">
             A Symbol of Brotherhood.
             <br />
             <span className="text-primary">A Legacy to Hold.</span>
@@ -87,7 +87,7 @@ export function WhyOwnSection({ onCtaClick }: WhyOwnSectionProps) {
 
                   {/* Title */}
                   <h3 
-                    className="text-3xl md:text-4xl font-serif font-bold text-foreground"
+                    className="text-3xl md:text-4xl font-serif font-medium text-foreground"
                     data-testid={`text-why-own-title-${index}`}
                   >
                     {reason.title}

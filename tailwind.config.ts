@@ -103,7 +103,7 @@ export default {
         "pulse-gold": "pulse-gold 2s ease-in-out infinite alternate",
       },
       letterSpacing: {
-        'widest': '0.2em',
+        'widest': '0.12em',
         'monumental': '0.05em',
       },
     },

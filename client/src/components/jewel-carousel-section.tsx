@@ -150,7 +150,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
           </Badge>
           
           <h2 
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-primary tracking-tight px-2"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-medium text-primary tracking-tight px-2"
             data-testid="text-carousel-title"
           >
             Honor Your Favorite Jewel
@@ -164,7 +164,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
             <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary">
               $19.06 <span className="text-xl sm:text-2xl md:text-3xl text-[#E8DEC2]/55">Each</span>
             </div>
-            <p className="text-xs sm:text-sm text-[#E8DEC2]/45">
+            <p className="text-xs sm:text-sm text-[#E8DEC2]/65">
               Commemorating the founding year 1906
             </p>
           </div>
@@ -267,7 +267,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
             >
               {/* Name & Title */}
               <div className="text-center space-y-1 sm:space-y-2">
-                <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-primary">
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-medium text-primary">
                   {activeJewel.fullName}
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-400 font-medium">

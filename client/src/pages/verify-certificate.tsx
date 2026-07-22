@@ -69,7 +69,7 @@ export default function VerifyCertificate() {
   return <main className="min-h-screen bg-[#070706] text-[#eee4c8] selection:bg-[#c7a34f] selection:text-black">
     <header className="border-b border-[#a88437]/45 bg-[#090908]">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 sm:px-8">
-        <a href="/" aria-label="06 Coins home"><span className="block font-serif text-3xl leading-none text-[#d1ad58]">06 COINS</span><span className="text-[9px] tracking-[.28em] text-[#d1ad58]/80">PRIVATE OFFICE</span></a>
+        <a href="/" aria-label="06 Coins home"><span className="block font-serif text-3xl leading-none text-[#d1ad58]">06 COINS</span><span className="text-xs tracking-[.14em] text-[#d1ad58]/80">PRIVATE OFFICE</span></a>
         <nav className="flex gap-6 text-xs text-[#eee4c8]/70"><a className="hover:text-[#d1ad58]" href="/shop-coins">Storefront</a><a className="hover:text-[#d1ad58]" href="/contact">Contact support</a></nav>
       </div>
     </header>
@@ -78,7 +78,7 @@ export default function VerifyCertificate() {
       <div aria-hidden="true" className="absolute inset-0 opacity-[.055] [background-image:repeating-radial-gradient(ellipse_at_center,#d1ad58_0,#d1ad58_1px,transparent_1px,transparent_13px)]" />
       <section className="relative mx-auto max-w-7xl px-5 py-12 sm:px-8 sm:py-16">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-[10px] uppercase tracking-[.35em] text-[#d1ad58]">Certificate registry</p>
+          <p className="text-xs uppercase tracking-[.14em] text-[#d1ad58]">Certificate registry</p>
           <h1 className="mt-4 font-serif text-4xl leading-tight sm:text-6xl">Verify an authentic issue</h1>
           <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-[#eee4c8]/60">Enter the unique serial printed on the Certificate of Authenticity. QR scans fill this field automatically.</p>
           <form onSubmit={submit} className="mx-auto mt-8 flex max-w-2xl flex-col gap-2 border border-[#a88437]/55 bg-[#0f0e0b] p-2 shadow-2xl sm:flex-row">
@@ -99,7 +99,7 @@ export default function VerifyCertificate() {
 
           <div className="mx-auto mt-12 grid max-w-6xl gap-10 border-y border-[#a88437]/45 py-10 lg:grid-cols-[1fr_1.1fr] lg:items-center">
             <div className="grid grid-cols-2 gap-5">
-              {[{src:coinFront,label:"Obverse"},{src:coinBack,label:"Reverse"}].map(coin => <figure key={coin.label} className="text-center"><div className="aspect-square overflow-hidden rounded-full bg-[#131109] shadow-[0_20px_50px_rgba(0,0,0,.55)]"><img src={coin.src} alt={`${coin.label} of the 1906 Limited Edition coin`} className="h-full w-full object-contain" /></div><figcaption className="mt-4 text-[10px] uppercase tracking-[.3em] text-[#d1ad58]">{coin.label}</figcaption></figure>)}
+              {[{src:coinFront,label:"Obverse"},{src:coinBack,label:"Reverse"}].map(coin => <figure key={coin.label} className="text-center"><div className="aspect-square overflow-hidden rounded-full bg-[#131109] shadow-[0_20px_50px_rgba(0,0,0,.55)]"><img src={coin.src} alt={`${coin.label} of the 1906 Limited Edition coin`} className="h-full w-full object-contain" /></div><figcaption className="mt-4 text-xs uppercase tracking-[.14em] text-[#d1ad58]">{coin.label}</figcaption></figure>)}
             </div>
             <dl>{fields.map(([label,value]) => <div key={label} className="grid grid-cols-[minmax(120px,.75fr)_1.25fr] gap-4 border-b border-[#a88437]/30 py-3 text-sm"><dt className="font-serif uppercase tracking-[.08em] text-[#d1ad58]">{label}</dt><dd className={label === "Status" ? "font-semibold uppercase text-[#dfbe69]" : "text-[#eee4c8]/80"}>{value}</dd></div>)}</dl>
           </div>
@@ -108,12 +108,12 @@ export default function VerifyCertificate() {
             <div className="flex items-center gap-4"><Headphones className="h-8 w-8 text-[#d1ad58]" strokeWidth={1.3}/><div><h3 className="font-serif text-xl">Does something look wrong?</h3><p className="mt-1 text-xs text-[#eee4c8]/50">Our team can help verify your coin and certificate.</p></div></div>
             <a href="/contact" className="border border-[#d1ad58] px-6 py-3 text-xs uppercase tracking-[.16em] text-[#e1c16c] hover:bg-[#d1ad58] hover:text-black">Contact support</a>
           </div>
-          <p className="mt-8 flex items-center justify-center gap-2 text-center text-[10px] uppercase tracking-[.2em] text-[#eee4c8]/40"><ShieldCheck className="h-4 w-4 text-[#d1ad58]"/>Verification record secured by 06 Coins Private Office</p>
+          <p className="mt-8 flex items-center justify-center gap-2 text-center text-xs uppercase tracking-[.14em] text-[#eee4c8]/40"><ShieldCheck className="h-4 w-4 text-[#d1ad58]"/>Verification record secured by 06 Coins Private Office</p>
         </div>}
 
         {!record && !loading && <div className="mx-auto mt-16 max-w-3xl border-t border-[#a88437]/30 pt-8 text-center"><p className="font-serif text-xl text-[#eee4c8]/70">Each of the 1,906 coins receives one permanent registry number.</p><p className="mt-3 text-xs leading-5 text-[#eee4c8]/40">A valid result confirms the certificate record. It does not independently establish the identity of the person presenting the coin.</p></div>}
       </section>
     </div>
-    <footer className="border-t border-[#a88437]/40 px-5 py-6 text-center text-[9px] uppercase tracking-[.24em] text-[#d1ad58]/75">First of all, servants of all, we shall transcend all</footer>
+    <footer className="border-t border-[#a88437]/40 px-5 py-6 text-center text-xs uppercase tracking-[.16em] text-[#d1ad58]/75">First of all, servants of all, we shall transcend all</footer>
   </main>;
 }

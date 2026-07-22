@@ -73,7 +73,7 @@ export function LegacyLifestyleSection({ onCtaClick }: LegacyLifestyleSectionPro
       <div className="max-w-7xl mx-auto space-y-20">
         {/* Section Header */}
         <div className="text-center space-y-6">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-foreground tracking-tight leading-tight">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-medium text-foreground tracking-tight leading-tight">
             A Legacy to Hold
           </h2>
           <p className="text-lg md:text-xl text-foreground/70 max-w-3xl mx-auto">
@@ -107,7 +107,7 @@ export function LegacyLifestyleSection({ onCtaClick }: LegacyLifestyleSectionPro
               {/* Content */}
               <div className={`space-y-6 ${index % 2 === 1 ? 'lg:order-1' : ''}`}>
                 <div className="space-y-3">
-                  <h3 className="text-3xl md:text-4xl font-serif font-bold text-foreground">
+                  <h3 className="text-3xl md:text-4xl font-serif font-medium text-foreground">
                     {display.title}
                   </h3>
                   <p className="text-xl md:text-2xl font-serif text-primary italic">
@@ -134,7 +134,7 @@ export function LegacyLifestyleSection({ onCtaClick }: LegacyLifestyleSectionPro
 
         {/* Final CTA */}
         <div className="bg-card border border-primary/20 rounded-3xl p-10 md:p-16 text-center space-y-6">
-          <h3 className="text-2xl md:text-3xl font-serif font-bold text-primary">
+          <h3 className="text-2xl md:text-3xl font-serif font-medium text-primary">
             This Is More Than a Purchase
           </h3>
           <p className="text-lg md:text-xl text-foreground/70 max-w-3xl mx-auto">

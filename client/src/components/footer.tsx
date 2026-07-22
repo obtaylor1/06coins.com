@@ -19,7 +19,7 @@ export function Footer() {
                   loading="lazy"
                   decoding="async"
                 />
-                <h3 className="text-xl font-serif font-bold text-foreground">
+                <h3 className="text-xl font-serif font-medium text-foreground">
                   Alpha Phi Alpha
                 </h3>
               </div>

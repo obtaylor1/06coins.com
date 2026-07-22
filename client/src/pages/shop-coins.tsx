@@ -182,7 +182,7 @@ export default function ShopCoins() {
             Est. 1906 - Limited Edition Collection
           </Badge>
           
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-white mb-6 tracking-tight leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-medium text-white mb-6 tracking-tight leading-tight">
             120-Year <span className="text-primary">Commemorative</span>
             <br />
             Coin Collection
@@ -220,7 +220,7 @@ export default function ShopCoins() {
           {/* SEO-Rich Introduction Section */}
           <section className="prose prose-invert max-w-none">
             <div className="bg-card/50 border border-primary/20 rounded-lg p-8 md:p-12">
-              <h2 className="text-3xl md:text-4xl font-serif font-bold text-white mb-6 text-center">
+              <h2 className="text-3xl md:text-4xl font-serif font-medium text-white mb-6 text-center">
                 Celebrate 120 Years of Alpha Phi Alpha Legacy
               </h2>
               <div className="text-gray-300 leading-relaxed space-y-4 text-lg">
@@ -245,7 +245,7 @@ export default function ShopCoins() {
             <div className="text-center mb-8">
               <div className="inline-block">
                 <div className="h-px w-12 bg-primary/60 mx-auto mb-4" />
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-white mb-2">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-medium text-white mb-2">
                   The Centerpiece
                 </h2>
                 <div className="h-px w-12 bg-primary/60 mx-auto mt-4" />
@@ -291,7 +291,7 @@ export default function ShopCoins() {
                     <Badge className="mb-4 bg-primary/10 text-primary border border-primary/30 text-xs px-3 py-1">
                       4-INCH DIAMETER
                     </Badge>
-                    <h3 className="text-3xl sm:text-4xl font-serif font-bold text-white mb-4">
+                    <h3 className="text-3xl sm:text-4xl font-serif font-medium text-white mb-4">
                       {MAIN_COIN.name}
                     </h3>
                     <p className="text-gray-300 text-lg leading-relaxed mb-6">
@@ -351,7 +351,7 @@ export default function ShopCoins() {
             <div className="text-center mb-8">
               <div className="inline-block">
                 <div className="h-px w-12 bg-primary/60 mx-auto mb-4" />
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-white mb-2">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-medium text-white mb-2">
                   Best Collector Value
                 </h2>
                 <div className="h-px w-12 bg-primary/60 mx-auto mt-4" />
@@ -408,7 +408,7 @@ export default function ShopCoins() {
                       <Badge className="mb-4 bg-primary/10 text-primary border border-primary/30 text-xs px-3 py-1">
                         7 COINS • 3-INCH EACH
                       </Badge>
-                      <h3 className="text-3xl font-serif font-bold text-white mb-4">
+                      <h3 className="text-3xl font-serif font-medium text-white mb-4">
                         {JEWEL_SET.name}
                       </h3>
                       <p className="text-gray-300 leading-relaxed mb-6">
@@ -467,7 +467,7 @@ export default function ShopCoins() {
             <div className="text-center mb-8">
               <div className="inline-block">
                 <div className="h-px w-12 bg-primary/60 mx-auto mb-4" />
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-white mb-2">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-medium text-white mb-2">
                   Individual Jewel Coins
                 </h2>
                 <p className="text-gray-400 mt-2">3-inch diameter • $19.06 each</p>
@@ -553,7 +553,7 @@ export default function ShopCoins() {
                 {/* Product details */}
                 <div className="text-center space-y-6 max-w-2xl mx-auto">
                   <div>
-                    <h3 className="text-2xl sm:text-3xl font-serif font-bold text-white mb-3">
+                    <h3 className="text-2xl sm:text-3xl font-serif font-medium text-white mb-3">
                       {selectedJewel.name}
                     </h3>
                     <p className="text-gray-300 leading-relaxed mb-4">
@@ -641,7 +641,7 @@ export default function ShopCoins() {
                   Ultimate Collector's Package
                 </Badge>
 
-                <h2 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-white">
+                <h2 className="text-4xl sm:text-5xl md:text-6xl font-serif font-medium text-white">
                   Build My Complete Collection
                 </h2>
 
@@ -689,7 +689,7 @@ export default function ShopCoins() {
               </p>
             </div>
 
-            <h2 className="font-playfair text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">
+            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">
               Need Help or Bulk Order Support?
             </h2>
 

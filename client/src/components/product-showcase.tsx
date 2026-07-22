@@ -32,7 +32,7 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
           {/* Section Header */}
           <div className="text-center space-y-4 sm:space-y-6 px-2">
             <p className="text-sm sm:text-base md:text-lg lg:text-xl text-primary/80 font-serif tracking-wider">The Masterpiece</p>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-serif font-bold text-foreground tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-serif font-medium text-foreground tracking-tight leading-tight">
               Four Inches of History.
               <br />
               <span className="text-primary">Unmatched Quality.</span>
@@ -67,7 +67,7 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
 
         {/* The Scale and Significance */}
         <div className="space-y-8 sm:space-y-10 md:space-y-12">
-          <h3 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-foreground text-center px-2">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-serif font-medium text-foreground text-center px-2">
             The Scale and Significance
           </h3>
           
@@ -78,7 +78,7 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
                   <Ruler className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
                 </div>
                 <div className="space-y-2 sm:space-y-3">
-                  <h4 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-primary">
+                  <h4 className="text-xl sm:text-2xl md:text-3xl font-serif font-medium text-primary">
                     4-Inch Diameter
                   </h4>
                   <p className="text-sm sm:text-base text-foreground/70 leading-relaxed">
@@ -94,7 +94,7 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
                   <Scale className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
                 </div>
                 <div className="space-y-2 sm:space-y-3">
-                  <h4 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-primary">
+                  <h4 className="text-xl sm:text-2xl md:text-3xl font-serif font-medium text-primary">
                     Substantial Weight
                   </h4>
                   <p className="text-sm sm:text-base text-foreground/70 leading-relaxed">
@@ -124,7 +124,7 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
 
             {/* Title */}
             <div className="text-center space-y-2">
-              <h3 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
+              <h3 className="text-2xl md:text-3xl font-serif font-medium text-foreground">
                 The Front (Obverse): <span className="text-primary">Foundations & Global Impact</span>
               </h3>
             </div>
@@ -134,7 +134,7 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
               <div className="flex gap-4">
                 <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">The Seven Jewels</h4>
+                  <h4 className="text-lg md:text-xl font-serif font-medium text-primary mb-2">The Seven Jewels</h4>
                   <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
                     Seven distinct stars are arranged in formation to pay direct homage to our seven visionary founders—The Jewels—who dared to lay the foundation at Cornell.
                   </p>
@@ -144,7 +144,7 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
               <div className="flex gap-4">
                 <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">The Founding Seal</h4>
+                  <h4 className="text-lg md:text-xl font-serif font-medium text-primary mb-2">The Founding Seal</h4>
                   <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
                     The official Greek-letter seal is centrally placed, a constant reminder of our intercollegiate origins.
                   </p>
@@ -154,7 +154,7 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
               <div className="flex gap-4">
                 <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">The Motto</h4>
+                  <h4 className="text-lg md:text-xl font-serif font-medium text-primary mb-2">The Motto</h4>
                   <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
                     The complete mantra, <em className="text-primary">"First of All, Servants of All, We Shall Transcend All,"</em> is elegantly inscribed along the perimeter, serving as the call to action for every brother who views it.
                   </p>
@@ -164,7 +164,7 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
               <div className="flex gap-4">
                 <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">Precision Engraving</h4>
+                  <h4 className="text-lg md:text-xl font-serif font-medium text-primary mb-2">Precision Engraving</h4>
                   <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
                     The entire surface features micro-engraving texture, designed to catch and reflect light, giving the Old Gold finish a vibrant, enduring luster.
                   </p>
@@ -189,7 +189,7 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
 
             {/* Title */}
             <div className="text-center space-y-2">
-              <h3 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
+              <h3 className="text-2xl md:text-3xl font-serif font-medium text-foreground">
                 The Back (Reverse): <span className="text-primary">Founders & Future Promise</span>
               </h3>
             </div>
@@ -199,7 +199,7 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
               <div className="flex gap-4">
                 <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">The Sphinx</h4>
+                  <h4 className="text-lg md:text-xl font-serif font-medium text-primary mb-2">The Sphinx</h4>
                   <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
                     The iconic Great Sphinx of Giza, the cornerstone of our sacred bond, stands prominently in high relief, watching over the inscription.
                   </p>
@@ -209,7 +209,7 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
               <div className="flex gap-4">
                 <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">The Alpha Shield</h4>
+                  <h4 className="text-lg md:text-xl font-serif font-medium text-primary mb-2">The Alpha Shield</h4>
                   <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
                     Subtly integrated in the background, the official Shield represents the Manly Deeds, Scholarship, and Love for All Mankind upon which we are built.
                   </p>
@@ -219,7 +219,7 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
               <div className="flex gap-4">
                 <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">Global Reach</h4>
+                  <h4 className="text-lg md:text-xl font-serif font-medium text-primary mb-2">Global Reach</h4>
                   <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
                     Encircling the design are stylized lines hinting at a global map, recognizing Alpha Phi Alpha's expansion across the U.S., the Caribbean, Africa, and beyond since its founding.
                   </p>
@@ -229,7 +229,7 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
               <div className="flex gap-4">
                 <Star className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                 <div>
-                  <h4 className="text-lg md:text-xl font-serif font-bold text-primary mb-2">Inscriptions</h4>
+                  <h4 className="text-lg md:text-xl font-serif font-medium text-primary mb-2">Inscriptions</h4>
                   <p className="text-base md:text-lg text-foreground/80 leading-relaxed font-medium">
                     Clearly marked are the founding year <strong className="text-primary">1906</strong> and the commemorative year <strong className="text-primary">2026</strong>.
                   </p>
@@ -242,7 +242,7 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
         {/* Display and Presentation */}
         <div className="bg-card border border-primary/20 rounded-3xl p-10 md:p-16 space-y-10">
           <div className="text-center space-y-4">
-            <h3 className="text-3xl md:text-4xl font-serif font-bold text-foreground">
+            <h3 className="text-3xl md:text-4xl font-serif font-medium text-foreground">
               Display and <span className="text-primary">Presentation</span>
             </h3>
             <p className="text-lg md:text-xl text-foreground/70">
@@ -252,14 +252,14 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
 
           <div className="grid md:grid-cols-2 gap-10">
             <div className="space-y-4">
-              <h4 className="text-2xl font-serif font-bold text-primary">Premium Presentation Box</h4>
+              <h4 className="text-2xl font-serif font-medium text-primary">Premium Presentation Box</h4>
               <p className="text-foreground/70 leading-relaxed">
                 The coin arrives nestled in a custom, velvet-lined display box embossed with the fraternity's shield in gold foil. It is ready for immediate display in your home or office.
               </p>
             </div>
 
             <div className="space-y-4">
-              <h4 className="text-2xl font-serif font-bold text-primary">Limited Edition Card</h4>
+              <h4 className="text-2xl font-serif font-medium text-primary">Limited Edition Card</h4>
               <p className="text-foreground/70 leading-relaxed">
                 Each coin is accompanied by a sequentially numbered certificate of authenticity, validating its place within the exclusive commemorative run.
               </p>
