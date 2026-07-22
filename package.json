@@ -12,7 +12,8 @@
     "start": "NODE_ENV=production node app.js",
     "verify": "npm run check && npm run build",
     "check": "tsc",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.4",
