@@ -35,3 +35,9 @@ coverage
 # Misc
 .cache
 temp
+
+# Keep deployment archives lean. The storefront uses the optimized WebP set;
+# retain source artwork locally and in Git history without shipping it to Railway.
+attached_assets/*
+!attached_assets/optimized-webp/
+!attached_assets/optimized-webp/**
