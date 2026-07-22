@@ -162,16 +162,17 @@ export default function About() {
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
               Explore our exclusive 120th Anniversary Commemorative Coin Collection and honor the legacy of Alpha Phi Alpha.
             </p>
-            <Link href="/shop-coins">
-              <Button
+            <Button
+                asChild
                 size="lg"
                 className="bg-primary text-black font-bold hover:bg-primary/90 px-12 py-6 text-xl"
                 data-testid="button-shop-collection"
               >
+              <Link href="/shop-coins">
                 <ShoppingCart className="w-6 h-6 mr-3" />
                 Shop the Collection
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </Card>
         </div>
       </main>

@@ -24,12 +24,26 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 const CART_STORAGE_KEY = "apa120_cart";
+const MAX_CART_QUANTITY = 99;
+
+function isCartItem(value: unknown): value is CartItem {
+  if (!value || typeof value !== "object") return false;
+  const item = value as Partial<CartItem>;
+  return typeof item.id === "string" &&
+    typeof item.name === "string" &&
+    typeof item.image === "string" &&
+    typeof item.price === "number" && Number.isFinite(item.price) && item.price >= 0 &&
+    typeof item.quantity === "number" && Number.isInteger(item.quantity) &&
+    item.quantity > 0 && item.quantity <= MAX_CART_QUANTITY;
+}
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(() => {
     try {
       const stored = localStorage.getItem(CART_STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
+      if (!stored) return [];
+      const parsed: unknown = JSON.parse(stored);
+      return Array.isArray(parsed) ? parsed.filter(isCartItem) : [];
     } catch {
       return [];
     }
@@ -44,21 +58,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const addItem = (product: Product, quantity: number = 1) => {
+    const safeQuantity = Number.isFinite(quantity)
+      ? Math.max(1, Math.min(Math.trunc(quantity), MAX_CART_QUANTITY))
+      : 1;
     // Track add to cart event in Google Analytics
     trackAddToCart({
       id: product.id,
       name: product.name,
       price: product.price,
-      quantity,
+      quantity: safeQuantity,
     });
 
     setItems((prev) => {
       const existingIndex = prev.findIndex((item) => item.id === product.id);
       
       if (existingIndex >= 0) {
-        const updated = [...prev];
-        updated[existingIndex].quantity += quantity;
-        return updated;
+        return prev.map((item, index) => index === existingIndex
+          ? { ...item, quantity: Math.min(item.quantity + safeQuantity, MAX_CART_QUANTITY) }
+          : item
+        );
       }
       
       return [
@@ -67,7 +85,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           id: product.id,
           name: product.name,
           price: product.price,
-          quantity,
+          quantity: safeQuantity,
           image: product.image,
         },
       ];
@@ -75,14 +93,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const updateQuantity = (id: string, quantity: number) => {
-    if (quantity <= 0) {
+    if (!Number.isFinite(quantity) || quantity <= 0) {
       removeItem(id);
       return;
     }
     
     setItems((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, quantity: Math.min(quantity, 99) } : item
+        item.id === id ? { ...item, quantity: Math.min(Math.trunc(quantity), MAX_CART_QUANTITY) } : item
       )
     );
   };

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { User, Users, ShieldCheck } from "lucide-react";
-import storyBgImg from "@assets/0_0-3_1763339431485.jpg";
+import storyBgImg from "@assets/optimized-webp/0_0-3_1763339431485.webp";
 
 interface StorySectionProps {
   onCtaClick?: () => void;

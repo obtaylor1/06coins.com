@@ -13,7 +13,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Mail, Building2, Send, CheckCircle2, AlertCircle, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, ApiError } from "@/lib/queryClient";
-import separatorBarImg from "@assets/0_0_640_N_1763339269798.png";
+import separatorBarImg from "@assets/optimized-webp/0_0_640_N_1763339269798.webp";
 
 interface FormData {
   name: string;

@@ -2,13 +2,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ChevronRight, Minus, Plus, ArrowRight } from "lucide-react";
-import callisImg from "@assets/Henry Arthur Callis_1763159941951.png";
-import chapmanImg from "@assets/Charles Henry Chapman_1763159941952.png";
-import jonesImg from "@assets/Eugene Kincle Jones_1763159941953.png";
-import kelleyImg from "@assets/george biddle kelley_1763159941952.png";
-import murrayImg from "@assets/Nathaniel Allison Murray_1763159941952.png";
-import ogleImg from "@assets/Robert Harold Ogle_1763159941950.png";
-import tandyImg from "@assets/Vertner Woodson Tandy_1763159941953.png";
+import callisImg from "@assets/optimized-webp/Henry Arthur Callis_1763159941951.webp";
+import chapmanImg from "@assets/optimized-webp/Charles Henry Chapman_1763159941952.webp";
+import jonesImg from "@assets/optimized-webp/Eugene Kincle Jones_1763159941953.webp";
+import kelleyImg from "@assets/optimized-webp/george biddle kelley_1763159941952.webp";
+import murrayImg from "@assets/optimized-webp/Nathaniel Allison Murray_1763159941952.webp";
+import ogleImg from "@assets/optimized-webp/Robert Harold Ogle_1763159941950.webp";
+import tandyImg from "@assets/optimized-webp/Vertner Woodson Tandy_1763159941953.webp";
 
 interface Jewel {
   id: string;
@@ -136,7 +136,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
 
   return (
     <section 
-      className="py-12 sm:py-16 md:py-24 px-4 sm:px-6 md:px-12 bg-white"
+      className="py-12 sm:py-16 md:py-24 px-4 sm:px-6 md:px-12 bg-[#0d0c09] border-y border-[#C8A856]/20"
       data-testid="section-jewel-carousel"
     >
       <div className="max-w-5xl mx-auto">
@@ -156,15 +156,15 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
             Honor Your Favorite Jewel
           </h2>
           
-          <p className="text-base sm:text-lg md:text-xl text-gray-700 max-w-2xl mx-auto px-2">
+          <p className="text-base sm:text-lg md:text-xl text-[#E8DEC2]/70 max-w-2xl mx-auto px-2">
             Select and purchase individual 3-inch founder coins to celebrate the legacy of a specific Jewel.
           </p>
 
           <div className="flex flex-col items-center gap-1 sm:gap-2">
             <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary">
-              $19.06 <span className="text-xl sm:text-2xl md:text-3xl text-gray-600">Each</span>
+              $19.06 <span className="text-xl sm:text-2xl md:text-3xl text-[#E8DEC2]/55">Each</span>
             </div>
-            <p className="text-xs sm:text-sm text-gray-500">
+            <p className="text-xs sm:text-sm text-[#E8DEC2]/45">
               Commemorating the founding year 1906
             </p>
           </div>
@@ -214,6 +214,8 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
                     src={activeJewel.coinImage}
                     alt={`${activeJewel.fullName} commemorative coin`}
                     className="w-full h-full object-cover rounded-full"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </div>
@@ -249,6 +251,8 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
                     src={jewel.coinImage}
                     alt={jewel.name}
                     className="w-full h-full object-cover"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </button>
               ))}
@@ -348,14 +352,14 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
 
         {/* Upsell Banner */}
         <div 
-          className="mt-6 sm:mt-8 max-w-xl mx-auto rounded-xl sm:rounded-2xl border border-gray-200 bg-gray-50 px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-center sm:justify-between gap-3 sm:gap-4"
+          className="mt-6 sm:mt-8 max-w-xl mx-auto rounded-xl sm:rounded-2xl border border-[#C8A856]/25 bg-[#15130F] px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-center sm:justify-between gap-3 sm:gap-4"
           data-testid="banner-collect-all"
         >
           <div className="flex-1 text-center sm:text-left">
-            <h4 className="text-sm sm:text-base md:text-lg font-bold text-gray-900">
+            <h4 className="text-sm sm:text-base md:text-lg font-bold text-[#E8DEC2]">
               Collect All 7 Founder Coins
             </h4>
-            <p className="text-xs sm:text-sm text-gray-600 mt-0.5">
+            <p className="text-xs sm:text-sm text-[#E8DEC2]/55 mt-0.5">
               Special set pricing available
             </p>
           </div>

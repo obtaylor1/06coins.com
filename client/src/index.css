@@ -132,14 +132,14 @@
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
 
-  /* Alpha Phi Alpha Dark Theme - Gold (#C8A856) on Black (#121212) */
-  --background: 0 0% 7%;
+  /* Archival mint palette: obsidian, old gold, and parchment. */
+  --background: 0 0% 3.5%;
 
-  --foreground: 0 0% 96%;
+  --foreground: 45 35% 84%;
 
   --border: 42 48% 56% / 0.3;
 
-  --card: 0 0% 10%;
+  --card: 43 13% 7%;
 
   --card-foreground: 0 0% 96%;
 

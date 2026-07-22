@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1784695079774,
+      "tag": "0000_mysql_hostgator",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1784695176051,
+      "tag": "0001_mysql_hostgator",
+      "breakpoints": true
+    }
+  ]
+}

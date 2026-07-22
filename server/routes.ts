@@ -1,9 +1,15 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage.js";
-import { getInventoryFromFirestore, updateInventoryInFirestore } from "./firebase.js";
-import { setupAuth, isAuthenticated, isAdmin } from "./replitAuth.js";
-import Stripe from "stripe";
+import { setupAuth, isAuthenticated, isAdmin } from "./auth.js";
+import type Stripe from "stripe";
+import QRCode from "qrcode";
+import { z } from "zod";
+import { rateLimit } from "express-rate-limit";
+import { db } from "../db/index.js";
+import { and, desc, eq, sql } from "drizzle-orm";
+import { activityLogs, certificates, customers, inventory as inventoryTable, inventoryAdjustments, notifications, orders as ordersTable, storeSettings } from "../shared/schema.js";
+import { loadStripeRuntime, removeStripeCredentials, saveStripeCredentials, stripeStatus } from "./services/stripeConfig.js";
 
 // Server-side product catalog (price authority)
 // SECURITY: This is the source of truth for all product pricing
@@ -19,20 +25,206 @@ const PRODUCT_CATALOG = new Map([
   ['jewel_tandy', { name: 'Tandy — The Architect', price: 19.06, type: 'jewel-coin' }],
 ]);
 
-// Stripe integration - reference: javascript_stripe blueprint
-let stripe: Stripe | null = null;
-if (process.env.STRIPE_SECRET_KEY) {
-  stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2025-10-29.clover",
+const MAX_ITEM_QUANTITY = 99;
+const checkoutItemSchema = z.object({
+  id: z.string().trim().min(1),
+  quantity: z.number().int().min(1).max(MAX_ITEM_QUANTITY),
+});
+const checkoutRequestSchema = z.union([
+  z.object({ cartItems: z.array(checkoutItemSchema).min(1).max(PRODUCT_CATALOG.size) }),
+  z.object({ quantity: z.number().int().min(1).max(MAX_ITEM_QUANTITY) }),
+]);
+const finalizeOrderSchema = z.object({
+  paymentIntentId: z.string().trim().min(1),
+});
+
+type CheckoutItem = z.infer<typeof checkoutItemSchema>;
+
+function mergeCheckoutItems(items: CheckoutItem[]): CheckoutItem[] {
+  const quantities = new Map<string, number>();
+  for (const item of items) {
+    const nextQuantity = (quantities.get(item.id) ?? 0) + item.quantity;
+    if (nextQuantity > MAX_ITEM_QUANTITY) {
+      throw new Error(`Quantity for ${item.id} exceeds the per-product limit`);
+    }
+    quantities.set(item.id, nextQuantity);
+  }
+  return Array.from(quantities, ([id, quantity]) => ({ id, quantity }));
+}
+
+function calculateOrderAmount(items: CheckoutItem[]): number {
+  return items.reduce((total, item) => {
+    const product = PRODUCT_CATALOG.get(item.id);
+    if (!product) throw new Error(`Invalid product: ${item.id}`);
+    return total + Math.round(product.price * 100) * item.quantity;
+  }, 0);
+}
+
+function isPaidOrder(order: { status: string }): boolean {
+  return ['processing', 'shipped', 'delivered', 'completed'].includes(order.status);
+}
+
+class FulfillmentError extends Error {
+  constructor(message: string, public status = 400) {
+    super(message);
+  }
+}
+
+async function dispatchOrderNotifications(paymentIntentId: string) {
+  const order = await storage.getOrderByPaymentIntent(paymentIntentId);
+  if (!order) return;
+
+  if (order.customerEmail) {
+    import('./services/emailService.js').then(({ sendOrderConfirmationEmail }) =>
+      sendOrderConfirmationEmail(order)
+    ).catch((error: unknown) => console.error('[EMAIL] Order confirmation failed:', error));
+  }
+
+}
+
+async function fulfillPaymentIntent(
+  paymentIntent: Stripe.PaymentIntent,
+) {
+  if (paymentIntent.status !== 'succeeded') {
+    throw new FulfillmentError(`Payment not succeeded (${paymentIntent.status})`);
+  }
+  if (paymentIntent.currency !== 'usd') {
+    throw new FulfillmentError('Unsupported payment currency');
+  }
+
+  const existingOrder = await storage.getOrderByPaymentIntent(paymentIntent.id);
+  if (existingOrder) {
+    const mainCoinInventory = await storage.getInventoryByProductId('coin120year');
+    const existingCertificates = await db.select({ serialNumber: certificates.serialNumber }).from(certificates).where(eq(certificates.orderId, existingOrder.id));
+    return {
+      remainingStock: mainCoinInventory?.remainingStock ?? 0,
+      alreadyProcessed: true,
+      certificates: existingCertificates,
+    };
+  }
+
+  let metadataItems: unknown;
+  try {
+    metadataItems = JSON.parse(paymentIntent.metadata?.items ?? '');
+  } catch {
+    throw new FulfillmentError('Payment is missing valid order details');
+  }
+  const parsedItems = z.array(checkoutItemSchema)
+    .min(1)
+    .max(PRODUCT_CATALOG.size)
+    .safeParse(metadataItems);
+  if (!parsedItems.success) {
+    throw new FulfillmentError('Payment contains invalid order details');
+  }
+
+  const items = mergeCheckoutItems(parsedItems.data);
+  const expectedAmount = calculateOrderAmount(items);
+  if (paymentIntent.amount !== expectedAmount) {
+    throw new FulfillmentError('Payment amount does not match order details');
+  }
+
+  const paymentMethod = typeof paymentIntent.payment_method === 'object'
+    ? paymentIntent.payment_method
+    : null;
+  const metadata = paymentIntent.metadata || {};
+  const cartItems = items.map((item) => {
+    const product = PRODUCT_CATALOG.get(item.id)!;
+    return {
+      id: item.id,
+      name: product.name,
+      quantity: item.quantity,
+      price: Math.round(product.price * 100),
+    };
   });
-  console.log('Stripe initialized successfully');
-} else {
-  console.warn('Stripe secret key not provided. Payment features will be disabled.');
+
+  const customerEmail = paymentIntent.receipt_email || paymentMethod?.billing_details.email || null;
+  const customerName = paymentIntent.shipping?.name || paymentMethod?.billing_details.name || 'Unknown Customer';
+  let customerId: string | null = null;
+  if (customerEmail) {
+    const names = customerName.trim().split(/\s+/);
+    await db.insert(customers).values({
+      email: customerEmail.toLowerCase(),
+      firstName: names[0] || null,
+      lastName: names.slice(1).join(' ') || null,
+      phone: paymentIntent.shipping?.phone || null,
+      defaultAddress: paymentIntent.shipping?.address || null,
+      status: 'active',
+      source: 'order',
+    }).onDuplicateKeyUpdate({
+      set: { phone: paymentIntent.shipping?.phone || null, defaultAddress: paymentIntent.shipping?.address || null, updatedAt: new Date() },
+    });
+    const [customer] = await db.select().from(customers).where(eq(customers.email, customerEmail.toLowerCase())).limit(1);
+    customerId = customer.id;
+  }
+
+  try {
+    const result = await storage.executeInventoryTransaction(items, {
+      stripePaymentIntentId: paymentIntent.id,
+      quantity: items.reduce((sum, item) => sum + item.quantity, 0),
+      totalAmount: paymentIntent.amount,
+      status: 'processing',
+      customerId,
+      customerName,
+      customerEmail,
+      customerPhone: paymentIntent.shipping?.phone || null,
+      shippingAddress: paymentIntent.shipping?.address || null,
+      cartItems,
+      emailConfirmationSent: 0,
+    });
+
+    const mainCoinUpdate = result.updatedInventories.find((item) => item.productId === 'coin120year');
+    void dispatchOrderNotifications(paymentIntent.id);
+
+    return {
+      remainingStock: mainCoinUpdate?.remainingStock ?? 0,
+      updatedInventories: result.updatedInventories,
+      certificates: result.certificates.map(({ serialNumber }) => ({ serialNumber })),
+    };
+  } catch (error) {
+    const concurrentlyCreatedOrder = await storage.getOrderByPaymentIntent(paymentIntent.id);
+    if (concurrentlyCreatedOrder) {
+      const mainCoinInventory = await storage.getInventoryByProductId('coin120year');
+      return {
+        remainingStock: mainCoinInventory?.remainingStock ?? 0,
+        alreadyProcessed: true,
+      };
+    }
+    if (error instanceof Error && error.message.includes('Insufficient stock')) {
+      throw new FulfillmentError(
+        'Stock was exhausted after payment. Contact support for resolution.',
+        409,
+      );
+    }
+    throw error;
+  }
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup auth middleware
-  await setupAuth(app);
+  setupAuth(app);
+
+  app.get("/api/health", async (_req, res) => {
+    try {
+      await db.execute(sql`select 1`);
+      res.json({ status: "ok", database: "connected" });
+    } catch (error) {
+      console.error("Health check failed:", error);
+      res.status(503).json({ status: "degraded", database: "unavailable" });
+    }
+  });
+
+  const checkoutLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    limit: 20,
+    standardHeaders: "draft-8",
+    legacyHeaders: false,
+  });
+  const contactLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    limit: 5,
+    standardHeaders: "draft-8",
+    legacyHeaders: false,
+  });
 
   // Initialize all products inventory on server startup
   try {
@@ -43,29 +235,99 @@ export async function registerRoutes(app: Express): Promise<Server> {
   }
 
   // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  app.get('/api/auth/user', isAuthenticated, isAdmin, (_req, res) => res.json(res.locals.adminUser));
+
+  app.get('/api/payments/config', async (_req, res) => {
+    const runtime = await loadStripeRuntime();
+    if (!runtime) return res.status(503).json({ configured: false, message: 'Payments are not configured' });
+    res.set('Cache-Control', 'no-store');
+    res.json({ configured: true, publishableKey: runtime.publishableKey, mode: runtime.mode });
+  });
+
+  app.get('/api/admin/stripe/status', isAuthenticated, isAdmin, async (req, res) => {
+    const runtime = await loadStripeRuntime();
+    const origin = (process.env.PUBLIC_BASE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
+    if (!runtime) return res.json({ ...stripeStatus(null), webhookUrl: `${origin}/api/webhooks/stripe` });
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
+      const account = await runtime.client.accounts.retrieve();
+      res.json({ ...stripeStatus(runtime), ready: Boolean(account.charges_enabled && account.details_submitted && runtime.webhookSecret), apiConnected: true, chargesEnabled: account.charges_enabled, payoutsEnabled: account.payouts_enabled, detailsSubmitted: account.details_submitted, webhookUrl: `${origin}/api/webhooks/stripe` });
+    } catch {
+      res.json({ ...stripeStatus(runtime), ready: false, apiConnected: false, chargesEnabled: false, payoutsEnabled: false, detailsSubmitted: false, webhookUrl: `${origin}/api/webhooks/stripe` });
     }
+  });
+
+  app.put('/api/admin/stripe/credentials', isAuthenticated, isAdmin, async (req, res) => {
+    const parsed = z.object({ publishableKey: z.string().trim().min(20).max(300), secretKey: z.string().trim().min(20).max(300), webhookSecret: z.string().trim().min(16).max(300) }).safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ message: 'Enter all three Stripe credentials' });
+    try {
+      const status = await saveStripeCredentials(parsed.data, res.locals.adminUser.id);
+      await db.insert(activityLogs).values({ actorId: res.locals.adminUser.id, action: 'integration.stripe_configured', entityType: 'integration', entityId: 'stripe', details: { mode: status.mode, accountId: status.accountId } });
+      res.json(status);
+    } catch (error) {
+      const message = error instanceof Error && !/api key|authentication/i.test(error.message) ? error.message : 'Stripe rejected these credentials. Check the key mode and try again.';
+      res.status(400).json({ message });
+    }
+  });
+
+  app.delete('/api/admin/stripe/credentials', isAuthenticated, isAdmin, async (_req, res) => {
+    await removeStripeCredentials();
+    await db.insert(activityLogs).values({ actorId: res.locals.adminUser.id, action: 'integration.stripe_disconnected', entityType: 'integration', entityId: 'stripe', details: {} });
+    res.json({ removed: true });
+  });
+
+  const serialSchema = z.string().trim().toUpperCase().regex(/^1906-LE-\d{6}$/);
+  const publicCertificateRecord = (certificate: typeof certificates.$inferSelect) => {
+    const nameParts = (certificate.purchaserName || '').trim().split(/\s+/).filter(Boolean);
+    const suffixes = new Set(['jr', 'jr.', 'sr', 'sr.', 'ii', 'iii', 'iv']);
+    const surname = [...nameParts].reverse().find(part => !suffixes.has(part.toLowerCase()));
+    const purchaser = nameParts.length
+      ? `${nameParts[0]}${surname && surname !== nameParts[0] ? ` ${surname[0]}.` : ''}`
+      : 'Private collector';
+    return {
+      serialNumber: certificate.serialNumber,
+      editionNumber: certificate.editionNumber,
+      editionSize: certificate.editionSize,
+      edition: '1906 Limited Edition',
+      status: certificate.status,
+      diameter: certificate.diameter,
+      finish: certificate.finish,
+      material: certificate.material,
+      issuedAt: certificate.issuedAt,
+      purchaser,
+      certificate: certificate.status === 'active' ? 'Active' : certificate.status,
+    };
+  };
+
+  // Public authenticity lookup. Full customer details are never returned here.
+  app.get('/api/certificates/verify/:serial', async (req, res) => {
+    const parsed = serialSchema.safeParse(req.params.serial);
+    if (!parsed.success) return res.status(400).json({ message: 'Enter a serial in the format 1906-LE-000127' });
+    const [certificate] = await db.select().from(certificates).where(eq(certificates.serialNumber, parsed.data)).limit(1);
+    if (!certificate) return res.status(404).json({ message: 'No authenticity record matches this serial number' });
+    await db.update(certificates).set({
+      verificationCount: sql`${certificates.verificationCount} + 1`,
+      lastVerifiedAt: new Date(),
+    }).where(eq(certificates.id, certificate.id));
+    res.set('Cache-Control', 'no-store');
+    res.json(publicCertificateRecord(certificate));
+  });
+
+  // A real scannable QR that always opens the single verification page.
+  app.get('/api/certificates/:serial/qr.svg', async (req, res) => {
+    const parsed = serialSchema.safeParse(req.params.serial);
+    if (!parsed.success) return res.status(400).send('Invalid serial number');
+    const [certificate] = await db.select({ id: certificates.id }).from(certificates).where(eq(certificates.serialNumber, parsed.data)).limit(1);
+    if (!certificate) return res.status(404).send('Certificate not found');
+    const origin = (process.env.PUBLIC_BASE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/$/, '');
+    const verificationUrl = `${origin}/verify?serial=${encodeURIComponent(parsed.data)}`;
+    const svg = await QRCode.toString(verificationUrl, { type: 'svg', errorCorrectionLevel: 'H', margin: 2, color: { dark: '#17130b', light: '#f3ead1' } });
+    res.type('image/svg+xml').set('Cache-Control', 'public, max-age=86400').send(svg);
   });
   
   // Get current inventory for main coin (used by header stock counter)
   app.get("/api/inventory", async (req, res) => {
     try {
-      // Try to get from Firestore first (real-time source of truth)
-      const firestoreStock = await getInventoryFromFirestore();
-      
-      if (firestoreStock !== null) {
-        // Update local storage to match Firestore
-        await storage.updateInventoryStock('coin120year', firestoreStock);
-      }
-      
-      // Return main coin inventory from local storage (which is now synced)
+      // MySQL is the transactional source of truth for authoritative stock.
       const inventory = await storage.getInventoryByProductId('coin120year');
       
       if (!inventory) {
@@ -114,211 +376,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Decrement inventory after payment verified
   // SECURITY: Verifies Stripe payment succeeded before decrementing
-  app.post("/api/inventory/decrement", async (req, res) => {
-    if (!stripe) {
+  app.post("/api/inventory/decrement", checkoutLimiter, async (req, res) => {
+    const stripeRuntime = await loadStripeRuntime();
+    if (!stripeRuntime) {
       return res.status(503).json({ message: "Payment system unavailable" });
     }
 
     try {
-      const { quantity, paymentIntentId, cartItems, customerPhone, smsOrderUpdatesOptIn, smsMarketingOptIn } = req.body;
-
-      if (!paymentIntentId) {
-        return res.status(400).json({ message: "Payment intent required" });
+      const parsedRequest = finalizeOrderSchema.safeParse(req.body);
+      if (!parsedRequest.success) {
+        return res.status(400).json({ message: "Invalid order finalization request" });
       }
+      const { paymentIntentId } = parsedRequest.data;
 
-      // CRITICAL: Verify payment with Stripe before decrementing
-      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-      
-      if (paymentIntent.status !== 'succeeded') {
-        return res.status(400).json({ 
-          message: "Payment not succeeded",
-          status: paymentIntent.status 
-        });
-      }
-
-      // Check if this payment was already processed (idempotency)
-      const existingOrder = await storage.getOrderByPaymentIntent(paymentIntentId);
-      if (existingOrder) {
-        // Return main coin stock for legacy compatibility
-        const mainCoinInventory = await storage.getInventoryByProductId('coin120year');
-        return res.json({
-          remainingStock: mainCoinInventory?.remainingStock ?? 0,
-          alreadyProcessed: true,
-        });
-      }
-
-      // Parse items from payment intent metadata
-      let itemsToDecrement: Array<{id: string, quantity: number}> = [];
-      let totalQuantity = 0;
-      
-      if (cartItems && Array.isArray(cartItems) && cartItems.length > 0) {
-        // New cart system
-        itemsToDecrement = cartItems.map((item: any) => ({
-          id: item.id,
-          quantity: item.quantity,
-        }));
-        totalQuantity = cartItems.reduce((sum: number, item: any) => sum + item.quantity, 0);
-      } else if (quantity && quantity >= 1) {
-        // Legacy single quantity system
-        itemsToDecrement = [{ id: 'coin120year', quantity }];
-        totalQuantity = quantity;
-      } else {
-        return res.status(400).json({ message: "Invalid request: provide either quantity or cartItems" });
-      }
-
-      // Verify total items matches payment metadata
-      const paidItems = paymentIntent.metadata?.totalItems;
-      if (paidItems && parseInt(paidItems) !== totalQuantity) {
-        return res.status(400).json({ 
-          message: "Item count mismatch",
-          paidItems: parseInt(paidItems),
-          requestedItems: totalQuantity
-        });
-      }
-
-      // Prepare cart items for storage
-      const cartItemsForStorage = cartItems && Array.isArray(cartItems) && cartItems.length > 0
-        ? cartItems.map((item: any) => {
-            const catalogProduct = PRODUCT_CATALOG.get(item.id);
-            return {
-              id: item.id,
-              name: catalogProduct?.name || item.name,
-              quantity: item.quantity,
-              price: catalogProduct?.price ? Math.round(catalogProduct.price * 100) : 0, // Store in cents
-            };
-          })
-        : [{
-            id: 'coin120year',
-            name: PRODUCT_CATALOG.get('coin120year')?.name || '120-Year Anniversary Coin',
-            quantity: quantity,
-            price: Math.round((PRODUCT_CATALOG.get('coin120year')?.price || 39.06) * 100),
-          }];
-
-      // Execute entire decrement + order creation in a database transaction
-      // Ensures all-or-nothing: if any decrement fails, all are rolled back
-      try {
-        const result = await storage.executeInventoryTransaction(
-          itemsToDecrement,
-          {
-            stripePaymentIntentId: paymentIntentId,
-            quantity: totalQuantity,
-            totalAmount: paymentIntent.amount,
-            status: "processing", // Order needs to be shipped
-            customerName: paymentIntent.shipping?.name || 'Unknown Customer',
-            customerEmail: paymentIntent.receipt_email || null,
-            customerPhone: customerPhone || null,
-            shippingAddress: paymentIntent.shipping?.address || null,
-            cartItems: cartItemsForStorage as any,
-            emailConfirmationSent: 0, // Will be set to 1 after email sent
-            smsOrderUpdatesOptIn: smsOrderUpdatesOptIn ?? 0,
-            smsMarketingOptIn: smsMarketingOptIn ?? 0,
-          }
-        );
-
-        // Get the created order to send confirmation email and SMS
-        const order = await storage.getOrderByPaymentIntent(paymentIntentId);
-        
-        // Send order confirmation email (async, don't block response)
-        if (order && order.customerEmail) {
-          // Import dynamically to avoid blocking
-          import('./services/emailService.js').then(({ sendOrderConfirmationEmail }) => {
-            sendOrderConfirmationEmail(order).catch((error: any) => {
-              console.error('[EMAIL] Failed to send order confirmation:', error);
-            });
-          }).catch((error: any) => {
-            console.error('[EMAIL] Failed to import email service:', error);
-          });
-        }
-        
-        // Send order confirmation SMS (async, don't block response)
-        if (order) {
-          import('./services/smsTriggers.js').then(({ sendOrderConfirmationSms, sendAdminNewOrderAlert, sendAdminHighValueAlert }) => {
-            sendOrderConfirmationSms(order).catch((error: any) => {
-              console.error('[SMS] Failed to send order confirmation SMS:', error);
-            });
-            
-            // Send admin alerts
-            sendAdminNewOrderAlert(order).catch((error: any) => {
-              console.error('[SMS] Failed to send admin new order alert:', error);
-            });
-            
-            sendAdminHighValueAlert(order).catch((error: any) => {
-              console.error('[SMS] Failed to send admin high-value alert:', error);
-            });
-          }).catch((error: any) => {
-            console.error('[SMS] Failed to import SMS triggers:', error);
-          });
-        }
-
-        // Sync main coin to Firestore (for header counter)
-        const mainCoinUpdate = result.updatedInventories.find(inv => inv.productId === 'coin120year');
-        if (mainCoinUpdate) {
-          await updateInventoryInFirestore(mainCoinUpdate.remainingStock);
-        }
-
-        res.json({
-          remainingStock: mainCoinUpdate?.remainingStock ?? 0,
-          updatedInventories: result.updatedInventories,
-        });
-      } catch (error: any) {
-        console.error('Error in inventory transaction:', error);
-        
-        // Check if it's an insufficient stock error
-        if (error.message?.includes('Insufficient stock') || error.message?.includes('stock exhausted')) {
-          return res.status(409).json({ 
-            message: "Stock was exhausted by another order during processing. Your payment succeeded - please contact support for a refund.",
-            paymentIntentId,
-            error: error.message,
-          });
-        }
-        
-        // Other transaction errors
-        return res.status(500).json({ 
-          message: "Payment succeeded but inventory update failed. Contact support.",
-          paymentIntentId,
-          error: error.message,
-        });
-      }
+      const paymentIntent = await stripeRuntime.client.paymentIntents.retrieve(paymentIntentId, {
+        expand: ['payment_method'],
+      });
+      const result = await fulfillPaymentIntent(paymentIntent);
+      res.json(result);
     } catch (error: any) {
       console.error('Error decrementing inventory:', error);
-      res.status(500).json({ message: "Error decrementing inventory: " + error.message });
+      const status = error instanceof FulfillmentError ? error.status : 500;
+      res.status(status).json({
+        message: status === 500 ? "Unable to finalize the order" : error.message,
+      });
     }
   });
 
   // Stripe payment intent creation - reference: javascript_stripe blueprint
-  app.post("/api/create-payment-intent", async (req, res) => {
-    if (!stripe) {
+  app.post("/api/create-payment-intent", checkoutLimiter, async (req, res) => {
+    const stripeRuntime = await loadStripeRuntime();
+    if (!stripeRuntime) {
       return res.status(503).json({ 
         message: "Payment processing is currently unavailable. Please contact support." 
       });
     }
 
     try {
-      const { quantity, cartItems } = req.body;
-      
-      let totalAmount = 0;
-      let metadataItems: any[] = [];
-      
-      if (cartItems && Array.isArray(cartItems) && cartItems.length > 0) {
+      const parsedRequest = checkoutRequestSchema.safeParse(req.body);
+      if (!parsedRequest.success) {
+        return res.status(400).json({ message: "Invalid checkout request" });
+      }
+
+      let metadataItems: CheckoutItem[];
+      if ('cartItems' in parsedRequest.data) {
+        try {
+          metadataItems = mergeCheckoutItems(parsedRequest.data.cartItems);
+        } catch (error) {
+          return res.status(400).json({ message: (error as Error).message });
+        }
         // New cart system: Calculate total from SERVER-SIDE catalog
         // SECURITY: Never trust client prices - use server catalog
-        for (const item of cartItems) {
+        for (const item of metadataItems) {
           const catalogProduct = PRODUCT_CATALOG.get(item.id);
           if (!catalogProduct) {
             return res.status(400).json({ 
               message: `Invalid product: ${item.id}`,
             });
           }
-          
-          // Use SERVER price, not client price
-          const serverPrice = catalogProduct.price;
-          totalAmount += serverPrice * item.quantity;
-          metadataItems.push({
-            id: item.id,
-            name: catalogProduct.name,
-            quantity: item.quantity,
-            price: serverPrice, // Server-controlled price
-          });
           
           // Check inventory for each product
           const inventory = await storage.getInventoryByProductId(item.id);
@@ -331,15 +446,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             });
           }
         }
-      } else if (quantity && quantity >= 1) {
+      } else {
         // Legacy single quantity system
-        const catalogProduct = PRODUCT_CATALOG.get('coin120year');
-        if (!catalogProduct) {
-          return res.status(500).json({ message: "Product catalog error" });
-        }
-        
-        totalAmount = quantity * catalogProduct.price;
-        metadataItems = [{ productId: 'coin120year', quantity, price: catalogProduct.price }];
+        const quantity = parsedRequest.data.quantity;
+        metadataItems = [{ id: 'coin120year', quantity }];
         
         // Check inventory for main coin
         const inventory = await storage.getInventoryByProductId('coin120year');
@@ -349,12 +459,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
             remainingStock: inventory?.remainingStock || 0,
           });
         }
-      } else {
-        return res.status(400).json({ message: "Invalid request: provide either quantity or cartItems" });
       }
 
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(totalAmount * 100), // Convert to cents
+      const amount = calculateOrderAmount(metadataItems);
+
+      const paymentIntent = await stripeRuntime.client.paymentIntents.create({
+        amount,
         currency: "usd",
         metadata: {
           items: JSON.stringify(metadataItems),
@@ -368,46 +478,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error: any) {
       console.error('Stripe error:', error);
-      res.status(500).json({ message: "Error creating payment intent: " + error.message });
+      res.status(500).json({ message: "Unable to initialize checkout" });
     }
   });
 
-  // Create order after payment intent
-  app.post("/api/orders", async (req, res) => {
-    try {
-      const { stripePaymentIntentId, quantity, totalAmount } = req.body;
-      
-      if (!stripePaymentIntentId || !quantity || !totalAmount) {
-        return res.status(400).json({ message: "Missing required fields" });
-      }
-
-      const order = await storage.createOrder({
-        stripePaymentIntentId,
-        quantity,
-        totalAmount: Math.round(totalAmount * 100), // Store in cents
-        status: "pending",
-      });
-
-      res.json(order);
-    } catch (error: any) {
-      console.error('Error creating order:', error);
-      res.status(500).json({ message: "Error creating order: " + error.message });
+  app.post("/api/webhooks/stripe", async (req, res) => {
+    const stripeRuntime = await loadStripeRuntime();
+    if (!stripeRuntime) {
+      return res.status(503).json({ message: "Stripe webhook is not configured" });
     }
-  });
+    const signature = req.get('stripe-signature');
+    if (!signature || !Buffer.isBuffer(req.rawBody)) {
+      return res.status(400).json({ message: "Invalid webhook request" });
+    }
 
-  // Get order by ID
-  app.get("/api/orders/:id", async (req, res) => {
     try {
-      const order = await storage.getOrder(req.params.id);
-      
-      if (!order) {
-        return res.status(404).json({ message: "Order not found" });
+      const event = stripeRuntime.client.webhooks.constructEvent(
+        req.rawBody,
+        signature,
+        stripeRuntime.webhookSecret,
+      );
+      if (event.type === 'payment_intent.succeeded') {
+        const paymentIntent = await stripeRuntime.client.paymentIntents.retrieve(event.data.object.id, {
+          expand: ['payment_method'],
+        });
+        await fulfillPaymentIntent(paymentIntent);
       }
-      
-      res.json(order);
-    } catch (error: any) {
-      console.error('Error fetching order:', error);
-      res.status(500).json({ message: "Error fetching order: " + error.message });
+      res.json({ received: true });
+    } catch (error) {
+      console.error('Stripe webhook processing failed:', error);
+      res.status(400).json({ message: "Webhook processing failed" });
     }
   });
 
@@ -424,22 +524,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch("/api/admin/inventory", isAuthenticated, isAdmin, async (req, res) => {
     try {
-      const { productId, remainingStock } = req.body;
-      
-      if (!productId) {
-        return res.status(400).json({ message: "Product ID required" });
-      }
-      
-      if (typeof remainingStock !== 'number' || remainingStock < 0) {
-        return res.status(400).json({ message: "Invalid stock quantity" });
-      }
-      
-      const updatedInventory = await storage.updateInventoryStock(productId, remainingStock);
-      
-      // Sync main coin to Firestore (for header counter)
-      if (productId === 'coin120year') {
-        await updateInventoryInFirestore(remainingStock);
-      }
+      const parsed = z.object({ productId: z.string().min(1), remainingStock: z.number().int().min(0).max(1_000_000), reason: z.string().min(2).max(100).default("Manual count correction"), notes: z.string().max(1000).optional(), referenceNumber: z.string().max(100).optional() }).safeParse(req.body);
+      if (!parsed.success) return res.status(400).json({ message: "Valid product, quantity, and adjustment reason are required" });
+      const { productId, remainingStock, reason, notes, referenceNumber } = parsed.data;
+      const previous = await storage.getInventoryByProductId(productId);
+      if (!previous) return res.status(404).json({ message: "Product not found" });
+      const updatedInventory = await db.transaction(async tx => {
+        await tx.update(inventoryTable).set({ remainingStock, lastUpdated: new Date() }).where(eq(inventoryTable.productId, productId));
+        const [updated] = await tx.select().from(inventoryTable).where(eq(inventoryTable.productId, productId)).limit(1);
+        await tx.insert(inventoryAdjustments).values({ productId, previousQuantity: previous.remainingStock, quantityChange: remainingStock - previous.remainingStock, newQuantity: remainingStock, reason, notes, referenceNumber, createdBy: res.locals.adminUser.id });
+        await tx.insert(activityLogs).values({ actorId: res.locals.adminUser.id, action: "inventory.adjusted", entityType: "product", entityId: productId, details: { previous: previous.remainingStock, next: remainingStock, reason } });
+        return updated;
+      });
       
       res.json({
         productId: updatedInventory.productId,
@@ -458,9 +554,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const orders = await storage.getAllOrders();
       const allInventory = await storage.getAllInventory();
       
-      const completedOrders = orders.filter(o => o.status === 'completed');
-      const totalRevenue = completedOrders.reduce((sum, order) => sum + order.totalAmount, 0);
-      const totalCoinsSold = completedOrders.reduce((sum, order) => sum + order.quantity, 0);
+      const paidOrders = orders.filter(isPaidOrder);
+      const totalRevenue = paidOrders.reduce((sum, order) => sum + order.totalAmount, 0);
+      const totalCoinsSold = paidOrders.reduce((sum, order) => sum + order.quantity, 0);
       
       // Get main coin inventory for header display
       const mainCoinInventory = allInventory.find(inv => inv.productId === 'coin120year');
@@ -480,7 +576,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Calculate total profit by iterating through order items
       let totalProfit = 0;
-      completedOrders.forEach(order => {
+      paidOrders.forEach(order => {
         if (order.cartItems && Array.isArray(order.cartItems)) {
           order.cartItems.forEach((item: any) => {
             if (item.id === 'coin120year') {
@@ -497,7 +593,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       res.json({
-        totalOrders: completedOrders.length,
+        totalOrders: paidOrders.length,
         totalRevenue, // in cents
         totalCoinsSold,
         totalProfit, // in cents
@@ -512,36 +608,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // SMS Management Routes
-  app.get("/api/admin/sms/analytics", isAuthenticated, isAdmin, async (req, res) => {
-    try {
-      // Use SQL aggregation instead of loading all logs
-      const analytics = await storage.getSmsAnalytics();
-      
-      res.json(analytics);
-    } catch (error: any) {
-      console.error('Error fetching SMS analytics:', error);
-      res.status(500).json({ message: "Error fetching SMS analytics: " + error.message });
-    }
-  });
-
-  // Order-specific SMS logs (secure, scoped to single order)
-  app.get("/api/admin/sms/logs/:orderId", isAuthenticated, isAdmin, async (req, res) => {
-    try {
-      const { orderId } = req.params;
-      const smsLogs = await storage.getSmsLogsByOrder(orderId);
-      res.json(smsLogs);
-    } catch (error: any) {
-      console.error('Error fetching SMS logs for order:', error);
-      res.status(500).json({ message: "Error fetching SMS logs: " + error.message });
-    }
-  });
 
   // Admin sales chart data endpoint (last 30 days)
   app.get("/api/admin/sales-chart", isAuthenticated, isAdmin, async (req, res) => {
     try {
       const orders = await storage.getAllOrders();
-      const completedOrders = orders.filter(o => o.status === 'completed');
+      const paidOrders = orders.filter(isPaidOrder);
       
       // Generate last 30 days
       const days = 30;
@@ -557,7 +629,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Aggregate orders by day
-      completedOrders.forEach(order => {
+      paidOrders.forEach(order => {
         const orderDate = new Date(order.createdAt).toISOString().split('T')[0];
         if (salesByDay.has(orderDate)) {
           const day = salesByDay.get(orderDate)!;
@@ -580,14 +652,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Complete report service. Monetary values are returned in cents so exports
+  // preserve exact accounting values and the client controls presentation.
+  app.get('/api/admin/reports/:type', isAuthenticated, isAdmin, async (req, res) => {
+    const reportType = z.enum(['sales', 'profitability', 'orders', 'products', 'inventory', 'customers', 'taxes', 'shipping', 'staff-activity']).safeParse(req.params.type);
+    const period = z.enum(['7', '30', '90', 'all']).safeParse(String(req.query.period || '30'));
+    if (!reportType.success || !period.success) return res.status(400).json({ message: 'Invalid report type or period' });
+
+    const now = new Date();
+    const start = period.data === 'all' ? null : new Date(now.getTime() - Number(period.data) * 86_400_000);
+    const allOrders = await storage.getAllOrders();
+    const periodOrders = allOrders.filter(order => !start || new Date(order.createdAt) >= start);
+    const paidOrders = periodOrders.filter(isPaidOrder);
+    const allInventory = await storage.getAllInventory();
+    const money = (value: number) => Math.round(value);
+    const itemCost = (id: string) => id === 'coin120year' ? 850 : id === 'jewelset7' ? 2310 : id.startsWith('jewel_') ? 330 : 0;
+    const itemRows = paidOrders.flatMap(order => Array.isArray(order.cartItems) ? (order.cartItems as any[]).map(item => ({ ...item, order })) : []);
+    const revenue = paidOrders.reduce((sum, order) => sum + order.totalAmount, 0);
+    const units = paidOrders.reduce((sum, order) => sum + order.quantity, 0);
+    const cost = itemRows.reduce((sum, item) => sum + itemCost(item.id) * Number(item.quantity || 0), 0);
+    const base = { type: reportType.data, period: period.data, generatedAt: now, note: null as string | null, metrics: [] as any[], columns: [] as any[], rows: [] as any[], chart: null as any };
+
+    if (reportType.data === 'sales') {
+      const days = period.data === 'all' ? Math.max(1, Math.ceil((now.getTime() - Math.min(...paidOrders.map(order => new Date(order.createdAt).getTime()), now.getTime())) / 86_400_000) + 1) : Number(period.data);
+      const byDay = new Map<string, { date: string; revenue: number; orders: number; units: number }>();
+      for (let i = Math.min(days, 3660) - 1; i >= 0; i--) { const date = new Date(now); date.setDate(date.getDate() - i); const key = date.toISOString().slice(0, 10); byDay.set(key, { date: key, revenue: 0, orders: 0, units: 0 }); }
+      paidOrders.forEach(order => { const row = byDay.get(new Date(order.createdAt).toISOString().slice(0, 10)); if (row) { row.revenue += order.totalAmount; row.orders += 1; row.units += order.quantity; } });
+      base.metrics = [{ label: 'Revenue', value: revenue, format: 'money' }, { label: 'Paid orders', value: paidOrders.length, format: 'number' }, { label: 'Units sold', value: units, format: 'number' }, { label: 'Average order value', value: paidOrders.length ? money(revenue / paidOrders.length) : 0, format: 'money' }];
+      base.columns = [{ key: 'date', label: 'Date' }, { key: 'revenue', label: 'Revenue', format: 'money' }, { key: 'orders', label: 'Orders' }, { key: 'units', label: 'Units' }];
+      base.rows = Array.from(byDay.values()); base.chart = { key: 'revenue', label: 'Revenue', format: 'money' };
+    } else if (reportType.data === 'profitability') {
+      const grouped = new Map<string, any>(); itemRows.forEach(item => { const row = grouped.get(item.id) || { product: item.name, units: 0, revenue: 0, cost: 0, grossProfit: 0, margin: 0 }; row.units += item.quantity; row.revenue += item.price * item.quantity; row.cost += itemCost(item.id) * item.quantity; row.grossProfit = row.revenue - row.cost; row.margin = row.revenue ? Number(((row.grossProfit / row.revenue) * 100).toFixed(1)) : 0; grouped.set(item.id, row); });
+      base.metrics = [{ label: 'Revenue', value: revenue, format: 'money' }, { label: 'Product cost', value: cost, format: 'money' }, { label: 'Gross profit', value: revenue - cost, format: 'money' }, { label: 'Gross margin', value: revenue ? Number((((revenue - cost) / revenue) * 100).toFixed(1)) : 0, format: 'percent' }];
+      base.columns = [{ key: 'product', label: 'Product' }, { key: 'units', label: 'Units' }, { key: 'revenue', label: 'Revenue', format: 'money' }, { key: 'cost', label: 'Product cost', format: 'money' }, { key: 'grossProfit', label: 'Gross profit', format: 'money' }, { key: 'margin', label: 'Margin', format: 'percent' }];
+      base.rows = Array.from(grouped.values()).sort((a, b) => b.grossProfit - a.grossProfit); base.chart = { key: 'grossProfit', nameKey: 'product', label: 'Gross profit', format: 'money' }; base.note = 'Gross profit uses the product costs configured by 06 Coins and excludes payment fees, taxes, refunds, and shipping expense.';
+    } else if (reportType.data === 'orders') {
+      base.metrics = [{ label: 'All orders', value: periodOrders.length, format: 'number' }, { label: 'Paid', value: paidOrders.length, format: 'number' }, { label: 'Awaiting shipment', value: periodOrders.filter(order => order.fulfillmentStatus === 'unfulfilled' && isPaidOrder(order)).length, format: 'number' }, { label: 'Cancelled / failed', value: periodOrders.filter(order => ['cancelled', 'failed'].includes(order.status)).length, format: 'number' }];
+      base.columns = [{ key: 'order', label: 'Order' }, { key: 'date', label: 'Date' }, { key: 'customer', label: 'Customer' }, { key: 'payment', label: 'Payment' }, { key: 'fulfillment', label: 'Fulfillment' }, { key: 'delivery', label: 'Delivery' }, { key: 'total', label: 'Total', format: 'money' }];
+      base.rows = periodOrders.map(order => ({ order: order.id, date: order.createdAt, customer: order.customerName || 'Unknown', payment: order.paymentStatus, fulfillment: order.fulfillmentStatus, delivery: order.deliveryStatus, total: order.totalAmount }));
+    } else if (reportType.data === 'products') {
+      const grouped = new Map<string, any>(); itemRows.forEach(item => { const row = grouped.get(item.id) || { sku: item.id, product: item.name, units: 0, orders: 0, revenue: 0 }; row.units += item.quantity; row.orders += 1; row.revenue += item.price * item.quantity; grouped.set(item.id, row); });
+      base.metrics = [{ label: 'Products sold', value: grouped.size, format: 'number' }, { label: 'Units sold', value: units, format: 'number' }, { label: 'Product revenue', value: revenue, format: 'money' }, { label: 'Top product', value: Array.from(grouped.values()).sort((a, b) => b.units - a.units)[0]?.product || '—', format: 'text' }];
+      base.columns = [{ key: 'product', label: 'Product' }, { key: 'sku', label: 'SKU' }, { key: 'units', label: 'Units' }, { key: 'orders', label: 'Order lines' }, { key: 'revenue', label: 'Revenue', format: 'money' }];
+      base.rows = Array.from(grouped.values()).sort((a, b) => b.units - a.units); base.chart = { key: 'units', nameKey: 'product', label: 'Units sold', format: 'number' };
+    } else if (reportType.data === 'inventory') {
+      base.metrics = [{ label: 'Products', value: allInventory.length, format: 'number' }, { label: 'Units available', value: allInventory.reduce((sum, item) => sum + item.remainingStock, 0), format: 'number' }, { label: 'Low stock', value: allInventory.filter(item => item.remainingStock > 0 && item.remainingStock <= item.reorderThreshold).length, format: 'number' }, { label: 'Out of stock', value: allInventory.filter(item => item.remainingStock === 0).length, format: 'number' }];
+      base.columns = [{ key: 'product', label: 'Product' }, { key: 'sku', label: 'SKU' }, { key: 'available', label: 'Available' }, { key: 'initial', label: 'Initial' }, { key: 'sold', label: 'Sold' }, { key: 'reorder', label: 'Reorder point' }, { key: 'status', label: 'Status' }];
+      base.rows = allInventory.map(item => ({ product: item.productName, sku: item.sku || item.productId, available: item.remainingStock, initial: item.initialStock, sold: item.initialStock - item.remainingStock, reorder: item.reorderThreshold, status: item.remainingStock === 0 ? 'Out of stock' : item.remainingStock <= item.reorderThreshold ? 'Low stock' : 'Healthy' })); base.chart = { key: 'available', nameKey: 'product', label: 'Available', format: 'number' }; base.note = 'Inventory is a current snapshot and is not restricted by the selected order date range.';
+    } else if (reportType.data === 'customers') {
+      const grouped = new Map<string, any>(); paidOrders.forEach(order => { const key = (order.customerEmail || order.customerName || order.id).toLowerCase(); const row = grouped.get(key) || { customer: order.customerName || 'Unknown', email: order.customerEmail || '—', orders: 0, units: 0, spent: 0, lastOrder: order.createdAt }; row.orders += 1; row.units += order.quantity; row.spent += order.totalAmount; if (new Date(order.createdAt) > new Date(row.lastOrder)) row.lastOrder = order.createdAt; grouped.set(key, row); });
+      const rows = Array.from(grouped.values()).sort((a, b) => b.spent - a.spent); base.metrics = [{ label: 'Purchasing customers', value: rows.length, format: 'number' }, { label: 'Returning customers', value: rows.filter(row => row.orders > 1).length, format: 'number' }, { label: 'Customer revenue', value: revenue, format: 'money' }, { label: 'Average customer value', value: rows.length ? money(revenue / rows.length) : 0, format: 'money' }];
+      base.columns = [{ key: 'customer', label: 'Customer' }, { key: 'email', label: 'Email' }, { key: 'orders', label: 'Orders' }, { key: 'units', label: 'Units' }, { key: 'spent', label: 'Total spent', format: 'money' }, { key: 'lastOrder', label: 'Last order', format: 'date' }]; base.rows = rows; base.chart = { key: 'spent', nameKey: 'customer', label: 'Total spent', format: 'money' };
+    } else if (reportType.data === 'taxes') {
+      base.metrics = [{ label: 'Recorded tax', value: 0, format: 'money' }, { label: 'Orders with tax data', value: 0, format: 'number' }, { label: 'Paid order revenue', value: revenue, format: 'money' }, { label: 'Data status', value: 'Not configured', format: 'text' }];
+      base.columns = [{ key: 'jurisdiction', label: 'Jurisdiction' }, { key: 'orders', label: 'Orders' }, { key: 'taxableSales', label: 'Recorded taxable sales', format: 'money' }, { key: 'taxCollected', label: 'Tax collected', format: 'money' }]; base.rows = [{ jurisdiction: 'No tax data recorded', orders: 0, taxableSales: 0, taxCollected: 0 }]; base.note = 'Stripe tax amounts are not currently stored on orders. Connect Stripe Tax and persist its transaction breakdown before using this report for filing.';
+    } else if (reportType.data === 'shipping') {
+      const shipped = periodOrders.filter(order => order.shippedAt); const delivered = periodOrders.filter(order => order.deliveredAt); const avgHours = shipped.length ? shipped.reduce((sum, order) => sum + (new Date(order.shippedAt!).getTime() - new Date(order.createdAt).getTime()) / 3_600_000, 0) / shipped.length : 0;
+      base.metrics = [{ label: 'Awaiting shipment', value: paidOrders.filter(order => !order.shippedAt).length, format: 'number' }, { label: 'Shipped', value: shipped.length, format: 'number' }, { label: 'Delivered', value: delivered.length, format: 'number' }, { label: 'Average fulfillment', value: Number(avgHours.toFixed(1)), format: 'hours' }];
+      base.columns = [{ key: 'order', label: 'Order' }, { key: 'customer', label: 'Customer' }, { key: 'carrier', label: 'Carrier' }, { key: 'tracking', label: 'Tracking' }, { key: 'status', label: 'Delivery status' }, { key: 'ordered', label: 'Ordered', format: 'date' }, { key: 'shipped', label: 'Shipped', format: 'date' }, { key: 'delivered', label: 'Delivered', format: 'date' }];
+      base.rows = paidOrders.map(order => ({ order: order.id, customer: order.customerName || 'Unknown', carrier: order.carrier || '—', tracking: order.trackingNumber || '—', status: order.deliveryStatus, ordered: order.createdAt, shipped: order.shippedAt, delivered: order.deliveredAt }));
+    } else {
+      const logs = await db.select().from(activityLogs).orderBy(desc(activityLogs.createdAt)); const filtered = logs.filter(log => !start || new Date(log.createdAt) >= start); const actors = new Set(filtered.map(log => log.actorId).filter(Boolean));
+      base.metrics = [{ label: 'Recorded actions', value: filtered.length, format: 'number' }, { label: 'Active staff', value: actors.size, format: 'number' }, { label: 'Inventory changes', value: filtered.filter(log => log.action === 'inventory.adjusted').length, format: 'number' }, { label: 'Customer records added', value: filtered.filter(log => log.action === 'customer.created').length, format: 'number' }];
+      base.columns = [{ key: 'date', label: 'Date', format: 'date' }, { key: 'staff', label: 'Staff ID' }, { key: 'action', label: 'Action' }, { key: 'recordType', label: 'Record type' }, { key: 'record', label: 'Record ID' }]; base.rows = filtered.map(log => ({ date: log.createdAt, staff: log.actorId || 'System', action: log.action, recordType: log.entityType, record: log.entityId || '—' })); base.note = 'Staff activity includes actions written to the immutable operations ledger.';
+    }
+    res.json(base);
+  });
+
   // Admin product sales ranking endpoint
   app.get("/api/admin/product-sales", isAuthenticated, isAdmin, async (req, res) => {
     try {
       // For now, we'll aggregate based on order quantity
       // In a real system, orders would have line items per product
-      const orders = await storage.getAllOrders();
-      const completedOrders = orders.filter(o => o.status === 'completed');
-      
       const allInventory = await storage.getAllInventory();
       
       // Calculate sold units per product
@@ -619,12 +755,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const allInventory = await storage.getAllInventory();
       const orders = await storage.getAllOrders();
-      const completedOrders = orders.filter(o => o.status === 'completed');
+      const paidOrders = orders.filter(isPaidOrder);
       
       // Calculate average daily sales over last 30 days for each product
       const now = new Date();
       const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-      const recentOrders = completedOrders.filter(o => new Date(o.createdAt) >= thirtyDaysAgo);
+      const recentOrders = paidOrders.filter(o => new Date(o.createdAt) >= thirtyDaysAgo);
       
       // For simplicity, we'll estimate based on total sold / days active
       const daysActive = Math.max(1, Math.ceil((now.getTime() - new Date(recentOrders[0]?.createdAt || now).getTime()) / (24 * 60 * 60 * 1000)));
@@ -664,16 +800,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin endpoint to mark order as shipped (sends shipping confirmation email)
   app.patch("/api/admin/orders/:id/ship", isAuthenticated, isAdmin, async (req, res) => {
     try {
-      const { trackingNumber, carrier } = req.body;
+      const shippingUpdate = z.object({
+        trackingNumber: z.string().trim().min(1).max(100),
+        carrier: z.enum(['USPS', 'FedEx', 'UPS', 'DHL', 'Other']),
+      }).safeParse(req.body);
+      if (!shippingUpdate.success) {
+        return res.status(400).json({ message: "Valid tracking number and carrier are required" });
+      }
+      const { trackingNumber, carrier } = shippingUpdate.data;
       const orderId = req.params.id;
 
-      if (!trackingNumber || !carrier) {
-        return res.status(400).json({ message: "Tracking number and carrier are required" });
+      const existingOrder = await storage.getOrder(orderId);
+      if (!existingOrder) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      if (!['processing', 'completed'].includes(existingOrder.status)) {
+        return res.status(409).json({ message: `Order cannot be shipped from ${existingOrder.status} status` });
       }
 
       // Update order with shipping info
       const updatedOrder = await storage.updateOrder(orderId, {
         status: "shipped",
+        fulfillmentStatus: "fulfilled",
+        deliveryStatus: "in_transit",
         trackingNumber,
         carrier,
         shippedAt: new Date(),
@@ -682,6 +831,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!updatedOrder) {
         return res.status(404).json({ message: "Order not found" });
       }
+      await db.insert(activityLogs).values({ actorId: res.locals.adminUser.id, action: 'order.shipped', entityType: 'order', entityId: orderId, details: { carrier, trackingNumber } });
 
       // Send shipping confirmation email (async, don't block response)
       if (updatedOrder.customerEmail) {
@@ -694,15 +844,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Send shipping confirmation SMS (async, don't block response)
-      import('./services/smsTriggers.js').then(({ sendShippingConfirmationSms }) => {
-        sendShippingConfirmationSms(updatedOrder).catch((error: any) => {
-          console.error('[SMS] Failed to send shipping confirmation SMS:', error);
-        });
-      }).catch((error: any) => {
-        console.error('[SMS] Failed to import SMS triggers:', error);
-      });
-
       res.json(updatedOrder);
     } catch (error: any) {
       console.error('Error marking order as shipped:', error);
@@ -715,15 +856,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const orderId = req.params.id;
 
+      const existingOrder = await storage.getOrder(orderId);
+      if (!existingOrder) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      if (existingOrder.status !== 'shipped') {
+        return res.status(409).json({ message: `Order cannot be delivered from ${existingOrder.status} status` });
+      }
+
       // Update order status to delivered
       const updatedOrder = await storage.updateOrder(orderId, {
         status: "delivered",
+        fulfillmentStatus: "fulfilled",
+        deliveryStatus: "delivered",
         deliveredAt: new Date(),
       });
 
       if (!updatedOrder) {
         return res.status(404).json({ message: "Order not found" });
       }
+      await db.insert(activityLogs).values({ actorId: res.locals.adminUser.id, action: 'order.delivered', entityType: 'order', entityId: orderId, details: {} });
 
       // Send delivery confirmation email (async, don't block response)
       // This will also schedule thank you and review request emails
@@ -737,16 +889,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Send delivery confirmation SMS (async, don't block response)
-      // This will also schedule thank you and review SMS
-      import('./services/smsTriggers.js').then(({ sendDeliveryConfirmationSms }) => {
-        sendDeliveryConfirmationSms(updatedOrder).catch((error: any) => {
-          console.error('[SMS] Failed to send delivery confirmation SMS:', error);
-        });
-      }).catch((error: any) => {
-        console.error('[SMS] Failed to import SMS triggers:', error);
-      });
-
       res.json(updatedOrder);
     } catch (error: any) {
       console.error('Error marking order as delivered:', error);
@@ -756,7 +898,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Contact form submission endpoint
   // POST /api/contact - Handle contact form submissions with spam protection and validation
-  app.post("/api/contact", async (req, res) => {
+  app.post("/api/contact", contactLimiter, async (req, res) => {
     try {
       const { name, email, phone, chapter, subject, message, inquiryType, honeypot, timestamp, timeElapsed } = req.body;
 
@@ -780,24 +922,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Server-side validation for required fields
       const errors: { [key: string]: string } = {};
 
-      if (!name || name.trim() === '') {
+      if (!name || typeof name !== 'string' || name.trim() === '') {
         errors.name = 'Full name is required';
+      } else if (name.trim().length > 100) {
+        errors.name = 'Full name must be 100 characters or fewer';
       }
 
-      if (!email || email.trim() === '') {
+      if (!email || typeof email !== 'string' || email.trim() === '') {
         errors.email = 'Email address is required';
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         errors.email = 'Please enter a valid email address';
+      } else if (email.trim().length > 254) {
+        errors.email = 'Email address is too long';
       }
 
-      if (!subject || subject.trim() === '') {
+      if (!subject || typeof subject !== 'string' || subject.trim() === '') {
         errors.subject = 'Subject is required';
+      } else if (subject.trim().length > 200) {
+        errors.subject = 'Subject must be 200 characters or fewer';
       }
 
-      if (!message || message.trim() === '') {
+      if (!message || typeof message !== 'string' || message.trim() === '') {
         errors.message = 'Message is required';
       } else if (message.trim().length < 10) {
         errors.message = 'Message must be at least 10 characters';
+      } else if (message.trim().length > 5000) {
+        errors.message = 'Message must be 5,000 characters or fewer';
       }
 
       if (Object.keys(errors).length > 0) {
@@ -812,24 +962,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const contactData = {
         name: name.trim(),
         email: email.trim(),
-        phone: phone?.trim() || '',
-        chapter: chapter?.trim() || '',
+        phone: typeof phone === 'string' ? phone.trim().slice(0, 30) : '',
+        chapter: typeof chapter === 'string' ? chapter.trim().slice(0, 100) : '',
         subject: subject.trim(),
         message: message.trim(),
-        inquiryType: inquiryType || 'general',
+        inquiryType: typeof inquiryType === 'string' ? inquiryType.trim().slice(0, 50) : 'general',
       };
 
-      console.log('='.repeat(60));
-      console.log('📧 NEW CONTACT FORM SUBMISSION');
-      console.log('='.repeat(60));
-      console.log('From:', contactData.name);
-      console.log('Email:', contactData.email);
-      console.log('Phone:', contactData.phone || 'Not provided');
-      console.log('Chapter:', contactData.chapter || 'Not provided');
-      console.log('Inquiry Type:', contactData.inquiryType);
-      console.log('Subject:', contactData.subject);
-      console.log('Message:', contactData.message);
-      console.log('='.repeat(60));
+      console.log('[CONTACT] Accepted a validated contact form submission');
 
       // Send emails (async, don't block response)
       import('./services/emailService.js').then(({ sendInquiryReceivedEmail, sendInternalContactNotification }) => {
@@ -875,75 +1015,111 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Scheduled SMS processing endpoint (called periodically via cron)
-  // This endpoint processes thank you and review request SMS that are due
-  app.post("/api/admin/process-scheduled-sms", isAuthenticated, isAdmin, async (req, res) => {
-    try {
-      console.log('[SMS] Processing scheduled SMS...');
-      
-      const { processScheduledSms } = await import('./services/smsTriggers.js');
-      await processScheduledSms();
-      
-      res.json({ success: true, message: "Scheduled SMS processed" });
-    } catch (error: any) {
-      console.error('Error processing scheduled SMS:', error);
-      res.status(500).json({ message: "Error processing scheduled SMS: " + error.message });
-    }
+  // Expanded private-office data services.
+  app.get('/api/admin/certificates', isAuthenticated, isAdmin, async (_req, res) => {
+    const records = await db.select().from(certificates).orderBy(desc(certificates.editionNumber));
+    res.json(records.map(record => ({
+      ...record,
+      verificationUrl: `/verify?serial=${encodeURIComponent(record.serialNumber)}`,
+      qrCodeUrl: `/api/certificates/${encodeURIComponent(record.serialNumber)}/qr.svg`,
+    })));
   });
 
-  // Twilio SMS webhook handler (for receiving STOP/opt-out messages)
-  // This endpoint is called by Twilio when a customer replies to an SMS
-  app.post("/api/webhooks/sms", async (req, res) => {
-    try {
-      const { From, Body } = req.body;
-      
-      console.log('[SMS WEBHOOK] Received message from:', From);
-      console.log('[SMS WEBHOOK] Message body:', Body);
-      
-      // Check if message contains STOP, UNSUBSCRIBE, etc. (case insensitive)
-      const optOutKeywords = ['stop', 'unsubscribe', 'cancel', 'end', 'quit'];
-      const messageBody = (Body || '').toLowerCase().trim();
-      const isOptOut = optOutKeywords.some(keyword => messageBody.includes(keyword));
-      
-      if (isOptOut && From) {
-        // Find all orders with this phone number and mark as opted out
-        const orders = await storage.getAllOrders();
-        const matchingOrders = orders.filter(order => {
-          if (!order.customerPhone) return false;
-          const normalizedOrderPhone = order.customerPhone.replace(/\D/g, '');
-          const normalizedFromPhone = From.replace(/\D/g, '');
-          return normalizedOrderPhone === normalizedFromPhone;
-        });
-        
-        for (const order of matchingOrders) {
-          await storage.updateOrder(order.id, {
-            smsOrderUpdatesOptIn: 0,
-            smsMarketingOptIn: 0,
-            smsOptedOutAt: new Date(),
-          });
-        }
-        
-        console.log(`[SMS WEBHOOK] Opted out ${matchingOrders.length} orders for phone: ${From}`);
-        
-        // Send auto-reply confirming opt-out (if Twilio is configured)
-        const { isSmsConfigured } = await import('./services/smsService.js');
-        if (isSmsConfigured()) {
-          const { sendSms } = await import('./services/smsService.js');
-          await sendSms({
-            to: From,
-            body: 'You have been unsubscribed from Alpha Phi Alpha Coin Shop SMS. You will not receive further messages.',
-            type: 'transactional',
-          });
-        }
+  app.get('/api/admin/certificates/:serial', isAuthenticated, isAdmin, async (req, res) => {
+    const parsed = serialSchema.safeParse(req.params.serial);
+    if (!parsed.success) return res.status(400).json({ message: 'Invalid serial number' });
+    const [record] = await db.select().from(certificates).where(eq(certificates.serialNumber, parsed.data)).limit(1);
+    if (!record) return res.status(404).json({ message: 'Certificate not found' });
+    const order = await storage.getOrder(record.orderId);
+    res.json({ ...record, order });
+  });
+
+  app.get("/api/admin/orders/:id", isAuthenticated, isAdmin, async (req, res) => {
+    const order = await storage.getOrder(req.params.id);
+    if (!order) return res.status(404).json({ message: "Order not found" });
+    res.json(order);
+  });
+
+  app.get("/api/admin/customers", isAuthenticated, isAdmin, async (_req, res) => {
+    const existingOrders = await storage.getAllOrders();
+    for (const order of existingOrders) {
+      if (!order.customerEmail) continue;
+      const names = (order.customerName || "").trim().split(/\s+/);
+      await db.insert(customers).values({
+        email: order.customerEmail.toLowerCase(), firstName: names[0] || null,
+        lastName: names.slice(1).join(" ") || null, phone: order.customerPhone,
+        defaultAddress: order.shippingAddress, status: "active", source: "order",
+      }).onDuplicateKeyUpdate({ set: { phone: order.customerPhone, defaultAddress: order.shippingAddress, updatedAt: new Date() } });
+      const [customer] = await db.select().from(customers).where(eq(customers.email, order.customerEmail.toLowerCase())).limit(1);
+      if (customer && order.customerId !== customer.id) {
+        await db.update(ordersTable).set({ customerId: customer.id }).where(eq(ordersTable.id, order.id));
       }
-      
-      // Respond with TwiML (required by Twilio)
-      res.set('Content-Type', 'text/xml');
-      res.send('<?xml version="1.0" encoding="UTF-8"?><Response></Response>');
-    } catch (error: any) {
-      console.error('Error processing SMS webhook:', error);
-      res.status(500).send('<?xml version="1.0" encoding="UTF-8"?><Response></Response>');
     }
+    const records = await db.select().from(customers).orderBy(desc(customers.updatedAt));
+    const enriched = records.map(customer => {
+      const related = existingOrders.filter(order => order.customerEmail?.toLowerCase() === customer.email.toLowerCase());
+      return { ...customer, totalOrders: related.length, totalSpent: related.reduce((sum, order) => sum + order.totalAmount, 0), lastOrderAt: related[0]?.createdAt ?? null };
+    });
+    res.json(enriched);
+  });
+
+  app.post("/api/admin/customers", isAuthenticated, isAdmin, async (req, res) => {
+    const parsed = z.object({ email: z.string().email().max(254), firstName: z.string().trim().max(100).optional(), lastName: z.string().trim().max(100).optional(), phone: z.string().trim().max(40).optional() }).safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ message: "Enter a valid customer email" });
+    const email = parsed.data.email.toLowerCase();
+    if ((await db.select({ id: customers.id }).from(customers).where(eq(customers.email, email)).limit(1)).length) return res.status(409).json({ message: "A customer with this email already exists" });
+    const customerId = crypto.randomUUID();
+    await db.insert(customers).values({ ...parsed.data, id: customerId, email, source: "admin" });
+    const [customer] = await db.select().from(customers).where(eq(customers.id, customerId)).limit(1);
+    await db.insert(activityLogs).values({ actorId: res.locals.adminUser.id, action: "customer.created", entityType: "customer", entityId: customer.id, details: { email: customer.email } });
+    res.status(201).json(customer);
+  });
+
+  app.get("/api/admin/customers/:id", isAuthenticated, isAdmin, async (req, res) => {
+    const [customer] = await db.select().from(customers).where(eq(customers.id, req.params.id)).limit(1);
+    if (!customer) return res.status(404).json({ message: "Customer not found" });
+    const relatedOrders = await db.select().from(ordersTable).where(eq(ordersTable.customerEmail, customer.email)).orderBy(desc(ordersTable.createdAt));
+    res.json({ ...customer, orders: relatedOrders });
+  });
+
+  app.get("/api/admin/activity", isAuthenticated, isAdmin, async (_req, res) => {
+    res.json(await db.select().from(activityLogs).orderBy(desc(activityLogs.createdAt)).limit(100));
+  });
+
+  app.get("/api/admin/inventory/:productId", isAuthenticated, isAdmin, async (req, res) => {
+    const product = await storage.getInventoryByProductId(req.params.productId);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+    const adjustments = await db.select().from(inventoryAdjustments).where(eq(inventoryAdjustments.productId, req.params.productId)).orderBy(desc(inventoryAdjustments.createdAt));
+    res.json({ ...product, adjustments });
+  });
+
+  app.get("/api/admin/notifications", isAuthenticated, isAdmin, async (_req, res) => {
+    const stored = await db.select().from(notifications).where(and(eq(notifications.dismissed, false))).orderBy(desc(notifications.createdAt));
+    const allInventory = await storage.getAllInventory();
+    const generated = allInventory.filter(item => item.remainingStock <= Math.max(50, item.initialStock * .1)).map(item => ({ id: `inventory-${item.id}`, type: "inventory", priority: item.remainingStock === 0 ? "critical" : "attention", message: `${item.productName} has ${item.remainingStock} available`, entityType: "product", entityId: item.productId, read: false, dismissed: false, assignedTo: null, createdAt: item.lastUpdated }));
+    res.json([...stored, ...generated]);
+  });
+
+  app.patch("/api/admin/notifications/:id/read", isAuthenticated, isAdmin, async (req, res) => {
+    if (req.params.id.startsWith("inventory-")) return res.json({ updated: true });
+    await db.update(notifications).set({ read: true }).where(eq(notifications.id, req.params.id));
+    const [updated] = await db.select().from(notifications).where(eq(notifications.id, req.params.id)).limit(1);
+    res.json(updated);
+  });
+
+  app.get("/api/admin/settings", isAuthenticated, isAdmin, async (_req, res) => {
+    const settings = await db.select().from(storeSettings);
+    res.json(settings.filter(setting => setting.key !== 'stripe_credentials'));
+  });
+
+  app.put("/api/admin/settings/:key", isAuthenticated, isAdmin, async (req, res) => {
+    if (req.params.key === 'stripe_credentials') return res.status(403).json({ message: 'Use the protected Stripe configuration endpoint' });
+    const parsed = z.object({ value: z.unknown() }).safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ message: "Invalid setting" });
+    await db.insert(storeSettings).values({ key: req.params.key, value: parsed.data.value, updatedBy: res.locals.adminUser.id }).onDuplicateKeyUpdate({ set: { value: parsed.data.value, updatedBy: res.locals.adminUser.id, updatedAt: new Date() } });
+    const [setting] = await db.select().from(storeSettings).where(eq(storeSettings.key, req.params.key)).limit(1);
+    await db.insert(activityLogs).values({ actorId: res.locals.adminUser.id, action: "setting.updated", entityType: "setting", entityId: req.params.key });
+    res.json(setting);
   });
 
   const httpServer = createServer(app);

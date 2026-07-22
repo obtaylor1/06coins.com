@@ -20,11 +20,11 @@ export function CartSummary({ sticky = false }: CartSummaryProps) {
         <CardContent className="text-center py-8">
           <ShoppingBag className="w-16 h-16 mx-auto mb-4 text-foreground/30" />
           <p className="text-foreground/70 mb-4">Your cart is empty</p>
-          <Link href="/shop-coins">
-            <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-black">
+          <Button asChild variant="outline" className="border-primary text-primary hover:bg-primary hover:text-black">
+            <Link href="/shop-coins">
               Continue Shopping
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </CardContent>
       </Card>
     );
@@ -52,6 +52,8 @@ export function CartSummary({ sticky = false }: CartSummaryProps) {
               alt={item.name}
               className="w-16 h-16 object-cover rounded-md shrink-0"
               data-testid={`img-cart-${item.id}`}
+              loading="lazy"
+              decoding="async"
             />
             <div className="flex-1 min-w-0">
               <h4 className="font-semibold text-sm mb-1 line-clamp-2" data-testid={`text-cart-name-${item.id}`}>
@@ -118,15 +120,16 @@ export function CartSummary({ sticky = false }: CartSummaryProps) {
             </span>
           </div>
         </div>
-        <Link href="/checkout" className="w-full">
-          <Button
+        <Button
+            asChild
             size="lg"
             className="w-full bg-primary text-black font-bold hover:bg-primary/90"
             data-testid="button-checkout"
           >
+          <Link href="/checkout" className="w-full">
             Proceed to Checkout
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </CardFooter>
     </Card>
   );

@@ -8,7 +8,21 @@ interface ContactSubmission {
   inquiryType?: string;
 }
 
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>'"]/g, (character) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    "'": '&#39;',
+    '"': '&quot;',
+  })[character]!);
+}
+
 export function inquiryReceivedTemplate(submission: ContactSubmission): { html: string; text: string } {
+  const safeName = escapeHtml(submission.name);
+  const safeSubject = escapeHtml(submission.subject);
+  const safeInquiryType = escapeHtml(submission.inquiryType || 'General');
+  const safeMessage = escapeHtml(submission.message);
   const html = `
 <!DOCTYPE html>
 <html>
@@ -38,7 +52,7 @@ export function inquiryReceivedTemplate(submission: ContactSubmission): { html: 
           <tr>
             <td style="padding: 40px 30px;">
               <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6; color: #e0e0e0;">
-                Dear ${submission.name},
+                Dear ${safeName},
               </p>
               
               <p style="margin: 0 0 30px 0; font-size: 16px; line-height: 1.6; color: #e0e0e0;">
@@ -57,16 +71,16 @@ export function inquiryReceivedTemplate(submission: ContactSubmission): { html: 
                 <tr>
                   <td style="padding: 20px;">
                     <p style="margin: 0 0 10px 0; color: #e0e0e0;">
-                      <strong style="color: #C8A856;">Subject:</strong> ${submission.subject}
+                      <strong style="color: #C8A856;">Subject:</strong> ${safeSubject}
                     </p>
                     <p style="margin: 0 0 15px 0; color: #e0e0e0;">
-                      <strong style="color: #C8A856;">Inquiry Type:</strong> ${submission.inquiryType || 'General'}
+                      <strong style="color: #C8A856;">Inquiry Type:</strong> ${safeInquiryType}
                     </p>
                     <p style="margin: 0 0 5px 0; color: #C8A856; font-weight: bold;">
                       Message:
                     </p>
                     <p style="margin: 0; color: #e0e0e0; line-height: 1.6; white-space: pre-line;">
-                      ${submission.message}
+                      ${safeMessage}
                     </p>
                   </td>
                 </tr>

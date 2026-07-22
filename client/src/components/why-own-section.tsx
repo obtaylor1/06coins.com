@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
-import coinFrontImg from "@assets/apa coin front_1762505793054.png";
-import coinBackImg from "@assets/apa_coin_back_1767463206489.png";
-import sectionBgImg from "@assets/0_0-5_1763342224856.jpg";
+import coinFrontImg from "@assets/optimized-webp/apa coin front_1762505793054.webp";
+import coinBackImg from "@assets/optimized-webp/apa_coin_back_1767463206489.webp";
+import sectionBgImg from "@assets/optimized-webp/0_0-5_1763342224856.webp";
 
 interface WhyOwnSectionProps {
   onCtaClick?: () => void;
@@ -75,6 +75,8 @@ export function WhyOwnSection({ onCtaClick }: WhyOwnSectionProps) {
                       src={coinBackImg} 
                       alt="Alpha Phi Alpha Coin" 
                       className="w-full h-full object-cover"
+                      loading="lazy"
+                      decoding="async"
                     />
                   </div>
 

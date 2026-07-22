@@ -12,11 +12,11 @@ import { StickyHeader } from "@/components/sticky-header";
 import { Footer } from "@/components/footer";
 import { SEO } from "@/components/seo";
 import { getAbsoluteUrl } from "@/../../shared/seo-config";
-import heroBackgroundImg from "@assets/0_2_1763332961118.jpg";
-import goldTextureImg from "@assets/0_0-8_1763355352629.jpg";
-import museumDisplayImg from "@assets/0_1_1763355638824.jpg";
-import egyptianPortalImg from "@assets/0_0-9_1763355883898.jpg";
-import hieroglyphicsImg from "@assets/0_0-10_1763356084962.jpg";
+import heroBackgroundImg from "@assets/optimized-webp/0_2_1763332961118.webp";
+import goldTextureImg from "@assets/optimized-webp/0_0-8_1763355352629.webp";
+import museumDisplayImg from "@assets/optimized-webp/0_1_1763355638824.webp";
+import egyptianPortalImg from "@assets/optimized-webp/0_0-9_1763355883898.webp";
+import hieroglyphicsImg from "@assets/optimized-webp/0_0-10_1763356084962.webp";
 
 export default function ShopCoins() {
   const { addItem } = useCart();
@@ -165,6 +165,8 @@ export default function ShopCoins() {
             src={heroBackgroundImg} 
             alt="" 
             className="w-full h-full object-cover"
+            fetchPriority="high"
+            decoding="async"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
         </div>
@@ -275,6 +277,7 @@ export default function ShopCoins() {
                       alt="Alpha Phi Alpha 120th Anniversary 4-inch commemorative coin - limited edition 1906 units"
                       className="relative w-full max-w-md h-auto object-contain drop-shadow-2xl"
                       loading="lazy"
+                      decoding="async"
                       width="400"
                       height="400"
                       data-testid="img-main-coin"
@@ -382,6 +385,7 @@ export default function ShopCoins() {
                             alt={`Alpha Phi Alpha Seven Jewels ${jewel.name} commemorative coin - 3 inch diameter`}
                             className="w-full h-full object-cover"
                             loading="lazy"
+                            decoding="async"
                             width="100"
                             height="100"
                           />
@@ -501,6 +505,7 @@ export default function ShopCoins() {
                         alt={`Alpha Phi Alpha Seven Jewels ${selectedJewel.name} commemorative coin - 3 inch diameter limited edition`}
                         className="relative w-full h-auto object-contain drop-shadow-2xl transition-all duration-300"
                         loading="lazy"
+                        decoding="async"
                         width="400"
                         height="400"
                         data-testid="img-selected-jewel"
@@ -537,6 +542,7 @@ export default function ShopCoins() {
                         alt={`Alpha Phi Alpha ${jewel.name} Jewel coin thumbnail`}
                         className="w-full h-full object-cover"
                         loading="lazy"
+                        decoding="async"
                         width="80"
                         height="80"
                       />
@@ -693,14 +699,15 @@ export default function ShopCoins() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-              <Link href="/contact">
-                <Button
+              <Button
+                  asChild
                   className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-8 py-6 text-lg"
                   data-testid="button-contact-cta"
                 >
+                <Link href="/contact">
                   Contact Us
-                </Button>
-              </Link>
+                </Link>
+              </Button>
               
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />

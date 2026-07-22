@@ -1,11 +1,11 @@
-import callisImg from "@assets/Henry Arthur Callis_1763159941951.png";
-import chapmanImg from "@assets/Charles Henry Chapman_1763159941952.png";
-import jonesImg from "@assets/Eugene Kincle Jones_1763159941953.png";
-import kelleyImg from "@assets/george biddle kelley_1763159941952.png";
-import murrayImg from "@assets/Nathaniel Allison Murray_1763159941952.png";
-import ogleImg from "@assets/Robert Harold Ogle_1763159941950.png";
-import tandyImg from "@assets/Vertner Woodson Tandy_1763159941953.png";
-import coinFrontImg from "@assets/apa coin front_1762505793054.png";
+import callisImg from "@assets/optimized-webp/Henry Arthur Callis_1763159941951.webp";
+import chapmanImg from "@assets/optimized-webp/Charles Henry Chapman_1763159941952.webp";
+import jonesImg from "@assets/optimized-webp/Eugene Kincle Jones_1763159941953.webp";
+import kelleyImg from "@assets/optimized-webp/george biddle kelley_1763159941952.webp";
+import murrayImg from "@assets/optimized-webp/Nathaniel Allison Murray_1763159941952.webp";
+import ogleImg from "@assets/optimized-webp/Robert Harold Ogle_1763159941950.webp";
+import tandyImg from "@assets/optimized-webp/Vertner Woodson Tandy_1763159941953.webp";
+import coinFrontImg from "@assets/optimized-webp/apa coin front_1762505793054.webp";
 
 export interface Product {
   id: string;

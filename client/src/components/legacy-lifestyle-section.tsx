@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
-import professionalDeskImg1 from "@assets/stock_images/professional_mahogan_4bd46e85.jpg";
-import giftPresentationImg from "@assets/stock_images/elegant_gift_present_ca12998c.jpg";
-import homeMantleImg from "@assets/stock_images/elegant_home_mantle__9166904c.jpg";
-import coinDetailImg from "@assets/stock_images/gold_coin_close-up_d_04ec2cbe.jpg";
+import professionalDeskImg1 from "@assets/optimized-webp/stock_images/professional_mahogan_4bd46e85.webp";
+import giftPresentationImg from "@assets/optimized-webp/stock_images/elegant_gift_present_ca12998c.webp";
+import homeMantleImg from "@assets/optimized-webp/stock_images/elegant_home_mantle__9166904c.webp";
+import coinDetailImg from "@assets/optimized-webp/stock_images/gold_coin_close-up_d_04ec2cbe.webp";
 
 interface LegacyLifestyleSectionProps {
   onCtaClick?: () => void;
@@ -97,6 +97,8 @@ export function LegacyLifestyleSection({ onCtaClick }: LegacyLifestyleSectionPro
                     src={display.images.lifestyle}
                     alt={display.images.alt}
                     className="w-full h-full object-cover"
+                    loading="lazy"
+                    decoding="async"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
                 </div>

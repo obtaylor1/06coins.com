@@ -8,13 +8,11 @@ import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/cart-context";
 import { MAIN_COIN } from "@/lib/products";
 import { ShieldCheck, CreditCard, Package, ShoppingCart, Lock, RotateCw } from "lucide-react";
-import coinFrontImg from "@assets/apa_coin_back_1767463401761.png";
-import coinBackImg from "@assets/apa coin back_1762505793054.png";
-import egyptianBgImg from "@assets/0_0-6_1763344416952.jpg";
+import egyptianBgImg from "@assets/optimized-webp/0_0-6_1763344416952.webp";
 
-import apa_coin_back from "@assets/apa coin back.png";
+import apa_coin_back from "@assets/optimized-webp/apa coin back.webp";
 
-import apa_coin_front from "@assets/apa coin front.png";
+import apa_coin_front from "@assets/optimized-webp/apa coin front.webp";
 
 const COIN_PRICE = 39.06;
 
@@ -122,15 +120,19 @@ export function PurchaseModule() {
             <div className="lg:col-span-2 flex flex-col justify-center items-center gap-4">
               <div className="relative w-full max-w-xs">
                 <img 
-                  src={apa_coin_front} 
+                  src={showBack ? apa_coin_back : apa_coin_front}
                   alt={`Alpha Phi Alpha 120th Anniversary Commemorative Coin - ${showBack ? 'Back' : 'Front'}`} 
                   className="w-full h-auto object-contain drop-shadow-2xl transition-opacity duration-300"
                   data-testid="img-coin-purchase"
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
               <Button
                 variant="outline"
                 onClick={() => setShowBack(!showBack)}
+                aria-pressed={showBack}
+                aria-label={showBack ? "Show the front of the coin" : "Show the back of the coin"}
                 className="flex items-center gap-2 bg-background/60 border-primary/30"
                 data-testid="button-toggle-coin-side"
               >

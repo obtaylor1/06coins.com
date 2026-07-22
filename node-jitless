@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /home2/obtaylor/.local/node20/bin/node --jitless "$@"

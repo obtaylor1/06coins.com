@@ -1,12 +1,12 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Ruler, Scale, Sparkles, Globe, Star, Shield } from "lucide-react";
-import coinFrontImg from "@assets/apa coin back_1763347654109.png";
-import coinBackImg from "@assets/apa coin front_1763347681442.png";
-import showcaseHeaderBgImg from "@assets/0_0-4_1763339722286.jpg";
-import showcaseContentBgImg from "@assets/white graphic_1763345066331.png";
+import coinFrontImg from "@assets/optimized-webp/apa coin back_1763347654109.webp";
+import coinBackImg from "@assets/optimized-webp/apa coin front_1763347681442.webp";
+import showcaseHeaderBgImg from "@assets/optimized-webp/0_0-4_1763339722286.webp";
+import showcaseContentBgImg from "@assets/optimized-webp/white graphic_1763345066331.webp";
 
-import apa_coin_back from "@assets/apa coin back.png";
+import apa_coin_back from "@assets/optimized-webp/apa coin back.webp";
 
 interface ProductShowcaseProps {
   onCtaClick?: () => void;
@@ -116,6 +116,8 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
                 src={apa_coin_back} 
                 alt="Alpha Phi Alpha 120th Anniversary Commemorative Coin - Front (Obverse)" 
                 className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
                 data-testid="img-coin-front-showcase"
               />
             </div>
@@ -179,6 +181,8 @@ export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
                 src={coinBackImg} 
                 alt="Alpha Phi Alpha 120th Anniversary Commemorative Coin - Back (Reverse)" 
                 className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
                 data-testid="img-coin-back-showcase"
               />
             </div>
