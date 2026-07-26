@@ -27,18 +27,21 @@ export function setupAuth(app: Express) {
   app.set("trust proxy", 1);
   const MySQLStore = MySQLStoreFactory(session);
   const databaseUrl = new URL(process.env.DATABASE_URL!);
+  const sessionStore = app.get("env") === "development"
+    ? undefined
+    : new MySQLStore({
+        host: databaseUrl.hostname,
+        port: Number(databaseUrl.port || 3306),
+        user: decodeURIComponent(databaseUrl.username),
+        password: decodeURIComponent(databaseUrl.password),
+        database: databaseUrl.pathname.slice(1),
+        createDatabaseTable: true,
+        schema: { tableName: "sessions", columnNames: { session_id: "sid", expires: "expire", data: "sess" } },
+        expiration: 7 * 24 * 60 * 60 * 1000,
+      });
   app.use(session({
     secret: process.env.SESSION_SECRET,
-    store: new MySQLStore({
-      host: databaseUrl.hostname,
-      port: Number(databaseUrl.port || 3306),
-      user: decodeURIComponent(databaseUrl.username),
-      password: decodeURIComponent(databaseUrl.password),
-      database: databaseUrl.pathname.slice(1),
-      createDatabaseTable: true,
-      schema: { tableName: "sessions", columnNames: { session_id: "sid", expires: "expire", data: "sess" } },
-      expiration: 7 * 24 * 60 * 60 * 1000,
-    }),
+    store: sessionStore,
     name: "06coins.admin",
     resave: false,
     saveUninitialized: false,

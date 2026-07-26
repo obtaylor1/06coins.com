@@ -1,5 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import callisImg from "@assets/optimized-webp/Henry Arthur Callis_1763159941951.webp";
 import chapmanImg from "@assets/optimized-webp/Charles Henry Chapman_1763159941952.webp";
 import jonesImg from "@assets/optimized-webp/Eugene Kincle Jones_1763159941953.webp";
@@ -7,135 +5,69 @@ import kelleyImg from "@assets/optimized-webp/george biddle kelley_1763159941952
 import murrayImg from "@assets/optimized-webp/Nathaniel Allison Murray_1763159941952.webp";
 import ogleImg from "@assets/optimized-webp/Robert Harold Ogle_1763159941950.webp";
 import tandyImg from "@assets/optimized-webp/Vertner Woodson Tandy_1763159941953.webp";
-import setBoxImg from "@assets/optimized-webp/box_1763351974535.webp";
+import legacyPosterImg from "@/assets/founders-legacy-poster.png";
 
 interface FoundersLegacySectionProps {
   onCtaClick: () => void;
 }
 
 const founders = [
-  { name: "Callis", fullName: "Henry Arthur Callis", image: callisImg },
-  { name: "Chapman", fullName: "Charles Henry Chapman", image: chapmanImg },
-  { name: "Jones", fullName: "Eugene Kinckle Jones", image: jonesImg },
-  { name: "Kelley", fullName: "George Biddle Kelley", image: kelleyImg },
-  { name: "Murray", fullName: "Nathaniel Allison Murray", image: murrayImg },
-  { name: "Ogle", fullName: "Robert Harold Ogle", image: ogleImg },
-  { name: "Tandy", fullName: "Vertner Woodson Tandy", image: tandyImg },
+  { fullName: "Henry Arthur Callis", image: callisImg, left: "17%" },
+  { fullName: "Charles Henry Chapman", image: chapmanImg, left: "28.2%" },
+  { fullName: "Eugene Kinckle Jones", image: jonesImg, left: "38.8%" },
+  { fullName: "George Biddle Kelley", image: kelleyImg, left: "49.4%" },
+  { fullName: "Nathaniel Allison Murray", image: murrayImg, left: "60%" },
+  { fullName: "Robert Harold Ogle", image: ogleImg, left: "70.4%" },
+  { fullName: "Vertner Woodson Tandy", image: tandyImg, left: "80.9%" },
 ];
 
 export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps) {
   return (
-    <section 
-      className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12 lg:px-16 bg-white"
+    <section
+      className="bg-[#f4f0e6] py-0"
       data-testid="section-founders-legacy"
+      aria-label="The Seven Jewels of Alpha Phi Alpha Founders' Legacy Set"
     >
-      <div className="max-w-6xl mx-auto text-center space-y-8 sm:space-y-10 md:space-y-12">
-        {/* Badge */}
-        <div className="flex justify-center">
-          <Badge 
-            className="bg-destructive text-white px-6 sm:px-8 md:px-10 py-2 sm:py-3 md:py-3.5 font-semibold text-sm sm:text-base md:text-lg rounded-lg"
-            data-testid="badge-complete-collection"
+      <figure className="relative mx-auto w-full max-w-[1417px] overflow-visible">
+        <img
+          src={legacyPosterImg}
+          alt="The Seven Jewels of Alpha Phi Alpha Founders' Legacy Set collector package, seven-coin presentation case, and founder portraits"
+          className="block h-auto w-full"
+          data-testid="img-founders-legacy-poster"
+          loading="lazy"
+          decoding="async"
+        />
+
+        <button
+          type="button"
+          onClick={onCtaClick}
+          className="absolute left-[18.1%] top-[51.2%] z-20 h-[4.6%] w-[21.2%] cursor-pointer rounded-sm focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#f4d47b]"
+          aria-label="Claim your Jewel Set collector's package"
+          data-testid="button-purchase-jewel-set"
+        />
+
+        {founders.map((founder) => (
+          <button
+            key={founder.fullName}
+            type="button"
+            className="group absolute top-[64.9%] z-20 aspect-square w-[8.5%] -translate-x-1/2 cursor-zoom-in rounded-full focus-visible:z-40 focus-visible:outline-none hover:z-40"
+            style={{ left: founder.left }}
+            aria-label={`Enlarge the ${founder.fullName} commemorative coin`}
           >
-            The Complete Collection
-          </Badge>
-        </div>
-
-        {/* Title */}
-        <h2 
-          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-primary font-serif leading-tight px-2"
-          data-testid="text-legacy-title"
-        >
-          The Founders' Legacy Set: Own All Seven Jewels
-        </h2>
-
-        {/* Subtitle */}
-        <p 
-          className="text-sm sm:text-base md:text-lg text-gray-700 max-w-3xl mx-auto px-2"
-          data-testid="text-legacy-subtitle"
-        >
-          Honor each of the Seven Visionary Founders with this exclusive museum-quality collection.
-        </p>
-
-        {/* Price Box and Set Box Image */}
-        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center max-w-5xl mx-auto px-2">
-          {/* Price Box */}
-          <div 
-            className="border-2 border-primary/50 rounded-lg px-4 sm:px-6 md:px-8 py-6 sm:py-8 md:py-10 bg-primary/5"
-            data-testid="box-complete-set-price"
-          >
-            <div className="flex flex-col items-center gap-2 sm:gap-3">
-              <span className="text-gray-800 text-xs sm:text-sm font-medium">
-                Complete Set Price:
-              </span>
-              <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary">
-                $120.06
-              </span>
-              <span className="text-xs sm:text-sm text-gray-600 text-center">
-                Commemorating 1906 · Seven Individual Coins · Limited Edition
-              </span>
-            </div>
-          </div>
-
-          {/* Set Box Image */}
-          <div className="flex justify-center items-center">
-            <img 
-              src={setBoxImg}
-              alt="Alpha Phi Alpha The Jewels - Founders' Commemorative Collection luxury set box"
-              className="w-full max-w-md object-contain"
-              data-testid="img-set-box"
-              loading="lazy"
-              decoding="async"
+            <img
+              src={founder.image}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full rounded-full border border-[#d4ad55] object-cover opacity-0 shadow-[0_12px_35px_rgba(0,0,0,.65)] transition duration-300 ease-out group-hover:scale-[2.25] group-hover:opacity-100 group-focus-visible:scale-[2.25] group-focus-visible:opacity-100 motion-reduce:transition-none"
             />
-          </div>
-        </div>
+          </button>
+        ))}
 
-        {/* Founders Grid */}
-        <div className="flex justify-center items-end gap-2 sm:gap-3 md:gap-4 lg:gap-6 flex-wrap px-2">
-          {founders.map((founder) => (
-            <div 
-              key={founder.name}
-              className="flex flex-col items-center gap-1 sm:gap-2"
-              data-testid={`founder-${founder.name.toLowerCase()}`}
-            >
-              <div className="coin-hover-wrapper">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full overflow-hidden border-2 border-primary/70">
-                  <img 
-                    src={founder.image}
-                    alt={`Jewel ${founder.fullName} commemorative coin`}
-                    className="w-full h-full object-cover"
-                    data-testid={`img-founder-${founder.name.toLowerCase()}`}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-              </div>
-              <span className="text-[0.6rem] sm:text-xs md:text-sm text-primary font-semibold text-center leading-tight max-w-[60px] sm:max-w-[80px] md:max-w-none">
-                {founder.fullName}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        {/* CTA Button */}
-        <div className="pt-4 sm:pt-6">
-          <Button
-            onClick={onCtaClick}
-            size="lg"
-            className="bg-primary text-black font-bold border-0"
-            data-testid="button-purchase-jewel-set"
-          >
-            PURCHASE JEWEL SET
-          </Button>
-        </div>
-
-        {/* Bottom Text */}
-        <p 
-          className="text-xs sm:text-sm text-gray-600 pt-2 sm:pt-4 px-2"
-          data-testid="text-craftsmanship-note"
-        >
-          Each 3-inch coin features museum-quality craftsmanship with dramatic Old Gold finish
-        </p>
-      </div>
+        <figcaption className="sr-only">
+          Purchase the 4-inch Limited-Edition Commemorative Coin with the Complete Seven Jewels
+          Founders Set to receive 30% off the combined price.
+        </figcaption>
+      </figure>
     </section>
   );
 }

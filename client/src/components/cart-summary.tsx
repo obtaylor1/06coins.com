@@ -9,7 +9,16 @@ interface CartSummaryProps {
 }
 
 export function CartSummary({ sticky = false }: CartSummaryProps) {
-  const { items, subtotal, total, updateQuantity, removeItem, emptyCart } = useCart();
+  const {
+    items,
+    subtotal,
+    discount,
+    total,
+    bundlePairCount,
+    updateQuantity,
+    removeItem,
+    emptyCart,
+  } = useCart();
 
   if (items.length === 0) {
     return (
@@ -113,6 +122,15 @@ export function CartSummary({ sticky = false }: CartSummaryProps) {
               ${subtotal.toFixed(2)}
             </span>
           </div>
+          {discount > 0 && (
+            <div className="flex justify-between text-sm text-emerald-400" data-testid="text-cart-bundle-discount">
+              <span>
+                Complete Collection bundle savings (30%)
+                {bundlePairCount > 1 ? ` × ${bundlePairCount}` : ""}
+              </span>
+              <span className="font-semibold">-${discount.toFixed(2)}</span>
+            </div>
+          )}
           <div className="flex justify-between text-lg font-bold pt-2 border-t border-primary/20">
             <span>Total</span>
             <span className="text-primary" data-testid="text-cart-total">

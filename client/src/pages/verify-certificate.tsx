@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useLocation } from "wouter";
-import { Check, Headphones, Search, ShieldCheck } from "lucide-react";
+import { AlertTriangle, Check, Headphones, Search, ShieldCheck } from "lucide-react";
 import coinFront from "@assets/optimized-webp/apa coin front.webp";
 import coinBack from "@assets/optimized-webp/apa coin back.webp";
 
@@ -54,6 +54,7 @@ export default function VerifyCertificate() {
   useEffect(() => { if (initial) void verify(initial); }, []);
 
   const submit = (event: FormEvent) => { event.preventDefault(); void verify(serial); };
+  const isActive = record?.status === "active";
   const fields = record ? [
     ["Edition", record.edition],
     ["Edition number", `${record.editionNumber.toLocaleString()} of ${record.editionSize.toLocaleString()}`],
@@ -91,10 +92,18 @@ export default function VerifyCertificate() {
 
         {record && <div className="mt-12 animate-in fade-in slide-in-from-bottom-3 duration-500">
           <div className="mx-auto text-center">
-            <div className="mx-auto grid h-16 w-16 place-items-center rounded-full border-2 border-[#d1ad58] text-[#d1ad58] shadow-[0_0_35px_rgba(209,173,88,.15)]"><Check className="h-8 w-8" strokeWidth={1.5} /></div>
-            <h2 className="mt-5 font-serif text-3xl uppercase tracking-[.08em] text-[#d1ad58] sm:text-4xl">Authentic 06 Coins issue</h2>
-            <p className="mt-3 text-sm text-[#eee4c8]/65">This serial matches an authentic 1906 Limited Edition commemorative coin.</p>
-            <div className="mx-auto mt-6 w-fit border border-[#d1ad58] px-6 py-3 font-mono text-xl tracking-[.12em] text-[#e3c273] sm:text-3xl">{record.serialNumber}</div>
+            <div className={`mx-auto grid h-16 w-16 place-items-center rounded-full border-2 ${isActive ? "border-[#d1ad58] text-[#d1ad58] shadow-[0_0_35px_rgba(209,173,88,.15)]" : "border-red-500 text-red-400 shadow-[0_0_35px_rgba(239,68,68,.15)]"}`}>
+              {isActive ? <Check className="h-8 w-8" strokeWidth={1.5} /> : <AlertTriangle className="h-8 w-8" strokeWidth={1.5} />}
+            </div>
+            <h2 className={`mt-5 font-serif text-3xl uppercase tracking-[.08em] sm:text-4xl ${isActive ? "text-[#d1ad58]" : "text-red-400"}`}>
+              {isActive ? "Authentic 06 Coins issue" : "Certificate not active"}
+            </h2>
+            <p className={`mx-auto mt-3 max-w-2xl text-sm ${isActive ? "text-[#eee4c8]/65" : "text-red-200/80"}`}>
+              {isActive
+                ? "This serial matches an authentic 1906 Limited Edition commemorative coin."
+                : `This serial exists in the registry, but its certificate status is ${record.status}. Contact 06 Coins support before purchasing or accepting this coin.`}
+            </p>
+            <div className={`mx-auto mt-6 w-fit border px-6 py-3 font-mono text-xl tracking-[.12em] sm:text-3xl ${isActive ? "border-[#d1ad58] text-[#e3c273]" : "border-red-500 text-red-300"}`}>{record.serialNumber}</div>
           </div>
 
           <div className="mx-auto mt-12 grid max-w-6xl gap-10 border-y border-[#a88437]/45 py-10 lg:grid-cols-[1fr_1.1fr] lg:items-center">

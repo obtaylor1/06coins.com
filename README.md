@@ -10,9 +10,10 @@ This platform delivers a luxurious online shopping experience featuring real-tim
 
 ## Products
 
-- **Main Commemorative Coin (4")**: $39.06 — Limited to 1,906 units
+- **Main Commemorative Coin (4")**: $59.06 — Limited to 1,906 units
 - **Founders' Jewel Coins (3")**: $19.06 each — Individual 3-inch coins honoring each founder
-- **Complete Founders' Set (7 coins)**: $120.06 — The full collection
+- **Complete Founders' Set (7 coins)**: $159.06 — The full collection
+- **Coin + Founders Set Bundle**: 30% off each matched pair
 
 ## Tech Stack
 

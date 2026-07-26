@@ -10,12 +10,17 @@ import { db } from "../db/index.js";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { activityLogs, certificates, customers, inventory as inventoryTable, inventoryAdjustments, notifications, orders as ordersTable, storeSettings } from "../shared/schema.js";
 import { loadStripeRuntime, removeStripeCredentials, saveStripeCredentials, stripeStatus } from "./services/stripeConfig.js";
+import {
+  FOUNDERS_SET_PRICE,
+  getFoundersBundleDiscountCents,
+  MAIN_COIN_PRICE,
+} from "../shared/pricing.js";
 
 // Server-side product catalog (price authority)
 // SECURITY: This is the source of truth for all product pricing
 const PRODUCT_CATALOG = new Map([
-  ['coin120year', { name: '120-Year Anniversary Commemorative Coin — 4" Premium Edition', price: 39.06, type: 'main-coin' }],
-  ['jewelset7', { name: 'Complete 7-Jewel Collector\'s Set — 3" Coins', price: 120.06, type: 'jewel-set' }],
+  ['coin120year', { name: '120-Year Anniversary Commemorative Coin — 4" Premium Edition', price: MAIN_COIN_PRICE, type: 'main-coin' }],
+  ['jewelset7', { name: 'Complete 7-Jewel Collector\'s Set — 3" Coins', price: FOUNDERS_SET_PRICE, type: 'jewel-set' }],
   ['jewel_callis', { name: 'Callis — The Philosopher', price: 19.06, type: 'jewel-coin' }],
   ['jewel_chapman', { name: 'Chapman — The Educator', price: 19.06, type: 'jewel-coin' }],
   ['jewel_jones', { name: 'Jones — The Organizer', price: 19.06, type: 'jewel-coin' }],
@@ -53,11 +58,12 @@ function mergeCheckoutItems(items: CheckoutItem[]): CheckoutItem[] {
 }
 
 function calculateOrderAmount(items: CheckoutItem[]): number {
-  return items.reduce((total, item) => {
+  const subtotal = items.reduce((total, item) => {
     const product = PRODUCT_CATALOG.get(item.id);
     if (!product) throw new Error(`Invalid product: ${item.id}`);
     return total + Math.round(product.price * 100) * item.quantity;
   }, 0);
+  return subtotal - getFoundersBundleDiscountCents(items);
 }
 
 function isPaidOrder(order: { status: string }): boolean {
@@ -226,12 +232,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     legacyHeaders: false,
   });
 
-  // Initialize all products inventory on server startup
-  try {
-    await storage.initializeAllProducts();
-    console.log('✅ Product inventory initialized successfully');
-  } catch (error) {
-    console.error('⚠️ Error initializing inventory:', error);
+  // Production inventory is database-backed. Local previews use catalog defaults
+  // so the storefront remains reviewable without production database access.
+  if (app.get("env") !== "development") {
+    try {
+      await storage.initializeAllProducts();
+      console.log('✅ Product inventory initialized successfully');
+    } catch (error) {
+      console.error('⚠️ Error initializing inventory:', error);
+    }
   }
 
   // Auth routes
@@ -326,6 +335,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Get current inventory for main coin (used by header stock counter)
   app.get("/api/inventory", async (req, res) => {
+    if (app.get("env") === "development") {
+      return res.json({
+        remainingStock: 1906,
+        productName: PRODUCT_CATALOG.get('coin120year')!.name,
+        lastUpdated: null,
+        previewFallback: true,
+      });
+    }
     try {
       // MySQL is the transactional source of truth for authoritative stock.
       const inventory = await storage.getInventoryByProductId('coin120year');
@@ -564,31 +581,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const remainingStock = mainCoinInventory?.remainingStock || 0;
       
       // Calculate profit based on actual costs
-      // 4" coin: Cost $8.50, Selling $39.06 → Profit $30.56
+      // Profit is calculated from actual discounted order revenue less product costs.
       // 3" coin: Cost $3.30, Selling $19.06 → Profit $15.76
-      // Jewel set (7 × 3" coins): Cost $23.10 (7 × $3.30), Selling $120.06 → Profit $96.96
       const COST_4_INCH = 8.50;
       const COST_3_INCH = 3.30;
       const COST_JEWEL_SET = 3.30 * 7; // $23.10
-      const PROFIT_4_INCH = 39.06 - COST_4_INCH; // $30.56
-      const PROFIT_3_INCH = 19.06 - COST_3_INCH; // $15.76
-      const PROFIT_JEWEL_SET = 120.06 - COST_JEWEL_SET; // $96.96
       
-      // Calculate total profit by iterating through order items
+      // Calculate total profit from actual paid revenue, including bundle discounts.
       let totalProfit = 0;
       paidOrders.forEach(order => {
+        let orderCost = 0;
         if (order.cartItems && Array.isArray(order.cartItems)) {
           order.cartItems.forEach((item: any) => {
             if (item.id === 'coin120year') {
-              totalProfit += item.quantity * PROFIT_4_INCH * 100; // in cents
+              orderCost += item.quantity * COST_4_INCH * 100;
             } else if (item.id === 'jewelset7') {
-              // Jewel set: 7 coins sold as a bundle
-              totalProfit += item.quantity * PROFIT_JEWEL_SET * 100; // in cents
+              orderCost += item.quantity * COST_JEWEL_SET * 100;
             } else if (item.id?.startsWith('jewel_')) {
-              // Individual jewel coins
-              totalProfit += item.quantity * PROFIT_3_INCH * 100; // in cents
+              orderCost += item.quantity * COST_3_INCH * 100;
             }
           });
+          totalProfit += order.totalAmount - orderCost;
+        } else {
+          totalProfit += order.totalAmount - (order.quantity * COST_4_INCH * 100);
         }
       });
       

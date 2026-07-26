@@ -19,6 +19,9 @@ import egyptianPortalImg from "@assets/optimized-webp/0_0-9_1763355883898.webp";
 import hieroglyphicsImg from "@assets/optimized-webp/0_0-10_1763356084962.webp";
 
 export default function ShopCoins() {
+  const bundleRegularPrice = MAIN_COIN.price + JEWEL_SET.price;
+  const bundleSavings = Math.round(bundleRegularPrice * 0.3 * 100) / 100;
+  const bundlePrice = bundleRegularPrice - bundleSavings;
   const { addItem } = useCart();
   const { toast } = useToast();
   const [quantities, setQuantities] = useState<Record<string, number>>({
@@ -119,7 +122,7 @@ export default function ShopCoins() {
     },
     "offers": {
       "@type": "Offer",
-      "price": "39.06",
+      "price": "59.06",
       "priceCurrency": "USD",
       "availability": "https://schema.org/InStock",
       "url": getAbsoluteUrl("/shop-coins")
@@ -138,7 +141,7 @@ export default function ShopCoins() {
     },
     "offers": {
       "@type": "Offer",
-      "price": "120.06",
+      "price": "159.06",
       "priceCurrency": "USD",
       "availability": "https://schema.org/InStock",
       "url": getAbsoluteUrl("/shop-coins")
@@ -397,8 +400,18 @@ export default function ShopCoins() {
                     </div>
                     
                     <div className="text-sm text-gray-400 bg-background/50 p-4 rounded-lg border border-primary/20">
-                      <p><strong className="text-primary">Individual price:</strong> 7 × $19.06 = $133.42</p>
-                      <p className="text-lg text-white mt-1"><strong>Complete Set:</strong> $120.06 (Save $13.36)</p>
+                      <p><strong className="text-primary">Complete collection:</strong> Seven 3-inch Founders coins</p>
+                      <p className="text-lg text-white mt-1"><strong>Complete Set:</strong> ${JEWEL_SET.price.toFixed(2)}</p>
+                      <div className="mt-3 border-t border-emerald-400/20 pt-3">
+                        <p className="font-semibold text-emerald-400">Complete the Collection &amp; Save 30%</p>
+                        <p className="mt-1 text-gray-300">
+                          Purchase the 4-inch Limited-Edition Commemorative Coin and the Complete Seven Jewels Founders Set together to receive 30% off the combined price.
+                        </p>
+                        <p className="mt-2 text-white">
+                          Regularly ${bundleRegularPrice.toFixed(2)} — <strong className="text-emerald-400">Bundle price: ${bundlePrice.toFixed(2)}</strong>
+                        </p>
+                        <p className="text-emerald-400">You save ${bundleSavings.toFixed(2)}.</p>
+                      </div>
                     </div>
                   </div>
 

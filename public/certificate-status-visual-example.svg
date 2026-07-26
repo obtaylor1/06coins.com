@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900">
+  <rect width="1400" height="900" fill="#070706"/>
+  <rect x="0" y="0" width="1400" height="92" fill="#090908"/>
+  <line x1="0" y1="91" x2="1400" y2="91" stroke="#a88437" stroke-opacity=".45"/>
+  <text x="62" y="49" fill="#d1ad58" font-family="Georgia,serif" font-size="31">06 COINS</text>
+  <text x="63" y="70" fill="#d1ad58" fill-opacity=".7" font-family="Arial,sans-serif" font-size="11" letter-spacing="2">PRIVATE OFFICE</text>
+
+  <text x="700" y="145" text-anchor="middle" fill="#d1ad58" font-family="Arial,sans-serif" font-size="12" letter-spacing="2">CERTIFICATE REGISTRY</text>
+  <text x="700" y="196" text-anchor="middle" fill="#eee4c8" font-family="Georgia,serif" font-size="45">Certificate Verification Results</text>
+  <text x="700" y="228" text-anchor="middle" fill="#eee4c8" fill-opacity=".6" font-family="Arial,sans-serif" font-size="15">Visual example of what a customer sees after submitting a serial number</text>
+
+  <g transform="translate(70 270)">
+    <rect width="610" height="550" fill="#0d0c09" stroke="#a88437" stroke-opacity=".55"/>
+    <circle cx="305" cy="68" r="35" fill="none" stroke="#d1ad58" stroke-width="2"/>
+    <path d="M289 68l11 11 22-25" fill="none" stroke="#d1ad58" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="305" y="137" text-anchor="middle" fill="#d1ad58" font-family="Georgia,serif" font-size="27" letter-spacing="2">AUTHENTIC 06 COINS ISSUE</text>
+    <text x="305" y="169" text-anchor="middle" fill="#eee4c8" fill-opacity=".65" font-family="Arial,sans-serif" font-size="13">This serial matches an authentic 1906 Limited Edition</text>
+    <text x="305" y="189" text-anchor="middle" fill="#eee4c8" fill-opacity=".65" font-family="Arial,sans-serif" font-size="13">commemorative coin.</text>
+    <rect x="165" y="214" width="280" height="55" fill="none" stroke="#d1ad58"/>
+    <text x="305" y="249" text-anchor="middle" fill="#e3c273" font-family="monospace" font-size="22" letter-spacing="2">1906-LE-000127</text>
+
+    <g font-family="Arial,sans-serif" font-size="14">
+      <line x1="40" y1="305" x2="570" y2="305" stroke="#a88437" stroke-opacity=".45"/>
+      <text x="45" y="333" fill="#d1ad58" font-family="Georgia,serif">EDITION</text><text x="275" y="333" fill="#eee4c8" fill-opacity=".8">1906 Limited Edition</text>
+      <line x1="40" y1="350" x2="570" y2="350" stroke="#a88437" stroke-opacity=".3"/>
+      <text x="45" y="378" fill="#d1ad58" font-family="Georgia,serif">EDITION NUMBER</text><text x="275" y="378" fill="#eee4c8" fill-opacity=".8">127 of 1,906</text>
+      <line x1="40" y1="395" x2="570" y2="395" stroke="#a88437" stroke-opacity=".3"/>
+      <text x="45" y="423" fill="#d1ad58" font-family="Georgia,serif">STATUS</text><text x="275" y="423" fill="#dfbe69" font-weight="bold">AUTHENTIC</text>
+      <line x1="40" y1="440" x2="570" y2="440" stroke="#a88437" stroke-opacity=".3"/>
+      <text x="45" y="468" fill="#d1ad58" font-family="Georgia,serif">PURCHASER</text><text x="275" y="468" fill="#eee4c8" fill-opacity=".8">Marcus J.</text>
+      <line x1="40" y1="485" x2="570" y2="485" stroke="#a88437" stroke-opacity=".3"/>
+      <text x="45" y="513" fill="#d1ad58" font-family="Georgia,serif">DATE ISSUED</text><text x="275" y="513" fill="#eee4c8" fill-opacity=".8">July 23, 2026</text>
+    </g>
+  </g>
+
+  <g transform="translate(720 270)">
+    <rect width="610" height="550" fill="#0d0c09" stroke="#7f1d1d" stroke-width="2"/>
+    <circle cx="305" cy="68" r="35" fill="none" stroke="#ef4444" stroke-width="2"/>
+    <path d="M305 48v27M305 86v2" fill="none" stroke="#f87171" stroke-width="4" stroke-linecap="round"/>
+    <text x="305" y="137" text-anchor="middle" fill="#f87171" font-family="Georgia,serif" font-size="27" letter-spacing="2">CERTIFICATE NOT ACTIVE</text>
+    <text x="305" y="169" text-anchor="middle" fill="#fecaca" fill-opacity=".85" font-family="Arial,sans-serif" font-size="13">This serial exists in the registry, but its certificate status is revoked.</text>
+    <text x="305" y="189" text-anchor="middle" fill="#fecaca" fill-opacity=".85" font-family="Arial,sans-serif" font-size="13">Contact support before purchasing or accepting this coin.</text>
+    <rect x="165" y="214" width="280" height="55" fill="none" stroke="#ef4444"/>
+    <text x="305" y="249" text-anchor="middle" fill="#fca5a5" font-family="monospace" font-size="22" letter-spacing="2">1906-LE-000128</text>
+
+    <g font-family="Arial,sans-serif" font-size="14">
+      <line x1="40" y1="305" x2="570" y2="305" stroke="#a88437" stroke-opacity=".45"/>
+      <text x="45" y="333" fill="#d1ad58" font-family="Georgia,serif">EDITION</text><text x="275" y="333" fill="#eee4c8" fill-opacity=".8">1906 Limited Edition</text>
+      <line x1="40" y1="350" x2="570" y2="350" stroke="#a88437" stroke-opacity=".3"/>
+      <text x="45" y="378" fill="#d1ad58" font-family="Georgia,serif">EDITION NUMBER</text><text x="275" y="378" fill="#eee4c8" fill-opacity=".8">128 of 1,906</text>
+      <line x1="40" y1="395" x2="570" y2="395" stroke="#a88437" stroke-opacity=".3"/>
+      <text x="45" y="423" fill="#d1ad58" font-family="Georgia,serif">STATUS</text><text x="275" y="423" fill="#f87171" font-weight="bold">REVOKED</text>
+      <line x1="40" y1="440" x2="570" y2="440" stroke="#a88437" stroke-opacity=".3"/>
+      <text x="45" y="468" fill="#d1ad58" font-family="Georgia,serif">PURCHASER</text><text x="275" y="468" fill="#eee4c8" fill-opacity=".8">Private collector</text>
+      <line x1="40" y1="485" x2="570" y2="485" stroke="#a88437" stroke-opacity=".3"/>
+      <text x="45" y="513" fill="#d1ad58" font-family="Georgia,serif">DATE ISSUED</text><text x="275" y="513" fill="#eee4c8" fill-opacity=".8">July 23, 2026</text>
+    </g>
+  </g>
+
+  <text x="700" y="864" text-anchor="middle" fill="#eee4c8" fill-opacity=".35" font-family="Arial,sans-serif" font-size="11" letter-spacing="2">VERIFICATION RECORD SECURED BY 06 COINS PRIVATE OFFICE</text>
+</svg>

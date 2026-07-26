@@ -72,7 +72,7 @@ export default function Home() {
     },
     "offers": {
       "@type": "Offer",
-      "price": "39.06",
+      "price": "59.06",
       "priceCurrency": "USD",
       "availability": "https://schema.org/InStock",
       "url": getAbsoluteUrl("/shop-coins")

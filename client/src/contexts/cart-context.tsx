@@ -1,6 +1,10 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { Product } from "@/lib/products";
+import { ALL_PRODUCTS, Product } from "@/lib/products";
 import { trackAddToCart } from "@/lib/analytics";
+import {
+  getFoundersBundleDiscountCents,
+  getFoundersBundlePairCount,
+} from "@shared/pricing";
 
 export interface CartItem {
   id: string;
@@ -13,7 +17,9 @@ export interface CartItem {
 interface CartContextType {
   items: CartItem[];
   subtotal: number;
+  discount: number;
   total: number;
+  bundlePairCount: number;
   itemCount: number;
   addItem: (product: Product, quantity?: number) => void;
   updateQuantity: (id: string, quantity: number) => void;
@@ -43,7 +49,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const stored = localStorage.getItem(CART_STORAGE_KEY);
       if (!stored) return [];
       const parsed: unknown = JSON.parse(stored);
-      return Array.isArray(parsed) ? parsed.filter(isCartItem) : [];
+      if (!Array.isArray(parsed)) return [];
+      const currentProducts = new Map(ALL_PRODUCTS.map((product) => [product.id, product]));
+      return parsed.filter(isCartItem).map((item) => {
+        const currentProduct = currentProducts.get(item.id);
+        return currentProduct
+          ? {
+              ...item,
+              name: currentProduct.name,
+              price: currentProduct.price,
+              image: currentProduct.image,
+            }
+          : item;
+      });
     } catch {
       return [];
     }
@@ -53,8 +71,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
   }, [items]);
 
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const total = subtotal;
+  const subtotalCents = items.reduce(
+    (sum, item) => sum + Math.round(item.price * 100) * item.quantity,
+    0,
+  );
+  const discountCents = getFoundersBundleDiscountCents(items);
+  const subtotal = subtotalCents / 100;
+  const discount = discountCents / 100;
+  const total = (subtotalCents - discountCents) / 100;
+  const bundlePairCount = getFoundersBundlePairCount(items);
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const addItem = (product: Product, quantity: number = 1) => {
@@ -118,7 +143,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       value={{
         items,
         subtotal,
+        discount,
         total,
+        bundlePairCount,
         itemCount,
         addItem,
         updateQuantity,

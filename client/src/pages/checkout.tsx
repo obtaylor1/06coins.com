@@ -9,6 +9,7 @@ import { useCart } from "@/contexts/cart-context";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { trackPurchase } from "@/lib/analytics";
+import { MAIN_COIN } from "@/lib/products";
 
 interface CheckoutFormProps {
   quantity: number;
@@ -23,7 +24,7 @@ function CheckoutForm({ quantity, totalAmount, useCartData, clientSecret }: Chec
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [isProcessing, setIsProcessing] = useState(false);
-  const { items, emptyCart } = useCart();
+  const { items, discount, bundlePairCount, emptyCart } = useCart();
   
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -159,6 +160,15 @@ function CheckoutForm({ quantity, totalAmount, useCartData, clientSecret }: Chec
                 <span className="font-semibold">${(item.price * item.quantity).toFixed(2)}</span>
               </div>
             ))}
+            {discount > 0 && (
+              <div className="flex justify-between text-sm text-emerald-400 pb-2 border-b border-primary/10">
+                <span>
+                  Complete Collection bundle savings (30%)
+                  {bundlePairCount > 1 ? ` × ${bundlePairCount}` : ""}
+                </span>
+                <span className="font-semibold">-${discount.toFixed(2)}</span>
+              </div>
+            )}
           </>
         ) : (
           <>
@@ -168,7 +178,7 @@ function CheckoutForm({ quantity, totalAmount, useCartData, clientSecret }: Chec
             </div>
             <div className="flex justify-between text-foreground/80">
               <span>Price per coin:</span>
-              <span className="font-bold">$39.06</span>
+              <span className="font-bold">${MAIN_COIN.price.toFixed(2)}</span>
             </div>
           </>
         )}
@@ -222,7 +232,7 @@ export default function Checkout() {
     : 1;
   
   const quantity = useCartData ? items.reduce((sum, item) => sum + item.quantity, 0) : queryQuantity;
-  const totalAmount = useCartData ? total : (queryQuantity * 39.06);
+  const totalAmount = useCartData ? total : (queryQuantity * MAIN_COIN.price);
 
   useEffect(() => {
     // Set dark mode

@@ -14,7 +14,7 @@ import apa_coin_back from "@assets/optimized-webp/apa coin back.webp";
 
 import apa_coin_front from "@assets/optimized-webp/apa coin front.webp";
 
-const COIN_PRICE = 39.06;
+const COIN_PRICE = MAIN_COIN.price;
 
 export function PurchaseModule() {
   const [quantity, setQuantity] = useState(1);
