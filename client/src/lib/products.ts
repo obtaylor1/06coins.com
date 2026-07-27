@@ -1,11 +1,12 @@
-import callisImg from "@assets/Henry Arthur Callis_1763159941951.png";
-import chapmanImg from "@assets/Charles Henry Chapman_1763159941952.png";
-import jonesImg from "@assets/Eugene Kincle Jones_1763159941953.png";
-import kelleyImg from "@assets/george biddle kelley_1763159941952.png";
-import murrayImg from "@assets/Nathaniel Allison Murray_1763159941952.png";
-import ogleImg from "@assets/Robert Harold Ogle_1763159941950.png";
-import tandyImg from "@assets/Vertner Woodson Tandy_1763159941953.png";
-import coinFrontImg from "@assets/apa coin front_1762505793054.png";
+import callisImg from "@assets/optimized-webp/Henry Arthur Callis_1763159941951.webp";
+import chapmanImg from "@assets/optimized-webp/Charles Henry Chapman_1763159941952.webp";
+import jonesImg from "@assets/optimized-webp/Eugene Kincle Jones_1763159941953.webp";
+import kelleyImg from "@assets/optimized-webp/george biddle kelley_1763159941952.webp";
+import murrayImg from "@assets/optimized-webp/Nathaniel Allison Murray_1763159941952.webp";
+import ogleImg from "@assets/optimized-webp/Robert Harold Ogle_1763159941950.webp";
+import tandyImg from "@assets/optimized-webp/Vertner Woodson Tandy_1763159941953.webp";
+import coinFrontImg from "@assets/optimized-webp/apa coin front_1762505793054.webp";
+import { FOUNDERS_SET_PRICE, MAIN_COIN_PRICE } from "@shared/pricing";
 
 export interface Product {
   id: string;
@@ -26,7 +27,7 @@ export interface JewelCoin extends Product {
 export const MAIN_COIN: Product = {
   id: "coin120year",
   name: "120-Year Anniversary Commemorative Coin — 4\" Premium Edition",
-  price: 39.06,
+  price: MAIN_COIN_PRICE,
   image: coinFrontImg,
   description: "A powerful 4-inch museum-grade coin commemorating 120 years of Alpha Phi Alpha leadership, service, and brotherhood. Crafted with deep detail and premium weight.",
   type: "main-coin",
@@ -35,9 +36,9 @@ export const MAIN_COIN: Product = {
 export const JEWEL_SET: Product = {
   id: "jewelset7",
   name: "Complete 7-Jewel Collector's Set — 3\" Coins",
-  price: 120.06,
+  price: FOUNDERS_SET_PRICE,
   image: callisImg,
-  description: "A beautifully crafted 7-coin collection honoring the Seven Jewels of Alpha Phi Alpha. Premium 3-inch coins with sharp detail and stunning finish. Save $13.36.",
+  description: "A beautifully crafted 7-coin collection honoring the Seven Jewels of Alpha Phi Alpha. Premium 3-inch coins with sharp detail, a stunning finish, and collector presentation.",
   type: "jewel-set",
 };
 

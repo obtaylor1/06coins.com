@@ -3,7 +3,8 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Minus, Plus, ShoppingCart, ChevronLeft, ChevronRight, Sparkles, Award, Package, Star } from "lucide-react";
+import { Minus, Plus, ShoppingCart, ChevronLeft, ChevronRight, Sparkles, Award, Star } from "lucide-react";
+import shieldCoinImg from "@assets/optimized-webp/apa coin back.webp";
 import { MAIN_COIN, JEWEL_SET, JEWEL_COINS } from "@/lib/products";
 import { useCart } from "@/contexts/cart-context";
 import { useToast } from "@/hooks/use-toast";
@@ -12,13 +13,16 @@ import { StickyHeader } from "@/components/sticky-header";
 import { Footer } from "@/components/footer";
 import { SEO } from "@/components/seo";
 import { getAbsoluteUrl } from "@/../../shared/seo-config";
-import heroBackgroundImg from "@assets/0_2_1763332961118.jpg";
-import goldTextureImg from "@assets/0_0-8_1763355352629.jpg";
-import museumDisplayImg from "@assets/0_1_1763355638824.jpg";
-import egyptianPortalImg from "@assets/0_0-9_1763355883898.jpg";
-import hieroglyphicsImg from "@assets/0_0-10_1763356084962.jpg";
+import heroBackgroundImg from "@assets/optimized-webp/0_2_1763332961118.webp";
+import goldTextureImg from "@assets/optimized-webp/0_0-8_1763355352629.webp";
+import museumDisplayImg from "@assets/optimized-webp/0_1_1763355638824.webp";
+import egyptianPortalImg from "@assets/optimized-webp/0_0-9_1763355883898.webp";
+import hieroglyphicsImg from "@assets/optimized-webp/0_0-10_1763356084962.webp";
 
 export default function ShopCoins() {
+  const bundleRegularPrice = MAIN_COIN.price + JEWEL_SET.price;
+  const bundleSavings = Math.round(bundleRegularPrice * 0.3 * 100) / 100;
+  const bundlePrice = bundleRegularPrice - bundleSavings;
   const { addItem } = useCart();
   const { toast } = useToast();
   const [quantities, setQuantities] = useState<Record<string, number>>({
@@ -27,6 +31,7 @@ export default function ShopCoins() {
     ...Object.fromEntries(JEWEL_COINS.map((j) => [j.id, 1])),
   });
   const [selectedJewelIndex, setSelectedJewelIndex] = useState(0);
+  const [mainCoinRotationReady, setMainCoinRotationReady] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
@@ -119,7 +124,7 @@ export default function ShopCoins() {
     },
     "offers": {
       "@type": "Offer",
-      "price": "39.06",
+      "price": "59.06",
       "priceCurrency": "USD",
       "availability": "https://schema.org/InStock",
       "url": getAbsoluteUrl("/shop-coins")
@@ -138,7 +143,7 @@ export default function ShopCoins() {
     },
     "offers": {
       "@type": "Offer",
-      "price": "120.06",
+      "price": "159.06",
       "priceCurrency": "USD",
       "availability": "https://schema.org/InStock",
       "url": getAbsoluteUrl("/shop-coins")
@@ -165,6 +170,8 @@ export default function ShopCoins() {
             src={heroBackgroundImg} 
             alt="" 
             className="w-full h-full object-cover"
+            fetchPriority="high"
+            decoding="async"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
         </div>
@@ -180,7 +187,7 @@ export default function ShopCoins() {
             Est. 1906 - Limited Edition Collection
           </Badge>
           
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-white mb-6 tracking-tight leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-medium text-white mb-6 tracking-tight leading-tight">
             120-Year <span className="text-primary">Commemorative</span>
             <br />
             Coin Collection
@@ -218,7 +225,7 @@ export default function ShopCoins() {
           {/* SEO-Rich Introduction Section */}
           <section className="prose prose-invert max-w-none">
             <div className="bg-card/50 border border-primary/20 rounded-lg p-8 md:p-12">
-              <h2 className="text-3xl md:text-4xl font-serif font-bold text-white mb-6 text-center">
+              <h2 className="text-3xl md:text-4xl font-serif font-medium text-white mb-6 text-center">
                 Celebrate 120 Years of Alpha Phi Alpha Legacy
               </h2>
               <div className="text-gray-300 leading-relaxed space-y-4 text-lg">
@@ -243,7 +250,7 @@ export default function ShopCoins() {
             <div className="text-center mb-8">
               <div className="inline-block">
                 <div className="h-px w-12 bg-primary/60 mx-auto mb-4" />
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-white mb-2">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-medium text-white mb-2">
                   The Centerpiece
                 </h2>
                 <div className="h-px w-12 bg-primary/60 mx-auto mt-4" />
@@ -268,17 +275,32 @@ export default function ShopCoins() {
               >
                 {/* Coin image */}
                 <div className="flex items-center justify-center">
-                  <div className="relative">
+                  <div className="relative aspect-square w-full max-w-md">
                     <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
                     <img
                       src={MAIN_COIN.image}
                       alt="Alpha Phi Alpha 120th Anniversary 4-inch commemorative coin - limited edition 1906 units"
-                      className="relative w-full max-w-md h-auto object-contain drop-shadow-2xl"
+                      className={`hero-coin-fallback absolute inset-0 h-full w-full object-contain drop-shadow-2xl transition-opacity duration-500 ${mainCoinRotationReady ? "opacity-0" : "opacity-100"}`}
                       loading="lazy"
+                      decoding="async"
                       width="400"
                       height="400"
                       data-testid="img-main-coin"
                     />
+                    <video
+                      className={`hero-coin-rotation absolute inset-0 h-full w-full object-contain drop-shadow-2xl transition-opacity duration-500 ${mainCoinRotationReady ? "opacity-100" : "opacity-0"}`}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      poster={MAIN_COIN.image}
+                      aria-label="The Alpha Phi Alpha 120th Anniversary 4-inch commemorative coin rotating from front to back"
+                      onCanPlay={() => setMainCoinRotationReady(true)}
+                      onError={() => setMainCoinRotationReady(false)}
+                    >
+                      <source src="/media/apa-coin-3d-rotation-transparent-v2.webm" type="video/webm"/>
+                    </video>
                   </div>
                 </div>
 
@@ -288,7 +310,7 @@ export default function ShopCoins() {
                     <Badge className="mb-4 bg-primary/10 text-primary border border-primary/30 text-xs px-3 py-1">
                       4-INCH DIAMETER
                     </Badge>
-                    <h3 className="text-3xl sm:text-4xl font-serif font-bold text-white mb-4">
+                    <h3 className="text-3xl sm:text-4xl font-serif font-medium text-white mb-4">
                       {MAIN_COIN.name}
                     </h3>
                     <p className="text-gray-300 text-lg leading-relaxed mb-6">
@@ -348,7 +370,7 @@ export default function ShopCoins() {
             <div className="text-center mb-8">
               <div className="inline-block">
                 <div className="h-px w-12 bg-primary/60 mx-auto mb-4" />
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-white mb-2">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-medium text-white mb-2">
                   Best Collector Value
                 </h2>
                 <div className="h-px w-12 bg-primary/60 mx-auto mt-4" />
@@ -382,19 +404,38 @@ export default function ShopCoins() {
                             alt={`Alpha Phi Alpha Seven Jewels ${jewel.name} commemorative coin - 3 inch diameter`}
                             className="w-full h-full object-cover"
                             loading="lazy"
+                            decoding="async"
                             width="100"
                             height="100"
                           />
                         </div>
                       ))}
-                      <div className="aspect-square rounded-lg border border-primary/20 bg-primary/10 flex items-center justify-center">
-                        <Package className="w-8 h-8 text-primary" />
-                      </div>
+                  <div className="aspect-square rounded-lg overflow-hidden border border-primary/20 bg-background/50">
+                    <img
+                      src={shieldCoinImg}
+                      alt="Shield side of the Alpha Phi Alpha 120th Anniversary commemorative coin"
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                      width="100"
+                      height="100"
+                    />
+                  </div>
                     </div>
                     
                     <div className="text-sm text-gray-400 bg-background/50 p-4 rounded-lg border border-primary/20">
-                      <p><strong className="text-primary">Individual price:</strong> 7 × $19.06 = $133.42</p>
-                      <p className="text-lg text-white mt-1"><strong>Complete Set:</strong> $120.06 (Save $13.36)</p>
+                      <p><strong className="text-primary">Complete collection:</strong> Seven 3-inch Founders coins</p>
+                      <p className="text-lg text-white mt-1"><strong>Complete Set:</strong> ${JEWEL_SET.price.toFixed(2)}</p>
+                      <div className="mt-3 border-t border-emerald-400/20 pt-3">
+                        <p className="font-semibold text-emerald-400">Complete the Collection &amp; Save 30%</p>
+                        <p className="mt-1 text-gray-300">
+                          Purchase the 4-inch Limited-Edition Commemorative Coin and the Complete Seven Jewels Founders Set together to receive 30% off the combined price.
+                        </p>
+                        <p className="mt-2 text-white">
+                          Regularly ${bundleRegularPrice.toFixed(2)} — <strong className="text-emerald-400">Bundle price: ${bundlePrice.toFixed(2)}</strong>
+                        </p>
+                        <p className="text-emerald-400">You save ${bundleSavings.toFixed(2)}.</p>
+                      </div>
                     </div>
                   </div>
 
@@ -404,7 +445,7 @@ export default function ShopCoins() {
                       <Badge className="mb-4 bg-primary/10 text-primary border border-primary/30 text-xs px-3 py-1">
                         7 COINS • 3-INCH EACH
                       </Badge>
-                      <h3 className="text-3xl font-serif font-bold text-white mb-4">
+                      <h3 className="text-3xl font-serif font-medium text-white mb-4">
                         {JEWEL_SET.name}
                       </h3>
                       <p className="text-gray-300 leading-relaxed mb-6">
@@ -463,7 +504,7 @@ export default function ShopCoins() {
             <div className="text-center mb-8">
               <div className="inline-block">
                 <div className="h-px w-12 bg-primary/60 mx-auto mb-4" />
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-white mb-2">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-medium text-white mb-2">
                   Individual Jewel Coins
                 </h2>
                 <p className="text-gray-400 mt-2">3-inch diameter • $19.06 each</p>
@@ -501,6 +542,7 @@ export default function ShopCoins() {
                         alt={`Alpha Phi Alpha Seven Jewels ${selectedJewel.name} commemorative coin - 3 inch diameter limited edition`}
                         className="relative w-full h-auto object-contain drop-shadow-2xl transition-all duration-300"
                         loading="lazy"
+                        decoding="async"
                         width="400"
                         height="400"
                         data-testid="img-selected-jewel"
@@ -537,6 +579,7 @@ export default function ShopCoins() {
                         alt={`Alpha Phi Alpha ${jewel.name} Jewel coin thumbnail`}
                         className="w-full h-full object-cover"
                         loading="lazy"
+                        decoding="async"
                         width="80"
                         height="80"
                       />
@@ -547,7 +590,7 @@ export default function ShopCoins() {
                 {/* Product details */}
                 <div className="text-center space-y-6 max-w-2xl mx-auto">
                   <div>
-                    <h3 className="text-2xl sm:text-3xl font-serif font-bold text-white mb-3">
+                    <h3 className="text-2xl sm:text-3xl font-serif font-medium text-white mb-3">
                       {selectedJewel.name}
                     </h3>
                     <p className="text-gray-300 leading-relaxed mb-4">
@@ -635,7 +678,7 @@ export default function ShopCoins() {
                   Ultimate Collector's Package
                 </Badge>
 
-                <h2 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-white">
+                <h2 className="text-4xl sm:text-5xl md:text-6xl font-serif font-medium text-white">
                   Build My Complete Collection
                 </h2>
 
@@ -683,7 +726,7 @@ export default function ShopCoins() {
               </p>
             </div>
 
-            <h2 className="font-playfair text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">
+            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">
               Need Help or Bulk Order Support?
             </h2>
 
@@ -693,14 +736,15 @@ export default function ShopCoins() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-              <Link href="/contact">
-                <Button
+              <Button
+                  asChild
                   className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-8 py-6 text-lg"
                   data-testid="button-contact-cta"
                 >
+                <Link href="/contact">
                   Contact Us
-                </Button>
-              </Link>
+                </Link>
+              </Button>
               
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />

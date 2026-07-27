@@ -13,7 +13,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Mail, Building2, Send, CheckCircle2, AlertCircle, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, ApiError } from "@/lib/queryClient";
-import separatorBarImg from "@assets/0_0_640_N_1763339269798.png";
+import separatorBarImg from "@assets/optimized-webp/0_0_640_N_1763339269798.webp";
 
 interface FormData {
   name: string;
@@ -229,7 +229,7 @@ export default function Contact() {
             Get In Touch
           </Badge>
           <h1 
-            className="font-playfair text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 text-primary"
+            className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 text-primary"
             data-testid="heading-contact"
           >
             Contact Us
@@ -284,7 +284,7 @@ export default function Contact() {
           {/* Left Column: Contact Information */}
           <div className="space-y-8">
             <Card className="p-8 bg-card border-primary/20" data-testid="card-contact-info">
-              <h2 className="font-playfair text-2xl font-bold text-primary mb-6">
+              <h2 className="font-serif text-2xl font-bold text-primary mb-6">
                 Contact Information
               </h2>
               
@@ -349,7 +349,7 @@ export default function Contact() {
           {/* Right Column: Contact Form */}
           <div>
             <Card className="p-8 bg-card border-primary/20" data-testid="card-contact-form">
-              <h2 className="font-playfair text-2xl font-bold text-primary mb-6">
+              <h2 className="font-serif text-2xl font-bold text-primary mb-6">
                 Send Us a Message
               </h2>
 

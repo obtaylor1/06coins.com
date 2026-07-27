@@ -2,13 +2,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ChevronLeft, ChevronRight, Minus, Plus, ArrowRight } from "lucide-react";
-import callisImg from "@assets/Henry Arthur Callis_1763159941951.png";
-import chapmanImg from "@assets/Charles Henry Chapman_1763159941952.png";
-import jonesImg from "@assets/Eugene Kincle Jones_1763159941953.png";
-import kelleyImg from "@assets/george biddle kelley_1763159941952.png";
-import murrayImg from "@assets/Nathaniel Allison Murray_1763159941952.png";
-import ogleImg from "@assets/Robert Harold Ogle_1763159941950.png";
-import tandyImg from "@assets/Vertner Woodson Tandy_1763159941953.png";
+import callisImg from "@assets/optimized-webp/Henry Arthur Callis_1763159941951.webp";
+import chapmanImg from "@assets/optimized-webp/Charles Henry Chapman_1763159941952.webp";
+import jonesImg from "@assets/optimized-webp/Eugene Kincle Jones_1763159941953.webp";
+import kelleyImg from "@assets/optimized-webp/george biddle kelley_1763159941952.webp";
+import murrayImg from "@assets/optimized-webp/Nathaniel Allison Murray_1763159941952.webp";
+import ogleImg from "@assets/optimized-webp/Robert Harold Ogle_1763159941950.webp";
+import tandyImg from "@assets/optimized-webp/Vertner Woodson Tandy_1763159941953.webp";
 
 interface Jewel {
   id: string;
@@ -136,7 +136,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
 
   return (
     <section 
-      className="py-12 sm:py-16 md:py-24 px-4 sm:px-6 md:px-12 bg-white"
+      className="py-12 sm:py-16 md:py-24 px-4 sm:px-6 md:px-12 bg-[#0d0c09] border-y border-[#C8A856]/20"
       data-testid="section-jewel-carousel"
     >
       <div className="max-w-5xl mx-auto">
@@ -150,21 +150,21 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
           </Badge>
           
           <h2 
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-primary tracking-tight px-2"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-medium text-primary tracking-tight px-2"
             data-testid="text-carousel-title"
           >
             Honor Your Favorite Jewel
           </h2>
           
-          <p className="text-base sm:text-lg md:text-xl text-gray-700 max-w-2xl mx-auto px-2">
+          <p className="text-base sm:text-lg md:text-xl text-[#E8DEC2]/70 max-w-2xl mx-auto px-2">
             Select and purchase individual 3-inch founder coins to celebrate the legacy of a specific Jewel.
           </p>
 
           <div className="flex flex-col items-center gap-1 sm:gap-2">
             <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary">
-              $19.06 <span className="text-xl sm:text-2xl md:text-3xl text-gray-600">Each</span>
+              $19.06 <span className="text-xl sm:text-2xl md:text-3xl text-[#E8DEC2]/55">Each</span>
             </div>
-            <p className="text-xs sm:text-sm text-gray-500">
+            <p className="text-xs sm:text-sm text-[#E8DEC2]/65">
               Commemorating the founding year 1906
             </p>
           </div>
@@ -206,14 +206,17 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
                 <div className="absolute inset-0 rounded-full bg-primary/20 blur-2xl -z-10" />
                 
                 {/* Coin Container */}
-                <div 
-                  className="relative h-40 w-40 xs:h-48 xs:w-48 sm:h-56 sm:w-56 lg:h-64 lg:w-64 rounded-full border-2 border-primary/60 bg-gradient-to-b from-primary/10 to-gray-900 flex items-center justify-center shadow-2xl overflow-hidden"
+                <div
+                  key={activeJewel.id}
+                  className="jewel-coin-enter relative h-40 w-40 xs:h-48 xs:w-48 sm:h-56 sm:w-56 lg:h-64 lg:w-64 rounded-full border-2 border-primary/60 bg-gradient-to-b from-primary/10 to-gray-900 flex items-center justify-center shadow-2xl overflow-hidden"
                   data-testid={`carousel-coin-${activeJewel.id}`}
                 >
                   <img
                     src={activeJewel.coinImage}
                     alt={`${activeJewel.fullName} commemorative coin`}
                     className="w-full h-full object-cover rounded-full"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </div>
@@ -237,9 +240,9 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
                 <button
                   key={jewel.id}
                   onClick={() => setActiveIndex(index)}
-                  className={`h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-full border-2 transition-all shrink-0 overflow-hidden ${
+                  className={`jewel-thumbnail h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-full border-2 transition-all shrink-0 overflow-hidden ${
                     index === activeIndex
-                      ? "border-primary ring-2 ring-primary/30 scale-110"
+                      ? "jewel-thumbnail-active border-primary ring-2 ring-primary/30 scale-110"
                       : "border-gray-600 hover:border-primary/50 opacity-60 hover:opacity-100"
                   }`}
                   aria-label={`View ${jewel.name} coin`}
@@ -249,6 +252,8 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
                     src={jewel.coinImage}
                     alt={jewel.name}
                     className="w-full h-full object-cover"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </button>
               ))}
@@ -257,13 +262,14 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
 
           {/* RIGHT: Detail & Add-to-Cart Panel */}
           <div className="w-full">
-            <div 
+            <div
+              key={activeJewel.id}
               className="rounded-2xl sm:rounded-3xl border-2 border-primary/60 bg-gray-800 px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-4 sm:gap-6"
               data-testid="card-jewel-detail"
             >
               {/* Name & Title */}
-              <div className="text-center space-y-1 sm:space-y-2">
-                <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-primary">
+              <div className="jewel-details-enter text-center space-y-1 sm:space-y-2">
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-medium text-primary">
                   {activeJewel.fullName}
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-400 font-medium">
@@ -275,7 +281,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
               </div>
 
               {/* Description */}
-              <p className="text-sm md:text-base text-gray-400 text-center leading-relaxed">
+              <p className="jewel-details-enter text-sm md:text-base text-gray-400 text-center leading-relaxed">
                 {activeJewel.description}
               </p>
 
@@ -348,14 +354,14 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
 
         {/* Upsell Banner */}
         <div 
-          className="mt-6 sm:mt-8 max-w-xl mx-auto rounded-xl sm:rounded-2xl border border-gray-200 bg-gray-50 px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-center sm:justify-between gap-3 sm:gap-4"
+          className="mt-6 sm:mt-8 max-w-xl mx-auto rounded-xl sm:rounded-2xl border border-[#C8A856]/25 bg-[#15130F] px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-center sm:justify-between gap-3 sm:gap-4"
           data-testid="banner-collect-all"
         >
           <div className="flex-1 text-center sm:text-left">
-            <h4 className="text-sm sm:text-base md:text-lg font-bold text-gray-900">
+            <h4 className="text-sm sm:text-base md:text-lg font-bold text-[#E8DEC2]">
               Collect All 7 Founder Coins
             </h4>
-            <p className="text-xs sm:text-sm text-gray-600 mt-0.5">
+            <p className="text-xs sm:text-sm text-[#E8DEC2]/55 mt-0.5">
               Special set pricing available
             </p>
           </div>

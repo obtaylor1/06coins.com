@@ -250,6 +250,16 @@ interface ContactSubmission {
   inquiryType?: string;
 }
 
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>'"]/g, (character) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    "'": '&#39;',
+    '"': '&quot;',
+  })[character]!);
+}
+
 export async function sendInquiryReceivedEmail(submission: ContactSubmission): Promise<boolean> {
   const { html, text } = inquiryReceivedTemplate(submission);
   const subject = `We've Received Your Message – Alpha Phi Alpha Coin Campaign`;
@@ -269,17 +279,26 @@ export async function sendInquiryReceivedEmail(submission: ContactSubmission): P
 }
 
 export async function sendInternalContactNotification(submission: ContactSubmission): Promise<boolean> {
-  const subject = `New Contact Form Submission: ${submission.subject}`;
+  const subject = `New Contact Form Submission: ${submission.subject.replace(/[\r\n]/g, ' ')}`;
+  const safe = {
+    name: escapeHtml(submission.name),
+    email: escapeHtml(submission.email),
+    phone: submission.phone ? escapeHtml(submission.phone) : '',
+    chapter: submission.chapter ? escapeHtml(submission.chapter) : '',
+    inquiryType: escapeHtml(submission.inquiryType || 'general'),
+    subject: escapeHtml(submission.subject),
+    message: escapeHtml(submission.message).replace(/\n/g, '<br>'),
+  };
   
   const html = `
     <h2>New Contact Form Submission</h2>
-    <p><strong>From:</strong> ${submission.name} (${submission.email})</p>
-    ${submission.phone ? `<p><strong>Phone:</strong> ${submission.phone}</p>` : ''}
-    ${submission.chapter ? `<p><strong>Chapter:</strong> ${submission.chapter}</p>` : ''}
-    <p><strong>Inquiry Type:</strong> ${submission.inquiryType || 'general'}</p>
-    <p><strong>Subject:</strong> ${submission.subject}</p>
+    <p><strong>From:</strong> ${safe.name} (${safe.email})</p>
+    ${safe.phone ? `<p><strong>Phone:</strong> ${safe.phone}</p>` : ''}
+    ${safe.chapter ? `<p><strong>Chapter:</strong> ${safe.chapter}</p>` : ''}
+    <p><strong>Inquiry Type:</strong> ${safe.inquiryType}</p>
+    <p><strong>Subject:</strong> ${safe.subject}</p>
     <p><strong>Message:</strong></p>
-    <p>${submission.message.replace(/\n/g, '<br>')}</p>
+    <p>${safe.message}</p>
   `;
 
   const text = `

@@ -9,7 +9,16 @@ interface CartSummaryProps {
 }
 
 export function CartSummary({ sticky = false }: CartSummaryProps) {
-  const { items, subtotal, total, updateQuantity, removeItem, emptyCart } = useCart();
+  const {
+    items,
+    subtotal,
+    discount,
+    total,
+    bundlePairCount,
+    updateQuantity,
+    removeItem,
+    emptyCart,
+  } = useCart();
 
   if (items.length === 0) {
     return (
@@ -20,11 +29,11 @@ export function CartSummary({ sticky = false }: CartSummaryProps) {
         <CardContent className="text-center py-8">
           <ShoppingBag className="w-16 h-16 mx-auto mb-4 text-foreground/30" />
           <p className="text-foreground/70 mb-4">Your cart is empty</p>
-          <Link href="/shop-coins">
-            <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-black">
+          <Button asChild variant="outline" className="border-primary text-primary hover:bg-primary hover:text-black">
+            <Link href="/shop-coins">
               Continue Shopping
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </CardContent>
       </Card>
     );
@@ -52,6 +61,8 @@ export function CartSummary({ sticky = false }: CartSummaryProps) {
               alt={item.name}
               className="w-16 h-16 object-cover rounded-md shrink-0"
               data-testid={`img-cart-${item.id}`}
+              loading="lazy"
+              decoding="async"
             />
             <div className="flex-1 min-w-0">
               <h4 className="font-semibold text-sm mb-1 line-clamp-2" data-testid={`text-cart-name-${item.id}`}>
@@ -111,6 +122,15 @@ export function CartSummary({ sticky = false }: CartSummaryProps) {
               ${subtotal.toFixed(2)}
             </span>
           </div>
+          {discount > 0 && (
+            <div className="flex justify-between text-sm text-emerald-400" data-testid="text-cart-bundle-discount">
+              <span>
+                Complete Collection bundle savings (30%)
+                {bundlePairCount > 1 ? ` × ${bundlePairCount}` : ""}
+              </span>
+              <span className="font-semibold">-${discount.toFixed(2)}</span>
+            </div>
+          )}
           <div className="flex justify-between text-lg font-bold pt-2 border-t border-primary/20">
             <span>Total</span>
             <span className="text-primary" data-testid="text-cart-total">
@@ -118,15 +138,16 @@ export function CartSummary({ sticky = false }: CartSummaryProps) {
             </span>
           </div>
         </div>
-        <Link href="/checkout" className="w-full">
-          <Button
+        <Button
+            asChild
             size="lg"
             className="w-full bg-primary text-black font-bold hover:bg-primary/90"
             data-testid="button-checkout"
           >
+          <Link href="/checkout" className="w-full">
             Proceed to Checkout
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </CardFooter>
     </Card>
   );

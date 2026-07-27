@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
-import professionalDeskImg1 from "@assets/stock_images/professional_mahogan_4bd46e85.jpg";
-import giftPresentationImg from "@assets/stock_images/elegant_gift_present_ca12998c.jpg";
-import homeMantleImg from "@assets/stock_images/elegant_home_mantle__9166904c.jpg";
-import coinDetailImg from "@assets/stock_images/gold_coin_close-up_d_04ec2cbe.jpg";
+import professionalDeskImg1 from "@assets/optimized-webp/stock_images/professional_mahogan_4bd46e85.webp";
+import giftPresentationImg from "@assets/optimized-webp/stock_images/elegant_gift_present_ca12998c.webp";
+import homeMantleImg from "@assets/optimized-webp/stock_images/elegant_home_mantle__9166904c.webp";
+import coinDetailImg from "@assets/optimized-webp/stock_images/gold_coin_close-up_d_04ec2cbe.webp";
 
 interface LegacyLifestyleSectionProps {
   onCtaClick?: () => void;
@@ -73,7 +73,7 @@ export function LegacyLifestyleSection({ onCtaClick }: LegacyLifestyleSectionPro
       <div className="max-w-7xl mx-auto space-y-20">
         {/* Section Header */}
         <div className="text-center space-y-6">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-foreground tracking-tight leading-tight">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-medium text-foreground tracking-tight leading-tight">
             A Legacy to Hold
           </h2>
           <p className="text-lg md:text-xl text-foreground/70 max-w-3xl mx-auto">
@@ -97,6 +97,8 @@ export function LegacyLifestyleSection({ onCtaClick }: LegacyLifestyleSectionPro
                     src={display.images.lifestyle}
                     alt={display.images.alt}
                     className="w-full h-full object-cover"
+                    loading="lazy"
+                    decoding="async"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
                 </div>
@@ -105,7 +107,7 @@ export function LegacyLifestyleSection({ onCtaClick }: LegacyLifestyleSectionPro
               {/* Content */}
               <div className={`space-y-6 ${index % 2 === 1 ? 'lg:order-1' : ''}`}>
                 <div className="space-y-3">
-                  <h3 className="text-3xl md:text-4xl font-serif font-bold text-foreground">
+                  <h3 className="text-3xl md:text-4xl font-serif font-medium text-foreground">
                     {display.title}
                   </h3>
                   <p className="text-xl md:text-2xl font-serif text-primary italic">
@@ -132,7 +134,7 @@ export function LegacyLifestyleSection({ onCtaClick }: LegacyLifestyleSectionPro
 
         {/* Final CTA */}
         <div className="bg-card border border-primary/20 rounded-3xl p-10 md:p-16 text-center space-y-6">
-          <h3 className="text-2xl md:text-3xl font-serif font-bold text-primary">
+          <h3 className="text-2xl md:text-3xl font-serif font-medium text-primary">
             This Is More Than a Purchase
           </h3>
           <p className="text-lg md:text-xl text-foreground/70 max-w-3xl mx-auto">

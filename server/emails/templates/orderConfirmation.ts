@@ -1,4 +1,8 @@
 import type { Order } from '@shared/schema';
+import {
+  getFoundersBundleDiscountCents,
+  getFoundersBundlePairCount,
+} from '@shared/pricing';
 
 export function orderConfirmationTemplate(order: Order): { html: string; text: string } {
   const orderNumber = order.id.substring(0, 8).toUpperCase();
@@ -12,6 +16,7 @@ export function orderConfirmationTemplate(order: Order): { html: string; text: s
   // Parse cart items or use legacy quantity
   let itemsList = '';
   let textItemsList = '';
+  let bundleDiscountRow = '';
   
   if (order.cartItems && Array.isArray(order.cartItems)) {
     const items = order.cartItems as Array<{ id: string; name: string; quantity: number; price: number }>;
@@ -36,6 +41,21 @@ export function orderConfirmationTemplate(order: Order): { html: string; text: s
     textItemsList = items
       .map(item => `  - ${item.name} (Qty: ${item.quantity}) - $${(item.price / 100).toFixed(2)}`)
       .join('\n');
+    const bundlePairCount = getFoundersBundlePairCount(items);
+    const bundleDiscountCents = getFoundersBundleDiscountCents(items);
+    if (bundleDiscountCents > 0) {
+      bundleDiscountRow = `
+        <tr>
+          <td colspan="2" style="padding: 12px; border-bottom: 1px solid #333; color: #6ee7b7;">
+            30% coin + Founders set discount${bundlePairCount > 1 ? ` × ${bundlePairCount}` : ''}
+          </td>
+          <td style="padding: 12px; border-bottom: 1px solid #333; text-align: right; color: #6ee7b7;">
+            -$${(bundleDiscountCents / 100).toFixed(2)}
+          </td>
+        </tr>
+      `;
+      textItemsList += `\n  - 30% coin + Founders set discount${bundlePairCount > 1 ? ` × ${bundlePairCount}` : ''}: -$${(bundleDiscountCents / 100).toFixed(2)}`;
+    }
   } else {
     // Legacy format
     itemsList = `
@@ -162,6 +182,7 @@ ${addr.country || ''}
                   </td>
                 </tr>
                 ${itemsList}
+                ${bundleDiscountRow}
                 <tr style="background-color: #0a0a0a;">
                   <td colspan="2" style="padding: 15px; border-top: 2px solid #C8A856; text-align: right; font-weight: bold; color: #C8A856;">
                     Total:

@@ -1,5 +1,5 @@
-import { drizzle } from "drizzle-orm/neon-serverless";
-import ws from "ws";
+import { drizzle } from "drizzle-orm/mysql2";
+import mysql from "mysql2/promise";
 import * as schema from "../shared/schema.js";
 
 if (!process.env.DATABASE_URL) {
@@ -8,8 +8,11 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-export const db = drizzle({
-  connection: process.env.DATABASE_URL,
-  schema,
-  ws: ws,
+export const pool = mysql.createPool({
+  uri: process.env.DATABASE_URL,
+  connectionLimit: Number.parseInt(process.env.DATABASE_POOL_SIZE || "10", 10),
+  idleTimeout: 30_000,
+  connectTimeout: 10_000,
 });
+
+export const db = drizzle(pool, { schema, mode: "default" });

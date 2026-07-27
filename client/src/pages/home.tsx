@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { StickyHeader } from "@/components/sticky-header";
 import { HeroSection } from "@/components/hero-section";
 import { FoundersLegacySection } from "@/components/founders-legacy-section";
-import { StorySection } from "@/components/story-section";
 import { JewelCarouselSection } from "@/components/jewel-carousel-section";
 import { ProductShowcase } from "@/components/product-showcase";
 import { WhyOwnSection } from "@/components/why-own-section";
@@ -12,9 +11,7 @@ import { SEO } from "@/components/seo";
 import { getAbsoluteUrl } from "@/../../shared/seo-config";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/cart-context";
-import { JEWEL_SET } from "@/lib/products";
-import separatorBarImg from "@assets/0_0_640_N_1763339269798.png";
-import separatorBar2Img from "@assets/0_0_640_N_1763340226514.png";
+import { JEWEL_COINS, JEWEL_SET } from "@/lib/products";
 
 export default function Home() {
   const { toast } = useToast();
@@ -32,21 +29,6 @@ export default function Home() {
     purchaseRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const scrollToFoundersSet = () => {
-    foundersSetRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const handleAddCoinToCart = (jewel: any, quantity: number) => {
-    toast({
-      title: "Added to Cart",
-      description: `${quantity}x ${jewel.fullName} coin${quantity > 1 ? 's' : ''} ($${(jewel.price * quantity).toFixed(2)})`,
-    });
-    
-    setTimeout(() => {
-      scrollToPurchase();
-    }, 1000);
-  };
-
   const handleAddJewelSetToCart = () => {
     addItem(JEWEL_SET, 1);
     toast({
@@ -55,12 +37,26 @@ export default function Home() {
     });
   };
 
+  const handleAddJewelCoinToCart = (jewel: { id: string; fullName: string }, quantity: number) => {
+    const product = JEWEL_COINS.find((coin) => coin.id === `jewel_${jewel.id}`);
+    if (!product) return;
+    addItem(product, quantity);
+    toast({
+      title: "Added to cart",
+      description: `${quantity} × ${product.fullName} coin${quantity === 1 ? "" : "s"}`,
+    });
+  };
+
+  const scrollToFounderSet = () => {
+    foundersSetRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Alpha Phi Alpha Fraternity, Incorporated",
     "url": "https://apa1906.net",
-    "logo": getAbsoluteUrl("/favicon.png"),
+    "logo": getAbsoluteUrl("/favicon.webp"),
     "description": "First intercollegiate Greek-letter organization founded by African American men",
     "foundingDate": "1906-12-04"
   };
@@ -76,7 +72,7 @@ export default function Home() {
     },
     "offers": {
       "@type": "Offer",
-      "price": "39.06",
+      "price": "59.06",
       "priceCurrency": "USD",
       "availability": "https://schema.org/InStock",
       "url": getAbsoluteUrl("/shop-coins")
@@ -98,42 +94,13 @@ export default function Home() {
       <main>
         <HeroSection onCtaClick={scrollToPurchase} />
         
-        {/* Decorative Separator Bar */}
-        <div 
-          className="w-full bg-background py-4 sm:py-6 md:py-8"
-          style={{
-            backgroundImage: `url(${separatorBarImg})`,
-            backgroundRepeat: 'repeat-x',
-            backgroundPosition: 'center',
-            backgroundSize: 'auto 32px',
-            minHeight: '32px',
-          }}
-          data-testid="container-separator-bar"
-        />
-
-        
         <div ref={foundersSetRef}>
           <FoundersLegacySection onCtaClick={handleAddJewelSetToCart} />
         </div>
-        
-        <StorySection onCtaClick={scrollToPurchase} />
-        
-        <JewelCarouselSection 
-          onAddToCart={handleAddCoinToCart}
-          onViewSet={scrollToFoundersSet}
-        />
-        
-        {/* Decorative Separator Bar */}
-        <div 
-          className="w-full bg-background py-4 sm:py-6 md:py-8"
-          style={{
-            backgroundImage: `url(${separatorBar2Img})`,
-            backgroundRepeat: 'repeat-x',
-            backgroundPosition: 'center',
-            backgroundSize: 'auto 32px',
-            minHeight: '32px',
-          }}
-          data-testid="container-separator-bar-2"
+
+        <JewelCarouselSection
+          onAddToCart={handleAddJewelCoinToCart}
+          onViewSet={scrollToFounderSet}
         />
         
         <ProductShowcase onCtaClick={scrollToPurchase} />

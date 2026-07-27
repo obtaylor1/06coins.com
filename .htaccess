@@ -1,0 +1,9 @@
+RewriteEngine On
+RewriteRule ^assets/(.*)$ dist/public/assets/$1 [L]
+RewriteRule ^favicon\.png$ dist/public/favicon.png [L]
+
+PassengerEnabled on
+PassengerAppRoot /home2/obtaylor/06coins.com
+PassengerAppType node
+PassengerStartupFile app.js
+PassengerNodejs /home2/obtaylor/06coins.com/node-jitless

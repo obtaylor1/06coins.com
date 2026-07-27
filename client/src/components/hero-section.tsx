@@ -1,169 +1,106 @@
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Lock, ShieldCheck, Package } from "lucide-react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "wouter";
-import coinFrontImg from "@assets/apa coin front_1762505793054.png";
-import heroBackgroundImg from "@assets/0_0-1_1763338140136.jpg";
+import { ArrowDownRight, ShieldCheck } from "lucide-react";
+import { MAIN_COIN } from "@/lib/products";
+import coinFrontImg from "@assets/optimized-webp/apa coin front_1762505793054.webp";
+import heroBackgroundImg from "@assets/optimized-webp/0_0-1_1763338140136.webp";
 
-interface HeroSectionProps {
-  onCtaClick: () => void;
-}
+export function HeroSection({ onCtaClick }: { onCtaClick: () => void }) {
+  const [rotationReady, setRotationReady] = useState(false);
+  const { data } = useQuery<{remainingStock:number}>({queryKey:['/api/inventory']});
+  const stock=data?.remainingStock??1906;
+  const editionSize = 1906;
+  const inventoryPercent = Math.max(0, Math.min(100, (stock / editionSize) * 100));
+  return <section className="relative overflow-hidden bg-[#090909] px-5 py-16 sm:px-8 lg:min-h-[calc(100vh-5rem)] lg:py-20">
+    <div className="absolute inset-0 opacity-20" style={{backgroundImage:`url(${heroBackgroundImg})`,backgroundSize:'cover'}}/>
+    <div className="absolute inset-0 bg-gradient-to-r from-[#090909] via-[#090909]/92 to-[#090909]/35"/>
+    <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_.95fr]">
+      <div>
+        <p className="mb-5 text-xs font-bold uppercase tracking-[.14em] text-[#C8A856]">The 120th anniversary edition</p>
+        <h1 className="max-w-3xl font-serif text-5xl leading-[.94] text-[#E8DEC2] sm:text-6xl lg:text-8xl">A legacy you can hold.</h1>
+        <p className="mt-7 max-w-xl text-base leading-7 text-[#E8DEC2]/68 sm:text-lg">A four-inch commemorative coin honoring Alpha Phi Alpha’s first 120 years—struck as a finite edition of 1,906.</p>
 
-export function HeroSection({ onCtaClick }: HeroSectionProps) {
-  const { data: inventory } = useQuery<{ remainingStock: number }>({
-    queryKey: ['/api/inventory'],
-    refetchInterval: 5000,
-  });
-  
-  const stock = inventory?.remainingStock ?? 1906;
+        <div className="mt-7" data-testid="hero-price-block">
+          <p className="text-xs font-bold uppercase tracking-[.18em] text-[#C8A856]">Limited 1906 edition</p>
+          <p className="mt-1 flex items-start font-serif leading-none text-[#E8DEC2]">
+            <span className="mt-2 text-3xl sm:mt-3 sm:text-4xl">$</span>
+            <span className="text-6xl tabular-nums sm:text-7xl">{MAIN_COIN.price.toFixed(2)}</span>
+          </p>
+          <p className="mt-2 text-sm text-[#E8DEC2]/65">Numbered and certified</p>
+        </div>
 
-  return (
-    <section className="relative min-h-screen flex items-center px-4 sm:px-6 py-16 sm:py-20 md:px-12 lg:px-16 overflow-hidden">
-      {/* Gold Circular Background */}
-      <div 
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage: `url(${heroBackgroundImg})`,
-          backgroundPosition: 'center',
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
-        }}
-      />
-      
-      {/* Dark overlay for text readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/70 to-black/80 pointer-events-none" />
-      
-      <div className="relative z-10 w-full max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-16 items-center">
-          {/* Left Column: Content */}
-          <div className="space-y-6 sm:space-y-8 text-left">
-            {/* Edition Badge */}
-            <Badge 
-              variant="outline"
-              className="border-primary/50 bg-primary/10 text-primary font-semibold px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm w-fit"
-              data-testid="badge-edition"
-            >
-              120th Anniversary Edition
-            </Badge>
-
-            {/* Main Headline */}
-            <h1 
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary font-serif leading-tight"
-              data-testid="text-hero-title"
-            >
-              120 Years Forged in Gold: The Exclusive Commemorative Coin
-            </h1>
-            
-            {/* Motto with left border */}
-            <div className="border-l-4 border-primary pl-3 sm:pl-4 py-2">
-              <p 
-                className="text-lg sm:text-xl md:text-2xl text-foreground/90 font-serif italic"
-                data-testid="text-motto"
-              >
-                "First of All, Servants of All, We Shall Transcend All."
-              </p>
-            </div>
-
-            {/* Description */}
-            <p 
-              className="text-sm sm:text-base md:text-lg text-foreground/70 leading-relaxed"
-              data-testid="text-hero-description"
-            >
-              Honor the Legacy of the Jewels and secure your piece of Alpha history.
-            </p>
-
-            {/* Limited Edition Text - Bordered Box */}
-            <div 
-              className="border border-primary/30 rounded-md px-4 sm:px-6 py-2 sm:py-3 w-fit"
-              data-testid="container-limited-edition"
-            >
-              <p className="text-xs sm:text-sm md:text-base text-primary font-semibold">
-                <span className="font-bold">LIMITED EDITION.</span> Only {stock.toLocaleString()} available worldwide.
-              </p>
-            </div>
-
-            {/* CTAs */}
-            <div className="space-y-4">
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <Button
-                  onClick={onCtaClick}
-                  size="lg"
-                  className="text-xs sm:text-sm md:text-base font-bold bg-primary text-black hover:bg-primary/90"
-                  data-testid="button-hero-cta-primary"
-                >
-                  <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2" />
-                  SECURE YOUR COIN NOW
-                </Button>
-                <Link href="/shop-coins">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="text-xs sm:text-sm md:text-base font-bold border-primary text-primary bg-white hover:bg-primary/10 w-full sm:w-auto"
-                    data-testid="button-shop-all-coins"
-                  >
-                    <Package className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2" />
-                    SHOP ALL COINS
-                  </Button>
-                </Link>
-                <Button
-                  onClick={onCtaClick}
-                  size="lg"
-                  variant="outline"
-                  className="text-xs sm:text-sm md:text-base font-bold border-primary text-primary bg-white hover:bg-primary/10"
-                  data-testid="button-hero-cta-secondary"
-                >
-                  VIEW DETAILS
-                </Button>
-              </div>
-
-              {/* Trust Indicators */}
-              <div className="flex flex-wrap items-center gap-3 sm:gap-4 md:gap-6 text-xs sm:text-sm text-foreground/80">
-                <div className="flex items-center gap-1.5 sm:gap-2" data-testid="text-price">
-                  <span className="text-primary font-bold text-sm sm:text-base md:text-lg">$39.06</span>
-                  <span>Each</span>
-                </div>
-                <div className="flex items-center gap-1.5 sm:gap-2" data-testid="text-secure-checkout">
-                  <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  <span className="whitespace-nowrap">Secure Checkout</span>
-                </div>
-                <div className="flex items-center gap-1.5 sm:gap-2" data-testid="text-authenticity">
-                  <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  <span className="whitespace-nowrap">Authenticity Guaranteed</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column: Coin Image */}
-          <div className="relative flex justify-center lg:justify-end mt-6 lg:mt-0">
-            <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg">
-              <div 
-                className="relative aspect-square rounded-full overflow-hidden shadow-2xl"
-                data-testid="container-coin-image"
-              >
-                <img 
-                  src={coinFrontImg} 
-                  alt="Alpha Phi Alpha 120th Anniversary Commemorative Coin - Front" 
-                  className="w-full h-full object-cover"
-                  data-testid="img-coin-front"
-                />
-              </div>
-              
-              {/* Coin Details Badge */}
-              <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4">
-                <Badge 
-                  className="bg-primary/90 text-black font-semibold px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 text-[10px] sm:text-xs md:text-sm backdrop-blur-sm border-0"
-                  data-testid="badge-coin-details"
-                >
-                  <span className="hidden sm:inline">4-inch Diameter commemorative 1906</span>
-                  <span className="sm:hidden">4" · 1906</span>
-                </Badge>
-              </div>
-            </div>
-          </div>
+        <div className="mt-6 flex flex-wrap items-center gap-5">
+          <button onClick={onCtaClick} className="min-h-12 bg-[#C8A856] px-7 text-sm font-bold uppercase tracking-[.16em] text-black hover:bg-[#E8DEC2]">Acquire the coin</button>
+          <a href="#edition-ledger" className="flex min-h-12 items-center gap-2 text-sm text-[#E8DEC2] underline decoration-[#C8A856]/50 underline-offset-8">Read the edition record <ArrowDownRight className="h-4 w-4"/></a>
+        </div>
+        <div className="mt-7 flex flex-wrap gap-5 text-xs uppercase tracking-[.15em] text-[#E8DEC2]/55">
+          <span className="flex gap-2"><ShieldCheck className="h-4 w-4 text-[#C8A856]"/>Secure Stripe checkout</span>
+          <span>4-inch diameter</span>
         </div>
       </div>
-    </section>
-  );
+      <div className="relative mx-auto w-full max-w-xl">
+        <div className="absolute inset-12 rounded-full bg-[#C8A856]/15 blur-3xl"/>
+        <div className="hero-coin-stage relative aspect-square">
+          <img
+            src={coinFrontImg}
+            alt="Front of the Alpha Phi Alpha 120th anniversary commemorative coin"
+            className={`hero-coin-fallback absolute inset-0 h-full w-full object-contain drop-shadow-[0_30px_50px_rgba(0,0,0,.75)] transition-opacity duration-500 ${rotationReady ? "opacity-0" : "opacity-100"}`}
+            fetchPriority="high"
+          />
+          <video
+            className={`hero-coin-rotation absolute inset-0 h-full w-full object-contain drop-shadow-[0_30px_50px_rgba(0,0,0,.75)] transition-opacity duration-500 ${rotationReady ? "opacity-100" : "opacity-0"}`}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            poster={coinFrontImg}
+            aria-label="The Alpha Phi Alpha 120th anniversary commemorative coin rotating from front to back"
+            onCanPlay={() => setRotationReady(true)}
+            onError={() => setRotationReady(false)}
+          >
+            <source src="/media/apa-coin-3d-rotation-transparent-v2.webm" type="video/webm"/>
+          </video>
+        </div>
+        <div className="edition-ledger relative -mt-6 w-full bg-[#0B0A08]/95 px-5 py-5 sm:px-7 sm:py-6">
+          <div className="flex items-center justify-between gap-4 border-b border-[#C8A856]/35 pb-4">
+            <div className="flex items-center gap-3">
+              <ShieldCheck className="h-7 w-7 text-[#C8A856]" strokeWidth={1.25}/>
+              <span className="font-serif text-sm uppercase tracking-[.15em] text-[#D5B65E] sm:text-base">Mint accession record</span>
+            </div>
+            <span className="border border-[#C8A856]/40 bg-black/45 px-3 py-2 font-mono text-[10px] tracking-[.12em] text-[#E8DEC2]/70 sm:text-xs">APA.120.2026</span>
+          </div>
+
+          <dl className="mt-5 grid grid-cols-3">
+            <div className="flex flex-col justify-center pr-3 text-center sm:pr-5">
+              <dt className="text-[10px] uppercase tracking-[.12em] text-[#E8DEC2]/60 sm:text-xs">Edition</dt>
+              <dd className="mt-2 font-serif text-2xl text-[#E8DEC2] sm:text-3xl">1,906</dd>
+            </div>
+            <div className="border-x border-[#C8A856]/30 px-3 text-center sm:px-5">
+              <dt className="text-[10px] uppercase tracking-[.12em] text-[#D5B65E] sm:text-xs">Coins remaining</dt>
+              <dd className="mt-1 font-serif text-4xl leading-none text-[#D5B65E] sm:text-5xl">{stock.toLocaleString()}</dd>
+            </div>
+            <div className="flex flex-col justify-center pl-3 text-center sm:pl-5">
+              <dt className="text-[10px] uppercase tracking-[.12em] text-[#E8DEC2]/60 sm:text-xs">Years</dt>
+              <dd className="mt-2 font-serif text-2xl text-[#E8DEC2] sm:text-3xl">120</dd>
+            </div>
+          </dl>
+
+          <div
+            className="mt-6 h-px overflow-hidden bg-[#C8A856]/20"
+            role="progressbar"
+            aria-label={`${stock.toLocaleString()} of ${editionSize.toLocaleString()} anniversary coins currently available`}
+            aria-valuemin={0}
+            aria-valuemax={editionSize}
+            aria-valuenow={stock}
+          >
+            <div className="edition-ledger-progress h-full bg-[#D5B65E]" style={{width:`${inventoryPercent}%`}}/>
+          </div>
+          <p className="mt-3 text-center font-serif text-xs tracking-[.06em] text-[#E8DEC2]/72 sm:text-sm">
+            {stock.toLocaleString()} of {editionSize.toLocaleString()} anniversary coins currently available
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>;
 }

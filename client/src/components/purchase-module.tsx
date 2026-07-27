@@ -7,20 +7,16 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/cart-context";
 import { MAIN_COIN } from "@/lib/products";
-import { ShieldCheck, CreditCard, Package, ShoppingCart, Lock, RotateCw } from "lucide-react";
-import coinFrontImg from "@assets/apa_coin_back_1767463401761.png";
-import coinBackImg from "@assets/apa coin back_1762505793054.png";
-import egyptianBgImg from "@assets/0_0-6_1763344416952.jpg";
+import { ShieldCheck, CreditCard, Package, ShoppingCart, Lock } from "lucide-react";
+import egyptianBgImg from "@assets/optimized-webp/0_0-6_1763344416952.webp";
 
-import apa_coin_back from "@assets/apa coin back.png";
+import apa_coin_front from "@assets/optimized-webp/apa coin front.webp";
 
-import apa_coin_front from "@assets/apa coin front.png";
-
-const COIN_PRICE = 39.06;
+const COIN_PRICE = MAIN_COIN.price;
 
 export function PurchaseModule() {
   const [quantity, setQuantity] = useState(1);
-  const [showBack, setShowBack] = useState(false);
+  const [rotationReady, setRotationReady] = useState(false);
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const { addItem, itemCount } = useCart();
@@ -102,7 +98,7 @@ export function PurchaseModule() {
       <div className="relative z-10 max-w-6xl mx-auto space-y-8 sm:space-y-10 md:space-y-12 lg:space-y-16">
         <div className="text-center space-y-4 sm:space-y-6 px-2">
           <h2 
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-serif font-bold text-foreground tracking-tight leading-tight"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-serif font-medium text-foreground tracking-tight leading-tight"
             data-testid="text-purchase-heading"
           >
             Secure Your Limited Edition Coin Today
@@ -120,30 +116,37 @@ export function PurchaseModule() {
           <div className="grid lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-12 p-6 sm:p-8 md:p-10">
             {/* Product Image */}
             <div className="lg:col-span-2 flex flex-col justify-center items-center gap-4">
-              <div className="relative w-full max-w-xs">
-                <img 
-                  src={apa_coin_front} 
-                  alt={`Alpha Phi Alpha 120th Anniversary Commemorative Coin - ${showBack ? 'Back' : 'Front'}`} 
-                  className="w-full h-auto object-contain drop-shadow-2xl transition-opacity duration-300"
+              <div className="relative aspect-square w-full max-w-sm">
+                <img
+                  src={apa_coin_front}
+                  alt="Front of the Alpha Phi Alpha 120th Anniversary Commemorative Coin"
+                  className={`hero-coin-fallback absolute inset-0 h-full w-full object-contain drop-shadow-2xl transition-opacity duration-500 ${rotationReady ? "opacity-0" : "opacity-100"}`}
                   data-testid="img-coin-purchase"
+                  loading="lazy"
+                  decoding="async"
                 />
+                <video
+                  className={`hero-coin-rotation absolute inset-0 h-full w-full object-contain drop-shadow-2xl transition-opacity duration-500 ${rotationReady ? "opacity-100" : "opacity-0"}`}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  poster={apa_coin_front}
+                  aria-label="The Alpha Phi Alpha 120th Anniversary Commemorative Coin rotating from front to back"
+                  onCanPlay={() => setRotationReady(true)}
+                  onError={() => setRotationReady(false)}
+                >
+                  <source src="/media/apa-coin-3d-rotation-transparent-v2.webm" type="video/webm"/>
+                </video>
               </div>
-              <Button
-                variant="outline"
-                onClick={() => setShowBack(!showBack)}
-                className="flex items-center gap-2 bg-background/60 border-primary/30"
-                data-testid="button-toggle-coin-side"
-              >
-                <RotateCw className="w-4 h-4" />
-                {showBack ? 'Show Front' : 'Show Back'}
-              </Button>
             </div>
 
             {/* Purchase Details */}
             <div className="lg:col-span-3 space-y-6 sm:space-y-8">
               {/* Product Title */}
               <div className="space-y-3 sm:space-y-4">
-                <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-foreground">
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-medium text-foreground">
                   Alpha Phi Alpha 120th Anniversary Commemorative Coin
                 </h3>
                 <p className="text-sm sm:text-base text-foreground/70">

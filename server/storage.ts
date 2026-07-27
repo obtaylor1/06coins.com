@@ -1,10 +1,13 @@
-import { type Inventory, type InsertInventory, type Order, type InsertOrder, type User, type UpsertUser, type SmsLog, type InsertSmsLog, type SmsSettings, type InsertSmsSettings, inventory as inventoryTable, orders as ordersTable, users as usersTable, smsLogs as smsLogsTable, smsSettings as smsSettingsTable } from "@shared/schema";
+import { type Certificate, type Inventory, type InsertInventory, type Order, type InsertOrder, type User, type UpsertUser, type SmsLog, type InsertSmsLog, type SmsSettings, type InsertSmsSettings, certificates as certificatesTable, inventory as inventoryTable, orders as ordersTable, users as usersTable, smsLogs as smsLogsTable, smsSettings as smsSettingsTable } from "@shared/schema";
 import { db } from "../db/index.js";
 import { eq, desc, sql, gte } from "drizzle-orm";
 
 export interface IStorage {
   // User methods (required for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  hasAdmin(): Promise<boolean>;
+  createAdmin(user: Pick<UpsertUser, 'email' | 'firstName' | 'lastName' | 'passwordHash'>): Promise<User>;
   upsertUser(user: UpsertUser): Promise<User>;
   
   // Inventory methods
@@ -12,7 +15,7 @@ export interface IStorage {
   getAllInventory(): Promise<Inventory[]>;
   updateInventoryStock(productId: string, remainingStock: number): Promise<Inventory>;
   atomicDecrementInventory(productId: string, quantity: number): Promise<{ success: boolean; inventory?: Inventory; error?: string }>;
-  executeInventoryTransaction(items: Array<{ id: string; quantity: number }>, orderData: InsertOrder): Promise<{ updatedInventories: Array<{ productId: string; remainingStock: number; decremented: number }> }>;
+  executeInventoryTransaction(items: Array<{ id: string; quantity: number }>, orderData: InsertOrder): Promise<{ updatedInventories: Array<{ productId: string; remainingStock: number; decremented: number }>; order: Order; certificates: Certificate[] }>;
   initializeInventory(inventory: InsertInventory): Promise<Inventory>;
   initializeAllProducts(): Promise<void>;
   
@@ -60,19 +63,33 @@ export class DbStorage implements IStorage {
     return result[0];
   }
 
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const result = await db.select().from(usersTable).where(eq(usersTable.email, email)).limit(1);
+    return result[0];
+  }
+
+  async hasAdmin(): Promise<boolean> {
+    const result = await db.select({ id: usersTable.id }).from(usersTable).where(eq(usersTable.isAdmin, 1)).limit(1);
+    return result.length > 0;
+  }
+
+  async createAdmin(user: Pick<UpsertUser, 'email' | 'firstName' | 'lastName' | 'passwordHash'>): Promise<User> {
+    const id = crypto.randomUUID();
+    await db.insert(usersTable).values({ ...user, id, isAdmin: 1 });
+    return (await this.getUser(id))!;
+  }
+
   async upsertUser(userData: UpsertUser): Promise<User> {
     const result = await db
       .insert(usersTable)
       .values(userData)
-      .onConflictDoUpdate({
-        target: usersTable.id,
+      .onDuplicateKeyUpdate({
         set: {
           ...userData,
           updatedAt: new Date(),
         },
-      })
-      .returning();
-    return result[0];
+      });
+    return (await this.getUser(userData.id!))!;
   }
 
   // Inventory operations
@@ -101,10 +118,9 @@ export class DbStorage implements IStorage {
         remainingStock,
         lastUpdated: new Date(),
       })
-      .where(eq(inventoryTable.productId, productId))
-      .returning();
+      .where(eq(inventoryTable.productId, productId));
 
-    return result[0];
+    return (await this.getInventoryByProductId(productId))!;
   }
 
   async atomicDecrementInventory(productId: string, quantity: number): Promise<{ success: boolean; inventory?: Inventory; error?: string }> {
@@ -116,10 +132,9 @@ export class DbStorage implements IStorage {
         remainingStock: sql`${inventoryTable.remainingStock} - ${quantity}`,
         lastUpdated: new Date(),
       })
-      .where(sql`${inventoryTable.productId} = ${productId} AND ${inventoryTable.remainingStock} >= ${quantity}`)
-      .returning();
+      .where(sql`${inventoryTable.productId} = ${productId} AND ${inventoryTable.remainingStock} >= ${quantity}`);
 
-    if (result.length === 0) {
+    if (result[0].affectedRows === 0) {
       // Update failed - either product not found or insufficient stock
       const current = await this.getInventoryByProductId(productId);
       if (!current) {
@@ -132,13 +147,13 @@ export class DbStorage implements IStorage {
       };
     }
 
-    return { success: true, inventory: result[0] };
+    return { success: true, inventory: (await this.getInventoryByProductId(productId))! };
   }
 
   async executeInventoryTransaction(
     items: Array<{ id: string; quantity: number }>, 
     orderData: InsertOrder
-  ): Promise<{ updatedInventories: Array<{ productId: string; remainingStock: number; decremented: number }> }> {
+  ): Promise<{ updatedInventories: Array<{ productId: string; remainingStock: number; decremented: number }>; order: Order; certificates: Certificate[] }> {
     // TRANSACTION: All-or-nothing inventory decrement + order creation
     // If any decrement fails, entire transaction is rolled back
     return await db.transaction(async (tx) => {
@@ -152,10 +167,9 @@ export class DbStorage implements IStorage {
             remainingStock: sql`${inventoryTable.remainingStock} - ${item.quantity}`,
             lastUpdated: new Date(),
           })
-          .where(sql`${inventoryTable.productId} = ${item.id} AND ${inventoryTable.remainingStock} >= ${item.quantity}`)
-          .returning();
+          .where(sql`${inventoryTable.productId} = ${item.id} AND ${inventoryTable.remainingStock} >= ${item.quantity}`);
 
-        if (result.length === 0) {
+        if (result[0].affectedRows === 0) {
           // Decrement failed - check why
           const current = await tx
             .select()
@@ -173,39 +187,58 @@ export class DbStorage implements IStorage {
 
         updatedInventories.push({
           productId: item.id,
-          remainingStock: result[0].remainingStock,
+          remainingStock: (await tx.select().from(inventoryTable).where(eq(inventoryTable.productId, item.id)).limit(1))[0].remainingStock,
           decremented: item.quantity,
         });
       }
 
       // Create order only after all decrements succeed
-      await tx
-        .insert(ordersTable)
-        .values(orderData);
+      const orderId = crypto.randomUUID();
+      await tx.insert(ordersTable).values({ ...orderData, id: orderId });
+      const [order] = await tx.select().from(ordersTable).where(eq(ordersTable.id, orderId)).limit(1);
 
-      return { updatedInventories };
+      const limitedQuantity = items.find((item) => item.id === "coin120year")?.quantity ?? 0;
+      const issuedCertificates: Certificate[] = [];
+      if (limitedQuantity > 0) {
+        // Serialize allocation so two simultaneous purchases can never receive
+        // the same edition number.
+        const [{ nextNumber }] = await tx
+          .select({ nextNumber: sql<number>`COALESCE(MAX(${certificatesTable.editionNumber}), 0) + 1` })
+          .from(certificatesTable);
+        if (nextNumber + limitedQuantity - 1 > 1906) {
+          throw new Error("The 1906 Limited Edition certificate registry is sold out");
+        }
+        for (let offset = 0; offset < limitedQuantity; offset += 1) {
+          const editionNumber = nextNumber + offset;
+          const certificateId = crypto.randomUUID();
+          await tx.insert(certificatesTable).values({
+            id: certificateId,
+            serialNumber: `1906-LE-${String(editionNumber).padStart(6, "0")}`,
+            editionNumber,
+            orderId: order.id,
+            customerId: order.customerId,
+            purchaserName: order.customerName,
+            purchaserEmail: order.customerEmail,
+          });
+          const [certificate] = await tx.select().from(certificatesTable).where(eq(certificatesTable.id, certificateId)).limit(1);
+          issuedCertificates.push(certificate);
+        }
+      }
+
+      return { updatedInventories, order, certificates: issuedCertificates };
     });
   }
 
   async initializeInventory(insertInventory: InsertInventory): Promise<Inventory> {
     // CRITICAL: Only insert if product doesn't exist
     // DO NOT reset remainingStock on conflict - preserves live inventory
-    const result = await db
+    await db
       .insert(inventoryTable)
       .values(insertInventory)
-      .onConflictDoNothing({ target: inventoryTable.productId })
-      .returning();
-
-    // If no rows returned, product already exists - return existing record
-    if (result.length === 0) {
-      const existing = await this.getInventoryByProductId(insertInventory.productId);
-      if (!existing) {
-        throw new Error(`Failed to initialize inventory for ${insertInventory.productId}`);
-      }
-      return existing;
-    }
-
-    return result[0];
+      .onDuplicateKeyUpdate({ set: { productId: insertInventory.productId } });
+    const existing = await this.getInventoryByProductId(insertInventory.productId);
+    if (!existing) throw new Error(`Failed to initialize inventory for ${insertInventory.productId}`);
+    return existing;
   }
 
   async initializeAllProducts(): Promise<void> {
@@ -227,12 +260,9 @@ export class DbStorage implements IStorage {
   }
 
   async createOrder(insertOrder: InsertOrder): Promise<Order> {
-    const result = await db
-      .insert(ordersTable)
-      .values(insertOrder)
-      .returning();
-
-    return result[0];
+    const id = crypto.randomUUID();
+    await db.insert(ordersTable).values({ ...insertOrder, id });
+    return (await this.getOrder(id))!;
   }
 
   async getOrder(id: string): Promise<Order | undefined> {
@@ -263,29 +293,25 @@ export class DbStorage implements IStorage {
   }
 
   async updateOrderStatus(id: string, status: string): Promise<Order | undefined> {
-    const result = await db
+    await db
       .update(ordersTable)
       .set({ 
         status,
         updatedAt: new Date(),
       })
-      .where(eq(ordersTable.id, id))
-      .returning();
-
-    return result[0];
+      .where(eq(ordersTable.id, id));
+    return this.getOrder(id);
   }
 
   async updateOrder(id: string, updates: Partial<Order>): Promise<Order | undefined> {
-    const result = await db
+    await db
       .update(ordersTable)
       .set({
         ...updates,
         updatedAt: new Date(),
       })
-      .where(eq(ordersTable.id, id))
-      .returning();
-
-    return result[0];
+      .where(eq(ordersTable.id, id));
+    return this.getOrder(id);
   }
 
   async markEmailSent(id: string, emailType: 'confirmation' | 'shipping' | 'delivery' | 'thankYou' | 'review'): Promise<Order | undefined> {
@@ -298,16 +324,14 @@ export class DbStorage implements IStorage {
     };
 
     const field = fieldMap[emailType];
-    const result = await db
+    await db
       .update(ordersTable)
       .set({ 
         [field]: 1,
         updatedAt: new Date(),
       })
-      .where(eq(ordersTable.id, id))
-      .returning();
-
-    return result[0];
+      .where(eq(ordersTable.id, id));
+    return this.getOrder(id);
   }
 
   async getOrdersNeedingScheduledEmails(): Promise<Order[]> {
@@ -336,11 +360,8 @@ export class DbStorage implements IStorage {
 
   // SMS Log operations
   async createSmsLog(log: InsertSmsLog): Promise<SmsLog> {
-    const result = await db
-      .insert(smsLogsTable)
-      .values(log)
-      .returning();
-    return result[0];
+    const result = await db.insert(smsLogsTable).values(log).$returningId();
+    return (await db.select().from(smsLogsTable).where(eq(smsLogsTable.id, result[0].id)).limit(1))[0];
   }
 
   async getSmsLogsByOrder(orderId: string): Promise<SmsLog[]> {
@@ -352,15 +373,14 @@ export class DbStorage implements IStorage {
   }
 
   async updateSmsLogStatus(id: number, status: string, errorMessage?: string): Promise<SmsLog | undefined> {
-    const result = await db
+    await db
       .update(smsLogsTable)
       .set({ 
         status,
         errorMessage: errorMessage || null,
       })
-      .where(eq(smsLogsTable.id, id))
-      .returning();
-    return result[0];
+      .where(eq(smsLogsTable.id, id));
+    return (await db.select().from(smsLogsTable).where(eq(smsLogsTable.id, id)).limit(1))[0];
   }
 
   async getSmsAnalytics() {
@@ -375,7 +395,7 @@ export class DbStorage implements IStorage {
         transactionalCount: sql<number>`COALESCE(COUNT(CASE WHEN type = 'transactional' THEN 1 END), 0)`,
         marketingCount: sql<number>`COALESCE(COUNT(CASE WHEN type = 'marketing' THEN 1 END), 0)`,
         adminCount: sql<number>`COALESCE(COUNT(CASE WHEN type = 'admin' THEN 1 END), 0)`,
-        recentSms: sql<number>`COALESCE(COUNT(CASE WHEN created_at > NOW() - INTERVAL '24 hours' THEN 1 END), 0)`,
+        recentSms: sql<number>`COALESCE(COUNT(CASE WHEN created_at > DATE_SUB(NOW(), INTERVAL 24 HOUR) THEN 1 END), 0)`,
       })
       .from(smsLogsTable);
 
@@ -426,15 +446,13 @@ export class DbStorage implements IStorage {
     const result = await db
       .insert(smsSettingsTable)
       .values(setting)
-      .onConflictDoUpdate({
-        target: smsSettingsTable.key,
+      .onDuplicateKeyUpdate({
         set: {
           value: setting.value,
           updatedAt: new Date(),
         },
-      })
-      .returning();
-    return result[0];
+      });
+    return (await this.getSmsSettingByKey(setting.key))!;
   }
 }
 
