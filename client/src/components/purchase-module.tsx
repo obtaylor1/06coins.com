@@ -7,10 +7,8 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/cart-context";
 import { MAIN_COIN } from "@/lib/products";
-import { ShieldCheck, CreditCard, Package, ShoppingCart, Lock, RotateCw } from "lucide-react";
+import { ShieldCheck, CreditCard, Package, ShoppingCart, Lock } from "lucide-react";
 import egyptianBgImg from "@assets/optimized-webp/0_0-6_1763344416952.webp";
-
-import apa_coin_back from "@assets/optimized-webp/apa coin back.webp";
 
 import apa_coin_front from "@assets/optimized-webp/apa coin front.webp";
 
@@ -18,7 +16,7 @@ const COIN_PRICE = MAIN_COIN.price;
 
 export function PurchaseModule() {
   const [quantity, setQuantity] = useState(1);
-  const [showBack, setShowBack] = useState(false);
+  const [rotationReady, setRotationReady] = useState(false);
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const { addItem, itemCount } = useCart();
@@ -118,27 +116,30 @@ export function PurchaseModule() {
           <div className="grid lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-12 p-6 sm:p-8 md:p-10">
             {/* Product Image */}
             <div className="lg:col-span-2 flex flex-col justify-center items-center gap-4">
-              <div className="relative w-full max-w-xs">
-                <img 
-                  src={showBack ? apa_coin_back : apa_coin_front}
-                  alt={`Alpha Phi Alpha 120th Anniversary Commemorative Coin - ${showBack ? 'Back' : 'Front'}`} 
-                  className="w-full h-auto object-contain drop-shadow-2xl transition-opacity duration-300"
+              <div className="relative aspect-square w-full max-w-sm">
+                <img
+                  src={apa_coin_front}
+                  alt="Front of the Alpha Phi Alpha 120th Anniversary Commemorative Coin"
+                  className={`hero-coin-fallback absolute inset-0 h-full w-full object-contain drop-shadow-2xl transition-opacity duration-500 ${rotationReady ? "opacity-0" : "opacity-100"}`}
                   data-testid="img-coin-purchase"
                   loading="lazy"
                   decoding="async"
                 />
+                <video
+                  className={`hero-coin-rotation absolute inset-0 h-full w-full object-contain drop-shadow-2xl transition-opacity duration-500 ${rotationReady ? "opacity-100" : "opacity-0"}`}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  poster={apa_coin_front}
+                  aria-label="The Alpha Phi Alpha 120th Anniversary Commemorative Coin rotating from front to back"
+                  onCanPlay={() => setRotationReady(true)}
+                  onError={() => setRotationReady(false)}
+                >
+                  <source src="/media/apa-coin-3d-rotation-transparent-v2.webm" type="video/webm"/>
+                </video>
               </div>
-              <Button
-                variant="outline"
-                onClick={() => setShowBack(!showBack)}
-                aria-pressed={showBack}
-                aria-label={showBack ? "Show the front of the coin" : "Show the back of the coin"}
-                className="flex items-center gap-2 bg-background/60 border-primary/30"
-                data-testid="button-toggle-coin-side"
-              >
-                <RotateCw className="w-4 h-4" />
-                {showBack ? 'Show Front' : 'Show Back'}
-              </Button>
             </div>
 
             {/* Purchase Details */}

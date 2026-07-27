@@ -3,7 +3,8 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Minus, Plus, ShoppingCart, ChevronLeft, ChevronRight, Sparkles, Award, Package, Star } from "lucide-react";
+import { Minus, Plus, ShoppingCart, ChevronLeft, ChevronRight, Sparkles, Award, Star } from "lucide-react";
+import shieldCoinImg from "@assets/optimized-webp/apa coin back.webp";
 import { MAIN_COIN, JEWEL_SET, JEWEL_COINS } from "@/lib/products";
 import { useCart } from "@/contexts/cart-context";
 import { useToast } from "@/hooks/use-toast";
@@ -30,6 +31,7 @@ export default function ShopCoins() {
     ...Object.fromEntries(JEWEL_COINS.map((j) => [j.id, 1])),
   });
   const [selectedJewelIndex, setSelectedJewelIndex] = useState(0);
+  const [mainCoinRotationReady, setMainCoinRotationReady] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
@@ -273,18 +275,32 @@ export default function ShopCoins() {
               >
                 {/* Coin image */}
                 <div className="flex items-center justify-center">
-                  <div className="relative">
+                  <div className="relative aspect-square w-full max-w-md">
                     <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
                     <img
                       src={MAIN_COIN.image}
                       alt="Alpha Phi Alpha 120th Anniversary 4-inch commemorative coin - limited edition 1906 units"
-                      className="relative w-full max-w-md h-auto object-contain drop-shadow-2xl"
+                      className={`hero-coin-fallback absolute inset-0 h-full w-full object-contain drop-shadow-2xl transition-opacity duration-500 ${mainCoinRotationReady ? "opacity-0" : "opacity-100"}`}
                       loading="lazy"
                       decoding="async"
                       width="400"
                       height="400"
                       data-testid="img-main-coin"
                     />
+                    <video
+                      className={`hero-coin-rotation absolute inset-0 h-full w-full object-contain drop-shadow-2xl transition-opacity duration-500 ${mainCoinRotationReady ? "opacity-100" : "opacity-0"}`}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      poster={MAIN_COIN.image}
+                      aria-label="The Alpha Phi Alpha 120th Anniversary 4-inch commemorative coin rotating from front to back"
+                      onCanPlay={() => setMainCoinRotationReady(true)}
+                      onError={() => setMainCoinRotationReady(false)}
+                    >
+                      <source src="/media/apa-coin-3d-rotation-transparent-v2.webm" type="video/webm"/>
+                    </video>
                   </div>
                 </div>
 
@@ -394,9 +410,17 @@ export default function ShopCoins() {
                           />
                         </div>
                       ))}
-                      <div className="aspect-square rounded-lg border border-primary/20 bg-primary/10 flex items-center justify-center">
-                        <Package className="w-8 h-8 text-primary" />
-                      </div>
+                  <div className="aspect-square rounded-lg overflow-hidden border border-primary/20 bg-background/50">
+                    <img
+                      src={shieldCoinImg}
+                      alt="Shield side of the Alpha Phi Alpha 120th Anniversary commemorative coin"
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                      width="100"
+                      height="100"
+                    />
+                  </div>
                     </div>
                     
                     <div className="text-sm text-gray-400 bg-background/50 p-4 rounded-lg border border-primary/20">

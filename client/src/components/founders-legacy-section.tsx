@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import callisImg from "@assets/optimized-webp/Henry Arthur Callis_1763159941951.webp";
 import chapmanImg from "@assets/optimized-webp/Charles Henry Chapman_1763159941952.webp";
 import jonesImg from "@assets/optimized-webp/Eugene Kincle Jones_1763159941953.webp";
@@ -22,13 +23,37 @@ const founders = [
 ];
 
 export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps) {
+  const figureRef = useRef<HTMLElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const figure = figureRef.current;
+    if (!figure) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.18 },
+    );
+
+    observer.observe(figure);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section
       className="bg-[#f4f0e6] py-0"
       data-testid="section-founders-legacy"
       aria-label="The Seven Jewels of Alpha Phi Alpha Founders' Legacy Set"
     >
-      <figure className="relative mx-auto w-full max-w-[1417px] overflow-visible">
+      <figure
+        ref={figureRef}
+        className={`founders-poster-reveal relative mx-auto w-full max-w-[1417px] overflow-visible ${isVisible ? "is-visible" : ""}`}
+      >
         <img
           src={legacyPosterImg}
           alt="The Seven Jewels of Alpha Phi Alpha Founders' Legacy Set collector package, seven-coin presentation case, and founder portraits"
@@ -37,6 +62,7 @@ export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps
           loading="lazy"
           decoding="async"
         />
+        <span className="founders-headline-shimmer" aria-hidden="true"/>
 
         <button
           type="button"
@@ -50,7 +76,7 @@ export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps
           <button
             key={founder.fullName}
             type="button"
-            className="group absolute top-[64.9%] z-20 aspect-square w-[8.5%] -translate-x-1/2 cursor-zoom-in rounded-full focus-visible:z-40 focus-visible:outline-none hover:z-40"
+            className="group founder-coin-hotspot absolute top-[64.9%] z-20 aspect-square w-[8.5%] -translate-x-1/2 cursor-zoom-in rounded-full focus-visible:z-40 focus-visible:outline-none hover:z-40"
             style={{ left: founder.left }}
             aria-label={`Enlarge the ${founder.fullName} commemorative coin`}
           >
@@ -58,8 +84,9 @@ export function FoundersLegacySection({ onCtaClick }: FoundersLegacySectionProps
               src={founder.image}
               alt=""
               aria-hidden="true"
-              className="absolute inset-0 h-full w-full rounded-full border border-[#d4ad55] object-cover opacity-0 shadow-[0_12px_35px_rgba(0,0,0,.65)] transition duration-300 ease-out group-hover:scale-[2.25] group-hover:opacity-100 group-focus-visible:scale-[2.25] group-focus-visible:opacity-100 motion-reduce:transition-none"
+              className="founder-coin-enlargement absolute inset-0 h-full w-full rounded-full border border-[#d4ad55] object-cover opacity-0 shadow-[0_12px_35px_rgba(0,0,0,.65)] transition duration-300 ease-out group-hover:scale-[2.25] group-hover:opacity-100 group-focus-visible:scale-[2.25] group-focus-visible:opacity-100 motion-reduce:transition-none"
             />
+            <span className="founder-coin-glint" aria-hidden="true"/>
           </button>
         ))}
 

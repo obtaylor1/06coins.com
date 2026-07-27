@@ -14,7 +14,7 @@ interface ProductShowcaseProps {
 
 export function ProductShowcase({ onCtaClick }: ProductShowcaseProps) {
   return (
-    <section className="relative">
+    <section id="edition-ledger" className="relative scroll-mt-20 sm:scroll-mt-24">
       {/* Full-Width Header Section with Egyptian Background */}
       <div 
         className="relative w-full py-16 sm:py-20 md:py-24 lg:py-32 px-4 sm:px-6 md:px-12 overflow-hidden"

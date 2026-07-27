@@ -206,8 +206,9 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
                 <div className="absolute inset-0 rounded-full bg-primary/20 blur-2xl -z-10" />
                 
                 {/* Coin Container */}
-                <div 
-                  className="relative h-40 w-40 xs:h-48 xs:w-48 sm:h-56 sm:w-56 lg:h-64 lg:w-64 rounded-full border-2 border-primary/60 bg-gradient-to-b from-primary/10 to-gray-900 flex items-center justify-center shadow-2xl overflow-hidden"
+                <div
+                  key={activeJewel.id}
+                  className="jewel-coin-enter relative h-40 w-40 xs:h-48 xs:w-48 sm:h-56 sm:w-56 lg:h-64 lg:w-64 rounded-full border-2 border-primary/60 bg-gradient-to-b from-primary/10 to-gray-900 flex items-center justify-center shadow-2xl overflow-hidden"
                   data-testid={`carousel-coin-${activeJewel.id}`}
                 >
                   <img
@@ -239,9 +240,9 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
                 <button
                   key={jewel.id}
                   onClick={() => setActiveIndex(index)}
-                  className={`h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-full border-2 transition-all shrink-0 overflow-hidden ${
+                  className={`jewel-thumbnail h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-full border-2 transition-all shrink-0 overflow-hidden ${
                     index === activeIndex
-                      ? "border-primary ring-2 ring-primary/30 scale-110"
+                      ? "jewel-thumbnail-active border-primary ring-2 ring-primary/30 scale-110"
                       : "border-gray-600 hover:border-primary/50 opacity-60 hover:opacity-100"
                   }`}
                   aria-label={`View ${jewel.name} coin`}
@@ -261,12 +262,13 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
 
           {/* RIGHT: Detail & Add-to-Cart Panel */}
           <div className="w-full">
-            <div 
+            <div
+              key={activeJewel.id}
               className="rounded-2xl sm:rounded-3xl border-2 border-primary/60 bg-gray-800 px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-4 sm:gap-6"
               data-testid="card-jewel-detail"
             >
               {/* Name & Title */}
-              <div className="text-center space-y-1 sm:space-y-2">
+              <div className="jewel-details-enter text-center space-y-1 sm:space-y-2">
                 <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-medium text-primary">
                   {activeJewel.fullName}
                 </h3>
@@ -279,7 +281,7 @@ export function JewelCarouselSection({ onAddToCart, onViewSet }: JewelCarouselSe
               </div>
 
               {/* Description */}
-              <p className="text-sm md:text-base text-gray-400 text-center leading-relaxed">
+              <p className="jewel-details-enter text-sm md:text-base text-gray-400 text-center leading-relaxed">
                 {activeJewel.description}
               </p>
 
